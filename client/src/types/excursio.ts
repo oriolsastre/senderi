@@ -1,5 +1,5 @@
 export interface Excursio {
-  id: number;
+  id?: number;
   titol: string;
   descripcio: string | null;
   distancia: number;
@@ -8,7 +8,7 @@ export interface Excursio {
   osm: number | null;
   data: string;
   slug: string;
-  privat: number;
-  created_at: string;
-  updated_at: string;
+  privat?: number;
+  created_at?: string;
+  updated_at?: string;
 }

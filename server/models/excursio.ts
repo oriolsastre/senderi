@@ -1,8 +1,21 @@
 import db from "../db.js";
-import { Excursio } from "../types/excursio.js";
 
-export { Excursio };
 export type { PublicExcursio } from "../types/excursio.js";
+
+export interface Excursio {
+  id: number;
+  titol: string;
+  descripcio: string | null;
+  distancia: number;
+  desnivell_pos: number;
+  desnivell_neg: number;
+  osm: number | null;
+  data: string;
+  slug: string;
+  privat: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface CreateExcursio {
   titol: string;

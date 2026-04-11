@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getExcursions } from "../api/excursions";
+import { getExcursions } from "../api/excursio";
 import { Excursio } from "../types/excursio";
 
 export default function List() {
