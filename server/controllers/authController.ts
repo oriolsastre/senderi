@@ -24,6 +24,7 @@ export function login(req: Request, res: Response) {
 }
 
 export function logout(_req: Request, res: Response) {
+  // TODO: Mirar header clear-site-data
   res.clearCookie("token");
   res.json({ message: "Logout successful" });
 }
