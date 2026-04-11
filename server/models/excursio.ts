@@ -1,19 +1,8 @@
 import db from "../db.js";
+import { Excursio } from "../types/excursio.js";
 
-export interface Excursio {
-  id: number;
-  titol: string;
-  descripcio: string | null;
-  distancia: number;
-  desnivell_pos: number;
-  desnivell_neg: number;
-  osm: number | null;
-  data: string;
-  slug: string;
-  privat: number;
-  created_at: string;
-  updated_at: string;
-}
+export { Excursio };
+export type { PublicExcursio } from "../types/excursio.js";
 
 export interface CreateExcursio {
   titol: string;
@@ -65,11 +54,19 @@ function generateUniqueSlug(date: string, title: string): string {
 }
 
 export function findAll(): Excursio[] {
-  return db.prepare("SELECT * FROM excursions ORDER BY data DESC").all() as Excursio[];
+  return db
+    .prepare(
+      "SELECT id, titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data, slug, privat FROM excursions ORDER BY data DESC"
+    )
+    .all() as Excursio[];
 }
 
 export function findPublic(): Excursio[] {
-  return db.prepare("SELECT * FROM excursions WHERE privat = 0 ORDER BY data DESC").all() as Excursio[];
+  return db
+    .prepare(
+      "SELECT id, titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data, slug, privat FROM excursions WHERE privat = 0 ORDER BY data DESC"
+    )
+    .all() as Excursio[];
 }
 
 export function findById(id: number): Excursio | undefined {
