@@ -68,6 +68,10 @@ export function findAll(): Excursio[] {
   return db.prepare("SELECT * FROM excursions ORDER BY data DESC").all() as Excursio[];
 }
 
+export function findPublic(): Excursio[] {
+  return db.prepare("SELECT * FROM excursions WHERE privat = 0 ORDER BY data DESC").all() as Excursio[];
+}
+
 export function findById(id: number): Excursio | undefined {
   return db.prepare("SELECT * FROM excursions WHERE id = ?").get(id) as Excursio | undefined;
 }
