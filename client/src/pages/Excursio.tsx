@@ -19,7 +19,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
-  const [editedData, setEditedData] = useState("");
+  const [editedDataInici, setEditedDataInici] = useState("");
+  const [editedDataFinal, setEditedDataFinal] = useState("");
   const [editedDistancia, setEditedDistancia] = useState(0);
   const [editedDesnivellPos, setEditedDesnivellPos] = useState(0);
   const [editedDesnivellNeg, setEditedDesnivellNeg] = useState(0);
@@ -40,7 +41,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
   const handleEditClick = () => {
     if (!excursio) return;
     setEditedTitle(excursio.titol);
-    setEditedData(excursio.data);
+    setEditedDataInici(excursio.data_inici);
+    setEditedDataFinal(excursio.data_final);
     setEditedDistancia(excursio.distancia);
     setEditedDesnivellPos(excursio.desnivell_pos);
     setEditedDesnivellNeg(excursio.desnivell_neg);
@@ -52,7 +54,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
   const handleCancel = () => {
     setIsEditing(false);
     setEditedTitle("");
-    setEditedData("");
+    setEditedDataInici("");
+    setEditedDataFinal("");
     setEditedDistancia(0);
     setEditedDesnivellPos(0);
     setEditedDesnivellNeg(0);
@@ -69,7 +72,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
     try {
       const updatedExcursio = await updateExcursio(excursio.id, {
         titol: editedTitle.trim(),
-        data: editedData,
+        data_inici: editedDataInici,
+        data_final: editedDataFinal,
         distancia: editedDistancia,
         desnivell_pos: editedDesnivellPos,
         desnivell_neg: editedDesnivellNeg,
@@ -139,8 +143,16 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
               <span className="text-white/80">{"("}</span>
               <input
                 type="date"
-                value={editedData}
-                onChange={(e) => setEditedData(e.target.value)}
+                value={editedDataInici}
+                onChange={(e) => setEditedDataInici(e.target.value)}
+                className="px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
+                disabled={saving}
+              />
+              <span className="text-white/80">-</span>
+              <input
+                type="date"
+                value={editedDataFinal}
+                onChange={(e) => setEditedDataFinal(e.target.value)}
                 className="px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
@@ -184,7 +196,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
           </div>
         ) : (
           <>
-            <h1 className="text-3xl font-bold text-white flex-1">{excursio.titol} ({excursio.data})</h1>
+            <h1 className="text-3xl font-bold text-white flex-1">{excursio.titol} ({excursio.data_inici}{excursio.data_final !== excursio.data_inici && ` - ${excursio.data_final}`})</h1>
             {isAuthenticated && (
               <button
                 onClick={handleEditClick}
@@ -274,7 +286,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
         )}
       </div>
 
-      <INaturalist date={excursio.data} />
+      <INaturalist dateInici={excursio.data_inici} dateFinal={excursio.data_final} />
     </div>
   );
 }

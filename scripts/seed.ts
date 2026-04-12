@@ -8,7 +8,8 @@ const seeds = [
     desnivell_pos: 650,
     desnivell_neg: 650,
     osm: 12277042,
-    data: "2026-04-04",
+    data_inici: "2026-04-04",
+    data_final: "2026-04-04",
     slug: "2026-04-04-fogueroses-sant-llorenc-del-munt",
     privat: 0,
   },
@@ -19,7 +20,8 @@ const seeds = [
     desnivell_pos: 320,
     desnivell_neg: 280,
     osm: 2345678,
-    data: "2025-07-22",
+    data_inici: "2025-07-22",
+    data_final: "2025-07-22",
     slug: "2025-07-22-ruta-del-cister-santes-creus",
     privat: 0,
   },
@@ -30,15 +32,16 @@ const seeds = [
     desnivell_pos: 980,
     desnivell_neg: 980,
     osm: 3456789,
-    data: "2025-08-10",
+    data_inici: "2025-08-10",
+    data_final: "2025-08-10",
     slug: "2025-08-10-pirineus-estany-de-baiau",
     privat: 0,
   },
 ];
 
 const stmt = db.prepare(`
-  INSERT INTO excursions (titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data, slug)
-  VALUES (@titol, @descripcio, @distancia, @desnivell_pos, @desnivell_neg, @osm, @data, @slug)
+  INSERT INTO excursions (titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data_inici, data_final, slug, privat)
+  VALUES (@titol, @descripcio, @distancia, @desnivell_pos, @desnivell_neg, @osm, @data_inici, @data_final, @slug, @privat)
 `);
 
 db.transaction(() => {

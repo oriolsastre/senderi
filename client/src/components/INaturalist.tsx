@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
 interface INaturalistProps {
-  date: string;
+  dateInici: string;
+  dateFinal: string;
 }
 
 interface INatObservation {
@@ -22,7 +23,7 @@ interface INatResponse {
   results?: INatObservation[];
 }
 
-export default function INaturalist({ date }: INaturalistProps) {
+export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) {
   const [observations, setObservations] = useState<INatObservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +35,8 @@ export default function INaturalist({ date }: INaturalistProps) {
 
       try {
         const params = new URLSearchParams({
-          d1: date,
-          d2: date,
+          d1: dateInici,
+          d2: dateFinal,
           perPage: "50",
         });
 
@@ -51,7 +52,7 @@ export default function INaturalist({ date }: INaturalistProps) {
     };
 
     fetchObservations();
-  }, [date]);
+  }, [dateInici, dateFinal]);
 
   if (loading) {
     return (

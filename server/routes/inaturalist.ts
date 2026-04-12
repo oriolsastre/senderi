@@ -7,12 +7,14 @@ router.get("/observations", async (req, res) => {
 
   const params = new URLSearchParams();
   params.set("user_login", "sastreo");
+  params.set("photos", "true");
+  params.set("order", "asc");
+  params.set("oder_by", "observed_on");
+  params.set("geo", "true");
+  params.set("geoprivacy", "open");
   if (d1) params.set("d1", d1 as string);
   if (d2) params.set("d2", d2 as string);
   if (perPage) params.set("per_page", perPage as string);
-  params.set("photos", "true");
-  params.set("geo", "true");
-  params.set("geoprivacy", "open");
 
   const url = `https://api.inaturalist.org/v1/observations?${params.toString()}`;
 

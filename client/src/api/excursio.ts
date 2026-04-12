@@ -12,7 +12,7 @@ export async function getExcursio(slug: string): Promise<Excursio> {
   return response.json();
 }
 
-export async function updateExcursio(id: number, data: { titol?: string; data?: string; distancia?: number; desnivell_pos?: number; desnivell_neg?: number; osm?: number | null; descripcio?: string | null }): Promise<Excursio> {
+export async function updateExcursio(id: number, data: { titol?: string; data_inici?: string; data_final?: string; distancia?: number; desnivell_pos?: number; desnivell_neg?: number; osm?: number | null; descripcio?: string | null }): Promise<Excursio> {
   const response = await fetch(`/api/excursions/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },

@@ -10,7 +10,8 @@ export interface Excursio {
   desnivell_pos: number;
   desnivell_neg: number;
   osm: number | null;
-  data: string;
+  data_inici: string;
+  data_final: string;
   slug: string;
   privat: number;
   created_at: string;
@@ -24,7 +25,8 @@ export interface CreateExcursio {
   desnivell_pos?: number;
   desnivell_neg?: number;
   osm?: number;
-  data?: string;
+  data_inici?: string;
+  data_final?: string;
   slug?: string;
   privat?: number;
 }
@@ -36,7 +38,8 @@ export interface UpdateExcursio {
   desnivell_pos?: number;
   desnivell_neg?: number;
   osm?: number;
-  data?: string;
+  data_inici?: string;
+  data_final?: string;
   slug?: string;
   privat?: number;
 }
@@ -69,7 +72,7 @@ function generateUniqueSlug(date: string, title: string): string {
 export function findAll(): Excursio[] {
   return db
     .prepare(
-      "SELECT id, titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data, slug, privat FROM excursions ORDER BY data DESC"
+      "SELECT id, titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data_inici, data_final, slug, privat FROM excursions ORDER BY data_inici DESC"
     )
     .all() as Excursio[];
 }
@@ -77,7 +80,7 @@ export function findAll(): Excursio[] {
 export function findPublic(): Excursio[] {
   return db
     .prepare(
-      "SELECT id, titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data, slug, privat FROM excursions WHERE privat = 0 ORDER BY data DESC"
+      "SELECT id, titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data_inici, data_final, slug, privat FROM excursions WHERE privat = 0 ORDER BY data_inici DESC"
     )
     .all() as Excursio[];
 }
@@ -92,10 +95,11 @@ export function findBySlug(slug: string): Excursio | undefined {
 
 export function create(data: CreateExcursio): Excursio {
   const stmt = db.prepare(`
-    INSERT INTO excursions (titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data, slug, privat)
-    VALUES (@titol, @descripcio, @distancia, @desnivell_pos, @desnivell_neg, @osm, @data, @slug, @privat)
+    INSERT INTO excursions (titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data_inici, data_final, slug, privat)
+    VALUES (@titol, @descripcio, @distancia, @desnivell_pos, @desnivell_neg, @osm, @data_inici, @data_final, @slug, @privat)
   `);
-  const finalData = data.data ?? new Date().toISOString().split("T")[0];
+  const finalDataInici = data.data_inici ?? new Date().toISOString().split("T")[0];
+  const finalDataFinal = data.data_final ?? finalDataInici;
   const result = stmt.run({
     titol: data.titol,
     descripcio: data.descripcio ?? null,
@@ -103,8 +107,9 @@ export function create(data: CreateExcursio): Excursio {
     desnivell_pos: data.desnivell_pos ?? 0,
     desnivell_neg: data.desnivell_neg ?? 0,
     osm: data.osm ?? null,
-    data: finalData,
-    slug: data.slug ?? generateUniqueSlug(finalData, data.titol),
+    data_inici: finalDataInici,
+    data_final: finalDataFinal,
+    slug: data.slug ?? generateUniqueSlug(finalDataInici, data.titol),
     privat: data.privat ?? 0,
   });
   return findById(result.lastInsertRowid as number)!;
@@ -123,14 +128,15 @@ export function update(id: number, data: UpdateExcursio): Excursio | undefined {
   if (data.desnivell_pos !== undefined) { fields.push("desnivell_pos = @desnivell_pos"); values.desnivell_pos = data.desnivell_pos; }
   if (data.desnivell_neg !== undefined) { fields.push("desnivell_neg = @desnivell_neg"); values.desnivell_neg = data.desnivell_neg; }
   if (data.osm !== undefined) { fields.push("osm = @osm"); values.osm = data.osm; }
-  if (data.data !== undefined) { fields.push("data = @data"); values.data = data.data; }
+  if (data.data_inici !== undefined) { fields.push("data_inici = @data_inici"); values.data_inici = data.data_inici; }
+  if (data.data_final !== undefined) { fields.push("data_final = @data_final"); values.data_final = data.data_final; }
   if (data.privat !== undefined) { fields.push("privat = @privat"); values.privat = data.privat; }
 
   if (fields.length === 0) return current;
 
-  if (data.titol !== undefined || data.data !== undefined) {
+  if (data.titol !== undefined || data.data_inici !== undefined) {
     fields.push("slug = @slug");
-    const newDate = data.data ?? current.data;
+    const newDate = data.data_inici ?? current.data_inici;
     const newTitle = data.titol ?? current.titol;
     values.slug = generateUniqueSlug(newDate, newTitle);
   } else if (data.slug !== undefined) {

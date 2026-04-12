@@ -6,7 +6,8 @@ export interface Excursio {
   desnivell_pos: number;
   desnivell_neg: number;
   osm: number | null;
-  data: string;
+  data_inici: string;
+  data_final: string;
   slug: string;
   privat: number;
   created_at: string;
@@ -20,6 +21,7 @@ export interface PublicExcursio {
   desnivell_pos: number;
   desnivell_neg: number;
   osm: number | null;
-  data: string;
+  data_inici: string;
+  data_final: string;
   slug: string;
 }
