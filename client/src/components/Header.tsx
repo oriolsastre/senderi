@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { UserIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/solid";
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -11,23 +12,25 @@ export default function Header({ isAuthenticated, onLoginClick, onLogoutClick }:
     <header className="h-16 flex justify-between items-center">
       <Link
         to="/"
-        className="text-white/80 hover:text-white transition-colors"
+        className="text-black/80 hover:text-black transition-colors"
       >
         Excursions
       </Link>
       {isAuthenticated ? (
         <button
           onClick={onLogoutClick}
-          className="text-white/80 hover:text-white transition-colors"
+          title="Surt"
+          className="text-black/80 hover:text-black hover:bg-black/10 cursor-pointer p-2 rounded transition-colors"
         >
-          Logout
+          <ArrowRightStartOnRectangleIcon className="w-5 h-5" />
         </button>
       ) : (
         <button
           onClick={onLoginClick}
-          className="text-white/80 hover:text-white transition-colors"
+          title="Entra"
+          className="text-black/80 hover:text-black hover:bg-black/10 cursor-pointer p-2 rounded transition-colors"
         >
-          Login
+          <UserIcon className="w-5 h-5" />
         </button>
       )}
     </header>

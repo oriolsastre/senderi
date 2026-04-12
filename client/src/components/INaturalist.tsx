@@ -57,7 +57,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
   if (loading) {
     return (
       <div className="py-4">
-        <p className="text-white/80">Carregant observacions...</p>
+        <p className="text-black/80">Carregant observacions...</p>
       </div>
     );
   }
@@ -73,17 +73,17 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
   if (observations.length === 0) {
     return (
       <div className="py-4">
-        <h2 className="text-lg font-semibold text-white mb-2">
+        <h2 className="text-lg font-semibold text-black mb-2">
           Observacions iNaturalist
         </h2>
-        <p className="text-white/60">Cap observació per a aquesta data</p>
+        <p className="text-black/60">Cap observació per a aquesta data</p>
       </div>
     );
   }
 
   return (
     <div className="py-4">
-      <h2 className="text-lg font-semibold text-white mb-3">
+      <h2 className="text-lg font-semibold text-black mb-3">
         Observacions iNaturalist ({observations.length})
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
@@ -95,7 +95,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
             rel="noopener noreferrer"
             className="block group"
           >
-            <div className="aspect-square overflow-hidden rounded-lg bg-white/10">
+            <div className="aspect-square overflow-hidden rounded-lg bg-gray-200">
               {obs.photos?.[0]?.url && (
                 <img
                   src={obs.photos[0].url?.replace("square.", "medium.")}
@@ -104,7 +104,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
                 />
               )}
             </div>
-            <p className="mt-1 text-xs text-white/70 truncate">
+            <p className="mt-1 text-xs text-black/70 truncate">
               {obs.taxon?.name || obs.speciesGuess || "Sense identificacio"}
             </p>
           </a>

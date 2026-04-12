@@ -58,13 +58,13 @@ export default function New({ isAuthenticated }: NewProps) {
 
   return (
     <div className="py-4 max-w-2xl">
-      <h1 className="text-3xl font-bold text-white mb-6">Nova Excursió</h1>
+      <h1 className="text-3xl font-bold text-black mb-6">Nova Excursió</h1>
 
       {error && <p className="text-red-400 mb-4">{error}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-white/80 mb-1">Titol *</label>
+          <label className="block text-black/80 mb-1">Titol *</label>
           <input
             type="text"
             value={titol}
@@ -77,7 +77,7 @@ export default function New({ isAuthenticated }: NewProps) {
 
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-white/80 mb-1">Data inici</label>
+            <label className="block text-black/80 mb-1">Data inici</label>
             <input
               type="date"
               value={dataInici}
@@ -86,7 +86,7 @@ export default function New({ isAuthenticated }: NewProps) {
             />
           </div>
           <div>
-            <label className="block text-white/80 mb-1">Data final</label>
+            <label className="block text-black/80 mb-1">Data final</label>
             <input
               type="date"
               value={dataFinal}
@@ -98,7 +98,7 @@ export default function New({ isAuthenticated }: NewProps) {
 
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-white/80 mb-1">Distancia (m)</label>
+            <label className="block text-black/80 mb-1">Distancia (m)</label>
             <input
               type="number"
               value={distancia}
@@ -107,7 +107,7 @@ export default function New({ isAuthenticated }: NewProps) {
             />
           </div>
           <div>
-            <label className="block text-white/80 mb-1">Desnivell + (m)</label>
+            <label className="block text-black/80 mb-1">Desnivell + (m)</label>
             <input
               type="number"
               value={desnivellPos}
@@ -116,7 +116,7 @@ export default function New({ isAuthenticated }: NewProps) {
             />
           </div>
           <div>
-            <label className="block text-white/80 mb-1">Desnivell - (m)</label>
+            <label className="block text-black/80 mb-1">Desnivell - (m)</label>
             <input
               type="number"
               value={desnivellNeg}
@@ -127,7 +127,7 @@ export default function New({ isAuthenticated }: NewProps) {
         </div>
 
         <div>
-          <label className="block text-white/80 mb-1">OSM Trace ID</label>
+          <label className="block text-black/80 mb-1">OSM Trace ID</label>
           <input
             type="number"
             value={osm ?? ""}
@@ -138,7 +138,7 @@ export default function New({ isAuthenticated }: NewProps) {
         </div>
 
         <div>
-          <label className="block text-white/80 mb-1">Descripció</label>
+          <label className="block text-black/80 mb-1">Descripció</label>
           <textarea
             value={descripcio}
             onChange={(e) => setDescripcio(e.target.value)}
@@ -154,14 +154,14 @@ export default function New({ isAuthenticated }: NewProps) {
             onChange={(e) => setPrivat(e.target.checked)}
             className="w-4 h-4"
           />
-          <label htmlFor="privat" className="text-white/80">Privada</label>
+          <label htmlFor="privat" className="text-black/80">Privada</label>
         </div>
 
         <div className="flex gap-4 pt-4">
           <button
             type="submit"
             disabled={saving || !titol.trim()}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
+            className="px-6 py-2 bg-green-600 text-black rounded-lg hover:bg-green-700 disabled:opacity-50 cursor-pointer"
           >
             {saving ? (
               <ArrowPathIcon className="h-5 w-5 animate-spin" />
@@ -172,7 +172,7 @@ export default function New({ isAuthenticated }: NewProps) {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="px-6 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 cursor-pointer"
+            className="px-6 py-2 bg-white/20 text-black rounded-lg hover:bg-white/30 cursor-pointer"
           >
             Cancel·lar
           </button>

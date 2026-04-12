@@ -120,9 +120,9 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
     }
   };
 
-  if (loading) return <div className="py-4 text-white">Loading...</div>;
+  if (loading) return <div className="py-4 text-black">Loading...</div>;
   if (error) return <div className="py-4 text-red-400">{error}</div>;
-  if (!excursio) return <div className="py-4 text-white">Excursio no trobada</div>;
+  if (!excursio) return <div className="py-4 text-black">Excursio no trobada</div>;
 
   const distanciaKm = (excursio.distancia / 1000).toFixed(1);
 
@@ -140,7 +140,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
                 disabled={saving}
                 autoFocus
               />
-              <span className="text-white/80">{"("}</span>
+              <span className="text-black/80">{"("}</span>
               <input
                 type="date"
                 value={editedDataInici}
@@ -148,7 +148,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
                 className="px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
-              <span className="text-white/80">-</span>
+              <span className="text-black/80">-</span>
               <input
                 type="date"
                 value={editedDataFinal}
@@ -156,7 +156,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
                 className="px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
-              <span className="text-white/80">{")"}</span>
+              <span className="text-black/80">{")"}</span>
             </div>
             <div className="flex flex-wrap gap-2 items-center">
               <input
@@ -166,7 +166,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
                 className="w-24 px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
-              <span className="text-white/80">m</span>
+              <span className="text-black/80">m</span>
               <input
                 type="number"
                 value={editedDesnivellPos}
@@ -174,7 +174,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
                 className="w-24 px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
-              <span className="text-white/80">m</span>
+              <span className="text-black/80">m</span>
               <input
                 type="number"
                 value={editedDesnivellNeg}
@@ -182,8 +182,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
                 className="w-24 px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
-              <span className="text-white/80">m</span>
-              <span className="text-white/80">OSM Trace:</span>
+              <span className="text-black/80">m</span>
+              <span className="text-black/80">OSM Trace:</span>
               <input
                 type="number"
                 value={editedOsm ?? ""}
@@ -196,11 +196,11 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
           </div>
         ) : (
           <>
-            <h1 className="text-3xl font-bold text-white flex-1">{excursio.titol} ({excursio.data_inici}{excursio.data_final !== excursio.data_inici && ` - ${excursio.data_final}`})</h1>
+            <h1 className="text-3xl font-bold text-black flex-1">{excursio.titol} ({excursio.data_inici}{excursio.data_final !== excursio.data_inici && ` - ${excursio.data_final}`})</h1>
             {isAuthenticated && (
               <button
                 onClick={handleEditClick}
-                className="p-2 text-white/80 hover:text-white cursor-pointer"
+                className="p-2 text-black/80 hover:text-black cursor-pointer"
               >
                 <PencilIcon className="h-6 w-6" />
               </button>
@@ -210,19 +210,19 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
         {isEditing && (
           saving ? (
             <div className="p-2">
-              <ArrowPathIcon className="h-6 w-6 text-white/80 animate-spin" />
+              <ArrowPathIcon className="h-6 w-6 text-black/80 animate-spin" />
             </div>
           ) : (
             <>
               <button
                 onClick={handleConfirm}
-                className="p-2 text-white/80 hover:text-white cursor-pointer"
+                className="p-2 text-black/80 hover:text-black cursor-pointer"
               >
                 <CheckIcon className="h-6 w-6" />
               </button>
               <button
                 onClick={handleCancel}
-                className="p-2 text-white/80 hover:text-white cursor-pointer"
+                className="p-2 text-black/80 hover:text-black cursor-pointer"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>
@@ -233,19 +233,19 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
 
       {saveError && <p className="text-red-400">{saveError}</p>}
 
-      <p className="text-xl text-white/80">
-        {distanciaKm} km <span className="text-white/60">+{excursio.desnivell_pos}m/-{excursio.desnivell_neg}m</span>
+      <p className="text-xl text-black/80 -mt-4">
+        {distanciaKm} km <span className="text-black/60">+{excursio.desnivell_pos}m/-{excursio.desnivell_neg}m</span>
       </p>
 
       <Map osmId={excursio.osm ?? null} />
 
       <div>
         <div className="flex items-center gap-4 mb-2">
-          <h2 className="text-lg font-semibold text-white">Descripció</h2>
+          <h2 className="text-lg font-semibold text-black">Descripció</h2>
           {isAuthenticated && (
             <button
               onClick={handleEditDescriptionClick}
-              className="p-2 text-white/80 hover:text-white cursor-pointer"
+              className="p-2 text-black/80 hover:text-black cursor-pointer"
             >
               <PencilIcon className="h-5 w-5" />
             </button>
@@ -262,19 +262,19 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
             />
             {saving ? (
               <div className="p-2">
-                <ArrowPathIcon className="h-6 w-6 text-white/80 animate-spin" />
+                <ArrowPathIcon className="h-6 w-6 text-black/80 animate-spin" />
               </div>
             ) : (
               <>
                 <button
                   onClick={handleConfirmDescription}
-                  className="p-2 text-white/80 hover:text-white cursor-pointer"
+                  className="p-2 text-black/80 hover:text-black cursor-pointer"
                 >
                   <CheckIcon className="h-6 w-6" />
                 </button>
                 <button
                   onClick={handleCancelDescription}
-                  className="p-2 text-white/80 hover:text-white cursor-pointer"
+                  className="p-2 text-black/80 hover:text-black cursor-pointer"
                 >
                   <XMarkIcon className="h-6 w-6" />
                 </button>
@@ -282,7 +282,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
             )}
           </div>
         ) : (
-          <p className="text-white/90">{excursio.descripcio || "Sense descripció"}</p>
+          <p className="text-black/90">{excursio.descripcio || "Sense descripció"}</p>
         )}
       </div>
 
