@@ -21,3 +21,13 @@ export async function updateExcursio(id: number, data: { titol?: string; data_in
   if (!response.ok) throw new Error("Failed to update");
   return response.json();
 }
+
+export async function createExcursio(data: { titol: string; data_inici: string; data_final: string; distancia?: number; desnivell_pos?: number; desnivell_neg?: number; osm?: number | null; descripcio?: string | null; privat?: number }): Promise<Excursio> {
+  const response = await fetch("/api/excursions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create excursion");
+  return response.json();
+}
