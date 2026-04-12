@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+.gpx {
+  stroke: #9333ea !important;
+  stroke-width: 3 !important;
+  fill: none !important;
+}
