@@ -4,6 +4,7 @@ import { PencilIcon, CheckIcon, XMarkIcon, ArrowPathIcon } from "@heroicons/reac
 import { getExcursio, updateExcursio } from "../api/excursio";
 import { Excursio } from "../types/excursio";
 import Map from "../components/Map";
+import INaturalist from "../components/INaturalist";
 
 interface ExcursioProps {
   isAuthenticated: boolean;
@@ -272,6 +273,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
           <p className="text-white/90">{excursio.descripcio || "Sense descripció"}</p>
         )}
       </div>
+
+      <INaturalist date={excursio.data} />
     </div>
   );
 }

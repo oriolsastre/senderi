@@ -124,7 +124,6 @@ export function update(id: number, data: UpdateExcursio): Excursio | undefined {
   if (data.desnivell_neg !== undefined) { fields.push("desnivell_neg = @desnivell_neg"); values.desnivell_neg = data.desnivell_neg; }
   if (data.osm !== undefined) { fields.push("osm = @osm"); values.osm = data.osm; }
   if (data.data !== undefined) { fields.push("data = @data"); values.data = data.data; }
-  if (data.slug !== undefined) { fields.push("slug = @slug"); values.slug = data.slug; }
   if (data.privat !== undefined) { fields.push("privat = @privat"); values.privat = data.privat; }
 
   if (fields.length === 0) return current;
@@ -134,6 +133,9 @@ export function update(id: number, data: UpdateExcursio): Excursio | undefined {
     const newDate = data.data ?? current.data;
     const newTitle = data.titol ?? current.titol;
     values.slug = generateUniqueSlug(newDate, newTitle);
+  } else if (data.slug !== undefined) {
+    fields.push("slug = @slug");
+    values.slug = data.slug;
   }
 
   fields.push("updated_at = CURRENT_TIMESTAMP");
