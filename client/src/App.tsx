@@ -30,14 +30,18 @@ export default function App() {
         />
         <Routes>
           <Route path="/" element={<List />} />
-          <Route path="/:slug" element={<Excursio />} />
+          <Route path="/:slug" element={<Excursio isAuthenticated={isAuthenticated} />} />
         </Routes>
       </Layout>
       <LoginModal
         isOpen={isLoginOpen}
-        onClose={() => {
+        onClose={async () => {
           setIsLoginOpen(false);
-          getAuthStatus().then(setIsAuthenticated);
+          const authenticated = await getAuthStatus();
+          setIsAuthenticated(authenticated);
+          if (authenticated) {
+            window.location.reload();
+          }
         }}
       />
     </BrowserRouter>

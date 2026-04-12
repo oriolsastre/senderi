@@ -20,6 +20,7 @@
   "author": "Oriol Sastre",
   "license": "ISC",
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "better-sqlite3": "^12.8.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.1",

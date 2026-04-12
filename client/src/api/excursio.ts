@@ -11,3 +11,13 @@ export async function getExcursio(slug: string): Promise<Excursio> {
   if (!response.ok) throw new Error("Failed to fetch excursion");
   return response.json();
 }
+
+export async function updateExcursio(id: number, data: { titol?: string; data?: string; distancia?: number; desnivell_pos?: number; desnivell_neg?: number; osm?: number | null; descripcio?: string | null }): Promise<Excursio> {
+  const response = await fetch(`/api/excursions/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update");
+  return response.json();
+}

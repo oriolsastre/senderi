@@ -22,13 +22,11 @@ export function findAll(req: AuthenticatedRequest, res: Response) {
   
   if (req.isAuthenticated) {
     const response = excursions.map(formatExcursion);
-    res.setHeader("Cache-Control", "public, max-age=3600");
     return res.json(response);
   } else {
     const publicExcursions = excursions
       .filter((e) => e.privat === 0)
       .map(toPublicExcursio);
-    res.setHeader("Cache-Control", "public, max-age=3600");
     return res.json(publicExcursions);
   }
 }
@@ -46,10 +44,8 @@ export function findBySlug(req: AuthenticatedRequest, res: Response) {
   }
 
   if (req.isAuthenticated) {
-    res.setHeader("Cache-Control", "public, max-age=3600");
     return res.json(formatExcursion(excursion));
   } else {
-    res.setHeader("Cache-Control", "public, max-age=3600");
     return res.json(toPublicExcursio(excursion));
   }
 }

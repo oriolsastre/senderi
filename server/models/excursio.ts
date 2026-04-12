@@ -129,6 +129,13 @@ export function update(id: number, data: UpdateExcursio): Excursio | undefined {
 
   if (fields.length === 0) return current;
 
+  if (data.titol !== undefined || data.data !== undefined) {
+    fields.push("slug = @slug");
+    const newDate = data.data ?? current.data;
+    const newTitle = data.titol ?? current.titol;
+    values.slug = generateUniqueSlug(newDate, newTitle);
+  }
+
   fields.push("updated_at = CURRENT_TIMESTAMP");
 
   const stmt = db.prepare(`UPDATE excursions SET ${fields.join(", ")} WHERE id = @id`);
