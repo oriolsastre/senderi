@@ -4,6 +4,21 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET!;
 const LOGIN_PASSWORD = process.env.PASSWORD!;
 
+export function status(req: Request, res: Response) {
+  const token = req.cookies.token;
+  
+  if (token) {
+    try {
+      jwt.verify(token, JWT_SECRET);
+      return res.json({ authenticated: true });
+    } catch {
+      res.clearCookie("token");
+    }
+  }
+  
+  return res.json({ authenticated: false });
+}
+
 export function login(req: Request, res: Response) {
   const { password } = req.body;
 
@@ -24,7 +39,6 @@ export function login(req: Request, res: Response) {
 }
 
 export function logout(_req: Request, res: Response) {
-  // TODO: Mirar header clear-site-data
   res.clearCookie("token");
   res.json({ message: "Logout successful" });
 }

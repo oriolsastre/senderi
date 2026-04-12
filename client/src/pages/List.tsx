@@ -16,26 +16,26 @@ export default function List() {
   }, []);
 
   if (loading) {
-    return <div className="p-4">Loading...</div>;
+    return <div className="py-4 text-white">Loading...</div>;
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">{error}</div>;
+    return <div className="py-4 text-red-400">{error}</div>;
   }
 
   if (excursions.length === 0) {
-    return <div className="p-4">No excursions yet</div>;
+    return <div className="py-4 text-white/80">No excursions yet</div>;
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Excursions</h1>
+    <div className="py-4">
+      <h1 className="text-2xl font-bold mb-4 text-white">Excursions</h1>
       <ul className="space-y-2">
         {excursions.map((excursion) => (
           <li key={excursion.id}>
             <Link
               to={`/${excursion.slug}`}
-              className="text-blue-600 hover:underline"
+              className="text-white/90 hover:text-white hover:underline"
             >
               {excursion.titol}
             </Link>

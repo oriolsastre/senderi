@@ -18,25 +18,25 @@ export default function Excursio() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  if (loading) return <div className="p-4">Loading...</div>;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
-  if (!excursio) return <div className="p-4">Excursio no trobada</div>;
+  if (loading) return <div className="py-4 text-white">Loading...</div>;
+  if (error) return <div className="py-4 text-red-400">{error}</div>;
+  if (!excursio) return <div className="py-4 text-white">Excursio no trobada</div>;
 
   const distanciaKm = (excursio.distancia / 1000).toFixed(1);
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="py-4 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">{excursio.titol}</h1>
-        <p className="text-xl text-gray-600">{distanciaKm} km</p>
+        <h1 className="text-3xl font-bold text-white">{excursio.titol}</h1>
+        <p className="text-xl text-white/80">{distanciaKm} km</p>
       </div>
 
       <Map osmId={excursio.osm ?? null} />
 
       {excursio.descripcio && (
         <div>
-          <h2 className="text-lg font-semibold mb-2">Descripció</h2>
-          <p className="text-gray-700">{excursio.descripcio}</p>
+          <h2 className="text-lg font-semibold mb-2 text-white">Descripció</h2>
+          <p className="text-white/90">{excursio.descripcio}</p>
         </div>
       )}
     </div>
