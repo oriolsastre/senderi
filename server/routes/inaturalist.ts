@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { rateLimit } from "../utils/rateLimiter.js";
 
 const router = Router();
 
@@ -19,7 +20,9 @@ router.get("/observations", async (req, res) => {
   const url = `https://api.inaturalist.org/v1/observations?${params.toString()}`;
 
   try {
-    const response = await fetch(url);
+    const response = await rateLimit("inaturalist", async () => {
+      return fetch(url);
+    });
     const data = await response.json();
     res.json(data);
   } catch {

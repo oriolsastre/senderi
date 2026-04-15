@@ -10,11 +10,12 @@ interface HeaderProps {
 export default function Header({ isAuthenticated, onLoginClick, onLogoutClick }: HeaderProps) {
   return (
     <header className="h-16 flex justify-between items-center">
+      <div className="w-10"></div>
       <Link
         to="/"
-        className="text-black/80 hover:text-black transition-colors"
+        className="text-2xl font-bold text-black/80 hover:text-black transition-colors"
       >
-        Excursions
+        Senderi
       </Link>
       {isAuthenticated ? (
         <button
