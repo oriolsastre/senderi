@@ -46,7 +46,8 @@ export async function rateLimit<T>(
     await waitForSlot(service, cfg.windowMs);
   }
 
-  timestamps.set(service, [...timestamps.get(service)!.filter((t) => now - t < cfg.windowMs), now]);
+  const existing = timestamps.get(service) || [];
+  timestamps.set(service, [...existing.filter((t) => now - t < cfg.windowMs), now]);
 
   return fn();
 }
