@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { PencilIcon, CheckIcon, XMarkIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, CheckIcon, XMarkIcon, ArrowPathIcon, MapIcon } from "@heroicons/react/24/solid";
 import { getExcursio, updateExcursio } from "../api/excursio";
 import { Excursio } from "../types/excursio";
 import Map from "../components/Map";
@@ -236,6 +236,21 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
       <p className="text-xl text-black/80 -mt-4">
         {distanciaKm} km <span className="text-black/60">+{excursio.desnivell_pos}m/-{excursio.desnivell_neg}m</span>
       </p>
+
+      <div className="flex items-start justify-end mb-2">
+        {excursio.osm && (
+          <a
+            href={`https://www.openstreetmap.org/user/SastReO/traces/${excursio.osm}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Veure a OSM"
+            className="inline-flex items-center gap-1 text-sm text-black/80 hover:text-black"
+          >
+            <MapIcon className="w-4 h-4" />
+            Veure a OSM
+          </a>
+        )}
+      </div>
 
       <Map osmId={excursio.osm ?? null} />
 
