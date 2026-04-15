@@ -4,12 +4,16 @@
   "description": "Gestionar les meves excursions",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:full": "concurrently -k -n server,vite \"npm start\" \"npm run dev\"",
-    "build": "vite build",
-    "start": "tsx server/index.ts",
-    "db:init": "tsx scripts/init-db.ts",
-    "db:seed": "tsx scripts/seed.ts"
+    "build:client": "vite build",
+    "build:server": "tsc -p tsconfig.server.json",
+    "build": "npm run build:client && npm run build:server",
+    "start:client:dev": "vite",
+    "start:server:dev": "tsx watch server/index.ts",
+    "start:dev": "concurrently -k -n server,vite \"npm run start:server:dev\" \"npm run start:client:dev\"",
+    "dev": "concurrently -k -n server,vite \"npm run start:server:dev\" \"npm run start:client:dev\"",
+    "start": "node server/dist/index.js",
+    "db:init": "node database/init-db.js",
+    "db:seed": "node database/seed.js"
   },
   "keywords": [
     "vite",
