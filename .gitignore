@@ -1,7 +1,8 @@
 node_modules
 dist
+logs
 
-.db
+**/*.db
 .env
 
 AGENTS.md
