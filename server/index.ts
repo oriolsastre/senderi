@@ -13,7 +13,7 @@ app.use("/api", apiRouter);
 
 app.use(express.static(path.resolve(process.cwd(), "client/dist")));
 
-app.get(".{0,}", (_req, res) => {
+app.get("/*splat", (_req, res) => {
   res.sendFile(path.resolve(process.cwd(), "client/dist/index.html"));
 });
 
