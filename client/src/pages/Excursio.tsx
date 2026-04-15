@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PencilIcon, CheckIcon, XMarkIcon, ArrowPathIcon, MapIcon } from "@heroicons/react/24/solid";
 import { getExcursio, updateExcursio } from "../api/excursio";
-import { Excursio } from "../types/excursio";
-import Map from "../components/Map";
-import INaturalist from "../components/INaturalist";
+import type { Excursio } from "../types/excursio";
+
+const Map = lazy(() => import("../components/Map"));
+const INaturalist = lazy(() => import("../components/INaturalist"));
 
 interface ExcursioProps {
   isAuthenticated: boolean;
@@ -252,7 +253,9 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
         )}
       </div>
 
-      <Map osmId={excursio.osm ?? null} />
+      <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-lg">Carregant mapa...</div>}>
+        <Map osmId={excursio.osm ?? null} />
+      </Suspense>
 
       <div>
         <div className="flex items-center gap-4 mb-2">
@@ -301,7 +304,9 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
         )}
       </div>
 
-      <INaturalist dateInici={excursio.data_inici} dateFinal={excursio.data_final} />
+      <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant observacions...</div>}>
+        <INaturalist dateInici={excursio.data_inici} dateFinal={excursio.data_final} />
+      </Suspense>
     </div>
   );
 }

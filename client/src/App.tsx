@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Header from "./components/Header";
 import LoginModal from "./components/LoginModal";
-import List from "./pages/List";
-import Excursio from "./pages/Excursio";
-import New from "./pages/New";
 import { getAuthStatus, logout as logoutApi } from "./api/auth";
+
+const List = lazy(() => import("./pages/List"));
+const New = lazy(() => import("./pages/New"));
+const Excursio = lazy(() => import("./pages/Excursio"));
 
 export default function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -29,11 +30,13 @@ export default function App() {
           onLoginClick={() => setIsLoginOpen(true)}
           onLogoutClick={handleLogout}
         />
-        <Routes>
-          <Route path="/" element={<List isAuthenticated={isAuthenticated} />} />
-          <Route path="/nou" element={<New isAuthenticated={isAuthenticated} />} />
-          <Route path="/excursions/:slug" element={<Excursio isAuthenticated={isAuthenticated} />} />
-        </Routes>
+        <Suspense fallback={<div className="p-4 text-black">Carregant...</div>}>
+          <Routes>
+            <Route path="/" element={<List isAuthenticated={isAuthenticated} />} />
+            <Route path="/nou" element={<New isAuthenticated={isAuthenticated} />} />
+            <Route path="/excursions/:slug" element={<Excursio isAuthenticated={isAuthenticated} />} />
+          </Routes>
+        </Suspense>
       </Layout>
       <LoginModal
         isOpen={isLoginOpen}
