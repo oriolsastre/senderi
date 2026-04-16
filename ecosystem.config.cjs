@@ -13,7 +13,7 @@ module.exports = {
       error_file: "logs/error.log",
       merge_logs: false,
       env: {
-        NODE_ENV: "production"
+        NODE_ENV: "PROD"
       }
     }
   ]
