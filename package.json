@@ -11,13 +11,12 @@
     "start:server:dev": "tsx watch server/index.ts",
     "start:dev": "concurrently -k -n server,vite \"npm run start:server:dev\" \"npm run start:client:dev\"",
     "dev": "concurrently -k -n server,vite \"npm run start:server:dev\" \"npm run start:client:dev\"",
-    "start": "node server/dist/index.js",
+    "start": "pm2 start ecosystem.config.cjs",
     "db:init": "node database/init-db.js",
     "db:seed": "node database/seed.js"
   },
   "keywords": [
-    "vite",
-    "express",
+    "senderi",
     "excursions",
     "gpx"
   ],
