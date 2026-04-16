@@ -300,7 +300,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
             )}
           </div>
         ) : (
-          <p className="text-black/90">{excursio.descripcio || "Sense descripció"}</p>
+          <p className="text-black/90 whitespace-pre-wrap">{excursio.descripcio || "Sense descripció"}</p>
         )}
       </div>
 
