@@ -81,7 +81,10 @@ export default function New({ isAuthenticated }: NewProps) {
             <input
               type="date"
               value={dataInici}
-              onChange={(e) => setDataInici(e.target.value)}
+              onChange={(e) => {
+                setDataInici(e.target.value);
+                setDataFinal(e.target.value);
+              }}
               className="px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
             />
           </div>

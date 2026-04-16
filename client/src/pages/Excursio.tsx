@@ -145,7 +145,10 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
               <input
                 type="date"
                 value={editedDataInici}
-                onChange={(e) => setEditedDataInici(e.target.value)}
+                onChange={(e) => {
+                  setEditedDataInici(e.target.value);
+                  setEditedDataFinal(e.target.value);
+                }}
                 className="px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
