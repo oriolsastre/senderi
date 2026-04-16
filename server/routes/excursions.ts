@@ -2,6 +2,7 @@ import { Router } from "express";
 import { checkAuth, requireAuth } from "../middleware/auth.js";
 import { findAll, findBySlug, findById, create, update, remove } from "../controllers/excursioController.js";
 import { rateLimit } from "../utils/rateLimiter.js";
+import { logger } from "../utils/logger.js";
 
 const router = Router();
 
@@ -26,7 +27,8 @@ router.get("/:osmId/gpx", async (req, res) => {
     const gpxData = await response.text();
     res.setHeader("Content-Type", "application/gpx+xml");
     res.send(gpxData);
-  } catch {
+  } catch (err) {
+    logger.error("Failed to fetch GPX:", err);
     res.status(500).send("Failed to fetch GPX");
   }
 });

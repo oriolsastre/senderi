@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { rateLimit } from "../utils/rateLimiter.js";
+import { logger } from "../utils/logger.js";
 
 const router = Router();
 
@@ -25,7 +26,8 @@ router.get("/observations", async (req, res) => {
     });
     const data = await response.json();
     res.json(data);
-  } catch {
+  } catch (err) {
+    logger.error("Failed to fetch from iNaturalist:", err);
     res.status(500).json({ error: "Failed to fetch from iNaturalist" });
   }
 });

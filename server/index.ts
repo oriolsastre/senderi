@@ -3,6 +3,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import apiRouter from "./routes/router.js";
+import { logger } from "./utils/logger.js";
 
 const app = express();
 
@@ -18,10 +19,19 @@ app.get("/*splat", (_req, res) => {
 });
 
 const server = app.listen(process.env.PORT, () => {
-  console.log("Server running at http://localhost:" + process.env.PORT);
+  logger.info("Server running at http://localhost:" + process.env.PORT);
+});
+
+process.on("uncaughtException", (err) => {
+  logger.error("Uncaught exception:", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  logger.error("Unhandled rejection:", reason);
 });
 
 server.on("error", (err) => {
-  console.error("Server error:", err);
+  logger.error("Server error:", err);
   process.exit(1);
 });

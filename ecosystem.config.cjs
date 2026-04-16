@@ -18,3 +18,5 @@ module.exports = {
     }
   ]
 };
+
+// Use `pm2 flush` to clear logs
