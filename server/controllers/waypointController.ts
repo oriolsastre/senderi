@@ -14,7 +14,15 @@ function formatWaypoint(waypoint: Waypoint) {
 }
 
 export function findAll(req: AuthenticatedRequest, res: Response) {
-  const waypoints = waypointModel.findAll(!!req.isAuthenticated);
+  const filters: waypointModel.WaypointFilters = {};
+  
+  if (req.query.tipus) filters.tipus = req.query.tipus as string;
+  if (req.query.max_lat) filters.max_lat = parseFloat(req.query.max_lat as string);
+  if (req.query.min_lat) filters.min_lat = parseFloat(req.query.min_lat as string);
+  if (req.query.max_lon) filters.max_lon = parseFloat(req.query.max_lon as string);
+  if (req.query.min_lon) filters.min_lon = parseFloat(req.query.min_lon as string);
+
+  const waypoints = waypointModel.findAll(!!req.isAuthenticated, filters);
   const response = waypoints.map(formatWaypoint);
   return res.json(response);
 }

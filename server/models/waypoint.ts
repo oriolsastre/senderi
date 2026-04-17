@@ -1,10 +1,48 @@
 import db from "../db.js";
 import type { Waypoint, CreateWaypoint, UpdateWaypoint, WaypointWithPrivat } from "../types/waypoint.js";
 
-export function findAll(isAuthenticated: boolean): Waypoint[] {
-  const query = isAuthenticated
-    ? "SELECT * FROM waypoints ORDER BY nom"
-    : "SELECT * FROM waypoints WHERE privat = 0 ORDER BY nom";
+export interface WaypointFilters {
+  tipus?: string;
+  max_lat?: number;
+  min_lat?: number;
+  max_lon?: number;
+  min_lon?: number;
+}
+
+export function findAll(isAuthenticated: boolean, filters?: WaypointFilters): Waypoint[] {
+  let query = isAuthenticated ? "SELECT * FROM waypoints" : "SELECT * FROM waypoints WHERE privat = 0";
+  const conditions: string[] = [];
+  const params: Record<string, unknown> = {};
+
+  if (filters?.tipus) {
+    conditions.push("tipus = @tipus");
+    params.tipus = filters.tipus;
+  }
+  if (filters?.max_lat !== undefined) {
+    conditions.push("lat <= @max_lat");
+    params.max_lat = filters.max_lat;
+  }
+  if (filters?.min_lat !== undefined) {
+    conditions.push("lat >= @min_lat");
+    params.min_lat = filters.min_lat;
+  }
+  if (filters?.max_lon !== undefined) {
+    conditions.push("lon <= @max_lon");
+    params.max_lon = filters.max_lon;
+  }
+  if (filters?.min_lon !== undefined) {
+    conditions.push("lon >= @min_lon");
+    params.min_lon = filters.min_lon;
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+  query += " ORDER BY nom";
+
+  if (Object.keys(params).length > 0) {
+    return db.prepare(query).all(params) as Waypoint[];
+  }
   return db.prepare(query).all() as Waypoint[];
 }
 
