@@ -1,18 +1,5 @@
-CREATE TABLE IF NOT EXISTS excursions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  titol TEXT NOT NULL,
-  descripcio TEXT,
-  distancia REAL NOT NULL DEFAULT 0,
-  desnivell_pos REAL NOT NULL DEFAULT 0,
-  desnivell_neg REAL NOT NULL DEFAULT 0,
-  osm INTEGER,
-  data_inici TEXT NOT NULL DEFAULT (date('now')),
-  data_final TEXT NOT NULL DEFAULT (date('now')),
-  slug TEXT UNIQUE NOT NULL,
-  privat INTEGER NOT NULL DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+-- Migration: Add waypoints and excursions_waypoints tables
+-- Date: 2025-04-16
 
 CREATE TABLE IF NOT EXISTS waypoints (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

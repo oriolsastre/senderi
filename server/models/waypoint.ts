@@ -1,0 +1,105 @@
+import db from "../db.js";
+import type { Waypoint, CreateWaypoint, UpdateWaypoint, WaypointWithPrivat } from "../types/waypoint.js";
+
+export function findAll(isAuthenticated: boolean): Waypoint[] {
+  const query = isAuthenticated
+    ? "SELECT * FROM waypoints ORDER BY nom"
+    : "SELECT * FROM waypoints WHERE privat = 0 ORDER BY nom";
+  return db.prepare(query).all() as Waypoint[];
+}
+
+export function findById(id: number): Waypoint | undefined {
+  return db.prepare("SELECT * FROM waypoints WHERE id = ?").get(id) as Waypoint | undefined;
+}
+
+export function create(data: CreateWaypoint): Waypoint {
+  const stmt = db.prepare(`
+    INSERT INTO waypoints (nom, elevacio, lat, lon, tipus, comentari, osm_node, wikidata, privat)
+    VALUES (@nom, @elevacio, @lat, @lon, @tipus, @comentari, @osm_node, @wikidata, @privat)
+  `);
+  const result = stmt.run({
+    nom: data.nom,
+    elevacio: data.elevacio ?? null,
+    lat: data.lat,
+    lon: data.lon,
+    tipus: data.tipus ?? "Altres",
+    comentari: data.comentari ?? null,
+    osm_node: data.osm_node ?? null,
+    wikidata: data.wikidata ?? null,
+    privat: data.privat ?? 0,
+  });
+  return findById(result.lastInsertRowid as number)!;
+}
+
+export function update(id: number, data: UpdateWaypoint): Waypoint | undefined {
+  const current = findById(id);
+  if (!current) return undefined;
+
+  const fields: string[] = [];
+  const values: Record<string, unknown> = { id };
+
+  if (data.nom !== undefined) { fields.push("nom = @nom"); values.nom = data.nom; }
+  if (data.elevacio !== undefined) { fields.push("elevacio = @elevacio"); values.elevacio = data.elevacio; }
+  if (data.lat !== undefined) { fields.push("lat = @lat"); values.lat = data.lat; }
+  if (data.lon !== undefined) { fields.push("lon = @lon"); values.lon = data.lon; }
+  if (data.tipus !== undefined) { fields.push("tipus = @tipus"); values.tipus = data.tipus; }
+  if (data.comentari !== undefined) { fields.push("comentari = @comentari"); values.comentari = data.comentari; }
+  if (data.osm_node !== undefined) { fields.push("osm_node = @osm_node"); values.osm_node = data.osm_node; }
+  if (data.wikidata !== undefined) { fields.push("wikidata = @wikidata"); values.wikidata = data.wikidata; }
+  if (data.privat !== undefined) { fields.push("privat = @privat"); values.privat = data.privat; }
+
+  if (fields.length === 0) return current;
+
+  const stmt = db.prepare(`UPDATE waypoints SET ${fields.join(", ")} WHERE id = @id`);
+  stmt.run(values);
+  return findById(id);
+}
+
+export function remove(id: number): boolean {
+  const stmt = db.prepare("DELETE FROM waypoints WHERE id = ?");
+  const result = stmt.run(id);
+  return result.changes > 0;
+}
+
+export interface ExcursionWaypoint {
+  excursion_id: number;
+  waypoint_id: number;
+  ordre: number;
+  privat: number;
+}
+
+export function findByExcursion(excursionId: number, isAuthenticated: boolean): WaypointWithPrivat[] {
+  const query = isAuthenticated
+    ? `SELECT w.*, ew.ordre, ew.privat as excursion_privat 
+       FROM waypoints w 
+       JOIN excursions_waypoints ew ON w.id = ew.waypoint_id 
+       WHERE ew.excursio_id = ?
+       ORDER BY ew.ordre`
+    : `SELECT w.*, ew.ordre, ew.privat as excursion_privat 
+       FROM waypoints w 
+       JOIN excursions_waypoints ew ON w.id = ew.waypoint_id 
+       WHERE ew.excursio_id = ? AND w.privat = 0 AND ew.privat = 0
+       ORDER BY ew.ordre`;
+  return db.prepare(query).all(excursionId) as WaypointWithPrivat[];
+}
+
+export function addToExcursion(excursionId: number, waypointId: number, privat: number = 0): boolean {
+  const stmt = db.prepare(`
+    INSERT INTO excursions_waypoints (excursio_id, waypoint_id, ordre, privat)
+    VALUES (?, ?, (SELECT COALESCE(MAX(ordre), 0) + 1 FROM excursions_waypoints WHERE excursio_id = ?), ?)
+  `);
+  const result = stmt.run(excursionId, waypointId, excursionId, privat);
+  return result.changes > 0;
+}
+
+export function removeFromExcursion(excursionId: number, waypointId: number): boolean {
+  const stmt = db.prepare("DELETE FROM excursions_waypoints WHERE excursio_id = ? AND waypoint_id = ?");
+  const result = stmt.run(excursionId, waypointId);
+  return result.changes > 0;
+}
+
+export function updateExcursionWaypoint(excursionId: number, waypointId: number, privat: number): boolean {
+  const stmt = db.prepare("UPDATE excursions_waypoints SET privat = ? WHERE excursio_id = ? AND waypoint_id = ?");
+  const result = stmt.run(privat, excursionId, waypointId);
+  return result.changes > 0;
+}

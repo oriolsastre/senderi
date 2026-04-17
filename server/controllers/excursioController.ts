@@ -4,7 +4,7 @@ import * as excursioModel from "../models/excursio.js";
 import { PublicExcursio } from "../types/excursio.js";
 
 function toPublicExcursio(excursion: excursioModel.Excursio): PublicExcursio {
-  const { id, privat, created_at, updated_at, ...publicExcursio } = excursion;
+  const { privat, created_at, updated_at, ...publicExcursio } = excursion;
   return publicExcursio;
 }
 

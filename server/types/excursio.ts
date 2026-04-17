@@ -15,6 +15,7 @@ export interface Excursio {
 }
 
 export interface PublicExcursio {
+  id: number;
   titol: string;
   descripcio: string | null;
   distancia: number;

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { checkAuth, requireAuth } from "../middleware/auth.js";
 import { findAll, findBySlug, findById, create, update, remove } from "../controllers/excursioController.js";
+import { findByExcursion, addToExcursion, removeFromExcursion } from "../controllers/waypointController.js";
 import { rateLimit } from "../utils/rateLimiter.js";
 import { logger } from "../utils/logger.js";
 
@@ -32,6 +33,9 @@ router.get("/:osmId/gpx", async (req, res) => {
     res.status(500).send("Failed to fetch GPX");
   }
 });
+router.get("/:id/waypoints", checkAuth, findByExcursion);
+router.post("/:id/waypoints", requireAuth, addToExcursion);
+router.delete("/:id/waypoints/:waypointId", requireAuth, removeFromExcursion);
 router.get("/:id", requireAuth, findById);
 router.patch("/:id", requireAuth, update);
 router.delete("/:id", requireAuth, remove);

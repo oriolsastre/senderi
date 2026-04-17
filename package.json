@@ -1,7 +1,7 @@
 {
-  "name": "excursions",
+  "name": "senderi",
   "version": "1.0.0",
-  "description": "Gestionar les meves excursions",
+  "description": "Per a no perdre el senderi.",
   "type": "module",
   "scripts": {
     "build:client": "vite build",

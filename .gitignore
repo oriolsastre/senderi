@@ -3,6 +3,7 @@ dist
 logs
 
 **/*.db
+*.csv
 .env
 
 AGENTS.md
