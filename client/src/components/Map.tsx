@@ -6,6 +6,8 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-gpx";
 import "proj4leaflet";
 import { MapPinIcon, FlagIcon, MapIcon, EyeIcon } from "@heroicons/react/24/solid";
+import { ElevationChart } from "./ElevationChart";
+import { HoverMarker } from "./HoverMarker";
 
 const createIcon = (icon: typeof MapPinIcon, color: string) =>
   L.divIcon({
@@ -44,7 +46,15 @@ interface MapProps {
   isAuthenticated: boolean;
 }
 
-function GPXLoader({ osmId, mapProvider }: { osmId: number; mapProvider: "osm" | "icgc" }) {
+interface GPXStats {
+  distance: number;
+  elevation_gain: number;
+  elevation_loss: number;
+  elevation_max: number;
+  elevation_min: number;
+}
+
+function GPXLoader({ osmId }: { osmId: number }) {
   const map = useMap();
 
   useEffect(() => {
@@ -82,9 +92,20 @@ function GPXLoader({ osmId, mapProvider }: { osmId: number; mapProvider: "osm" |
   return null;
 }
 
-function WaypointsHandler({ showWaypoints, waypoints, setWaypoints }: { 
-  showWaypoints: boolean; 
-  waypoints: Waypoint[]; 
+function StatsLoader({ osmId, onStatsLoaded }: { osmId: number; onStatsLoaded: (stats: GPXStats) => void }) {
+  useEffect(() => {
+    fetch(`/api/excursions/${osmId}/gpx/stats`)
+      .then(res => res.json())
+      .then(onStatsLoaded)
+      .catch(err => console.error("Failed to load stats:", err));
+  }, [osmId]);
+
+  return null;
+}
+
+function WaypointsHandler({ showWaypoints, waypoints, setWaypoints }: {
+  showWaypoints: boolean;
+  waypoints: Waypoint[];
   setWaypoints: (w: Waypoint[]) => void;
 }) {
   const map = useMap();
@@ -97,7 +118,7 @@ function WaypointsHandler({ showWaypoints, waypoints, setWaypoints }: {
     if (!fetched.current) {
       fetched.current = true;
       const bounds = map.getBounds();
-      const tolerance = 0.0001;
+      const tolerance = 0.00001;
       const params = new URLSearchParams();
       params.set("min_lat", (bounds.getSouth() - tolerance).toString());
       params.set("max_lat", (bounds.getNorth() + tolerance).toString());
@@ -142,14 +163,51 @@ export default function Map({ osmId, isAuthenticated }: MapProps) {
   const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
   const [showWaypoints, setShowWaypoints] = useState(false);
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
+  const [gpxStats, setGpxStats] = useState<GPXStats | null>(null);
+  const [gpxData, setGpxData] = useState<string | null>(null);
+  const [trackPoints, setTrackPoints] = useState<{ lat: number; lon: number; ele: number }[]>([]);
+  const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
+
+  const handleStatsLoaded = (stats: GPXStats) => {
+    setGpxStats(stats);
+  };
 
   const handleToggleWaypoints = () => {
     setShowWaypoints(!showWaypoints);
   };
 
+  useEffect(() => {
+    if (!osmId) return;
+    fetch(`/api/excursions/${osmId}/gpx`)
+      .then(res => res.text())
+      .then(gpxText => {
+        setGpxData(gpxText);
+        // Parse track points from GPX
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(gpxText, "application/xml");
+        const trkpts = doc.querySelectorAll("trkpt");
+        const points: { lat: number; lon: number; ele: number }[] = [];
+        trkpts.forEach((pt) => {
+          points.push({
+            lat: parseFloat(pt.getAttribute("lat") || "0"),
+            lon: parseFloat(pt.getAttribute("lon") || "0"),
+            ele: parseFloat(pt.querySelector("ele")?.textContent || "0"),
+          });
+        });
+        setTrackPoints(points);
+      })
+      .catch(err => console.error("Failed to fetch GPX:", err));
+  }, [osmId]);
+
+  const hoveredPosition = hoveredPointIndex !== null ? trackPoints[hoveredPointIndex] : null;
+
   if (!osmId) {
     return null;
   }
+
+  const distanceKm = gpxStats ? (gpxStats.distance / 1000).toFixed(1) : null;
+  const elevationGain = gpxStats ? Math.round(gpxStats.elevation_gain) : null;
+  const elevationLoss = gpxStats ? Math.round(gpxStats.elevation_loss) : null;
 
   return (
     <div className="space-y-2">
@@ -157,9 +215,8 @@ export default function Map({ osmId, isAuthenticated }: MapProps) {
         {isAuthenticated && (
           <button
             onClick={handleToggleWaypoints}
-            className={`inline-flex items-center gap-1 text-sm ${
-              showWaypoints ? "text-purple-600" : "text-black/80 hover:text-black"
-            }`}
+            className={`inline-flex items-center gap-1 text-sm ${showWaypoints ? "text-purple-600" : "text-black/80 hover:text-black"
+              }`}
           >
             <EyeIcon className="w-4 h-4" />
             {showWaypoints ? "Amaga punts" : "Mostra punts"}
@@ -179,21 +236,19 @@ export default function Map({ osmId, isAuthenticated }: MapProps) {
         <div className="absolute top-2 right-2 z-[1000] flex gap-1">
           <button
             onClick={() => setMapProvider("osm")}
-            className={`px-2 py-1 text-xs rounded ${
-              mapProvider === "osm"
+            className={`px-2 py-1 text-xs rounded ${mapProvider === "osm"
                 ? "bg-green-600 text-white"
                 : "bg-white text-black hover:bg-gray-100"
-            }`}
+              }`}
           >
             OSM
           </button>
           <button
             onClick={() => setMapProvider("icgc")}
-            className={`px-2 py-1 text-xs rounded ${
-              mapProvider === "icgc"
+            className={`px-2 py-1 text-xs rounded ${mapProvider === "icgc"
                 ? "bg-green-600 text-white"
                 : "bg-white text-black hover:bg-gray-100"
-            }`}
+              }`}
           >
             ICGC
           </button>
@@ -217,10 +272,28 @@ export default function Map({ osmId, isAuthenticated }: MapProps) {
               attribution="Institut Cartogràfic i Geològic de Catalunya"
             />
           )}
-          <GPXLoader osmId={osmId} mapProvider={mapProvider} />
+          <GPXLoader osmId={osmId} />
+          <StatsLoader osmId={osmId} onStatsLoaded={handleStatsLoaded} />
           <WaypointsHandler showWaypoints={showWaypoints} waypoints={waypoints} setWaypoints={setWaypoints} />
+          <HoverMarker position={hoveredPosition} />
         </MapContainer>
+        {gpxStats && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[1000] bg-white/90 px-3 py-1 rounded-md text-sm">
+            <span>{distanceKm} km</span>
+            <span className="mx-2 text-black/50">|</span>
+            <span>+{elevationGain}m/-{elevationLoss}m</span>
+          </div>
+        )}
       </div>
+      {gpxData && (
+        <div className="relative z-[1001]">
+          <ElevationChart
+            gpxData={gpxData}
+            trackPoints={trackPoints}
+            onHoverPoint={setHoveredPointIndex}
+          />
+        </div>
+      )}
     </div>
   );
 }
