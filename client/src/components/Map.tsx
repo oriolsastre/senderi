@@ -70,12 +70,9 @@ function GPXLoader({ osmId }: { osmId: number }) {
         opacity: 0.8,
         weight: 4,
       },
-      marker_options: {
-        startIconUrl: "",
-        endIconUrl: "",
-        shadowUrl: "",
-        startDivIcon: startIcon,
-        endDivIcon: endIcon,
+      markers: {
+        startIcon: "/assets/icons/start.svg",
+        endIcon: "/assets/icons/finish.svg",
       },
     })
       .on("loaded", (e: any) => {
