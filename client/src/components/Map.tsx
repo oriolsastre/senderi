@@ -5,9 +5,10 @@ import ReactDOMServer from "react-dom/server";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx";
 import "proj4leaflet";
-import { MapPinIcon, FlagIcon, MapIcon, EyeIcon } from "@heroicons/react/24/solid";
+import { MapPinIcon, FlagIcon, MapIcon, EyeIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import { ElevationChart } from "./ElevationChart";
 import { HoverMarker } from "./HoverMarker";
+import { updateExcursio } from "../api/excursio";
 
 const createIcon = (icon: typeof MapPinIcon, color: string) =>
   L.divIcon({
@@ -42,6 +43,7 @@ interface Waypoint {
 }
 
 interface MapProps {
+  id: number;
   osmId: number | null;
   isAuthenticated: boolean;
 }
@@ -159,7 +161,7 @@ function WaypointsHandler({ showWaypoints, waypoints, setWaypoints }: {
   return null;
 }
 
-export default function Map({ osmId, isAuthenticated }: MapProps) {
+export default function Map({ id, osmId, isAuthenticated }: MapProps) {
   const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
   const [showWaypoints, setShowWaypoints] = useState(false);
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
@@ -167,6 +169,7 @@ export default function Map({ osmId, isAuthenticated }: MapProps) {
   const [gpxData, setGpxData] = useState<string | null>(null);
   const [trackPoints, setTrackPoints] = useState<{ lat: number; lon: number; ele: number }[]>([]);
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleStatsLoaded = (stats: GPXStats) => {
     setGpxStats(stats);
@@ -174,6 +177,21 @@ export default function Map({ osmId, isAuthenticated }: MapProps) {
 
   const handleToggleWaypoints = () => {
     setShowWaypoints(!showWaypoints);
+  };
+
+  const handleSaveStats = async () => {
+    if (!gpxStats || !id) return;
+    setIsSaving(true);
+    try {
+      await updateExcursio(id, {
+        distancia: gpxStats.distance,
+        desnivell_pos: gpxStats.elevation_gain,
+        desnivell_neg: gpxStats.elevation_loss,
+      });
+    } catch (err) {
+      console.error("Failed to save stats:", err);
+    }
+    setIsSaving(false);
   };
 
   useEffect(() => {
@@ -278,10 +296,20 @@ export default function Map({ osmId, isAuthenticated }: MapProps) {
           <HoverMarker position={hoveredPosition} />
         </MapContainer>
         {gpxStats && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[1000] bg-white/90 px-3 py-1 rounded-md text-sm">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[1000] bg-white/90 px-3 py-1 rounded-md text-sm flex items-center gap-2">
             <span>{distanceKm} km</span>
             <span className="mx-2 text-black/50">|</span>
             <span>+{elevationGain}m/-{elevationLoss}m</span>
+            {isAuthenticated && (
+              <button
+                onClick={handleSaveStats}
+                disabled={isSaving}
+                className={`p-1 rounded hover:bg-gray-200 ${isSaving ? "text-gray-400" : "text-green-600"}`}
+                title="Desa les estadístiques"
+              >
+                <CloudArrowUpIcon className="w-4 h-4" />
+              </button>
+            )}
           </div>
         )}
       </div>
