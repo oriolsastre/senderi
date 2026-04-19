@@ -53,6 +53,20 @@ function calculateDistance(points: TrackPoint[]): number[] {
   return distances;
 }
 
+function smoothElevations(elevations: number[], alpha: number): number[] {
+  if (elevations.length === 0) return [];
+  
+  const smoothed: number[] = [elevations[0]];
+  
+  for (let i = 1; i < elevations.length; i++) {
+    const prev = smoothed[i - 1];
+    const curr = elevations[i];
+    smoothed.push(alpha * curr + (1 - alpha) * prev);
+  }
+  
+  return smoothed;
+}
+
 export function parseGPXStats(gpxString: string): GPXStats {
   const points = parseGPX(gpxString);
   
@@ -68,12 +82,13 @@ export function parseGPXStats(gpxString: string): GPXStats {
   
   const distances = calculateDistance(points);
   const elevations = points.map(p => p.ele);
+  const smoothed = smoothElevations(elevations, 0.25);
   
   let elevation_gain = 0;
   let elevation_loss = 0;
   
-  for (let i = 1; i < elevations.length; i++) {
-    const diff = elevations[i] - elevations[i - 1];
+  for (let i = 1; i < smoothed.length; i++) {
+    const diff = smoothed[i] - smoothed[i - 1];
     if (diff > 0) {
       elevation_gain += diff;
     } else {
