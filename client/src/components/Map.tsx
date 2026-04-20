@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, WMSTileLayer, useMap } from "react-leaflet";
+import React, { useEffect, useState } from "react";
+import { MapContainer, TileLayer, WMSTileLayer } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx";
@@ -7,6 +7,8 @@ import "proj4leaflet";
 import { MapIcon, EyeIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import { ElevationChart } from "./ElevationChart";
 import { HoverMarker } from "./HoverMarker";
+import { GPXLoader } from "./GPXLoader";
+import { StatsLoader, type GPXStats } from "./StatsLoader";
 import { WaypointsLayer } from "./WaypointsLayer";
 import { AddWaypointFetcher } from "./AddWaypointFetcher";
 import { WaypointsFetcher } from "./WaypointsFetcher";
@@ -30,62 +32,6 @@ interface MapProps {
   isAuthenticated: boolean;
 }
 
-interface GPXStats {
-  distance: number;
-  elevation_gain: number;
-  elevation_loss: number;
-  elevation_max: number;
-  elevation_min: number;
-}
-
-function GPXLoader({ osmId }: { osmId: number }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const gpxUrl = `/api/excursions/${osmId}/gpx`;
-
-    // @ts-ignore - leaflet-gpx types not perfect
-    const gpx = new L.GPX(gpxUrl, {
-      async: true,
-      polyline_options: {
-        color: "purple",
-        opacity: 0.8,
-        weight: 4,
-      },
-      markers: {
-        startIcon: "/assets/icons/start.svg",
-        endIcon: "/assets/icons/finish.svg",
-      },
-    })
-      .on("loaded", (e: any) => {
-        map.fitBounds(e.target.getBounds());
-      })
-      .on("error", (e: any) => {
-        console.error("GPX load error:", e);
-      })
-      .addTo(map);
-
-    return () => {
-      map.removeLayer(gpx);
-    };
-  }, [osmId]);
-
-  return null;
-}
-
-function StatsLoader({ osmId, onStatsLoaded }: { osmId: number; onStatsLoaded: (stats: GPXStats) => void }) {
-  useEffect(() => {
-    fetch(`/api/excursions/${osmId}/gpx/stats`)
-      .then(res => res.json())
-      .then(onStatsLoaded)
-      .catch(err => console.error("Failed to load stats:", err));
-  }, [osmId]);
-
-  return null;
-}
-
-
-
 export default function Map({ id, osmId, isAuthenticated }: MapProps) {
   const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
@@ -103,6 +49,10 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
 
   const handleToggleAddWaypoints = () => {
     setShowAddWaypoints(!showAddWaypoints);
+  };
+
+  const handleTrackPointClick = (index: number | null) => {
+    setHoveredPointIndex(index);
   };
 
   const handleSaveStats = async () => {
@@ -215,7 +165,7 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
               attribution="Institut Cartogràfic i Geològic de Catalunya"
             />
           )}
-          <GPXLoader osmId={osmId} />
+          <GPXLoader osmId={osmId} trackPoints={trackPoints} onTrackPointClick={handleTrackPointClick} />
           <StatsLoader osmId={osmId} onStatsLoaded={handleStatsLoaded} />
           <WaypointsFetcher waypoints={waypoints} setWaypoints={setWaypoints} excursioId={id} />
           {!isAuthenticated && <WaypointsLayer showWaypoints={true} waypoints={waypoints} isHikingMap={true} belongsToHike={true} />}
@@ -248,6 +198,7 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
             gpxData={gpxData}
             trackPoints={trackPoints}
             onHoverPoint={setHoveredPointIndex}
+            hoveredIndex={hoveredPointIndex}
           />
         </div>
       )}

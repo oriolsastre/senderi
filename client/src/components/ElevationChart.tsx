@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
 interface ElevationChartProps {
   gpxData: string;
   trackPoints?: { lat: number; lon: number }[];
   onHoverPoint?: (index: number | null) => void;
+  hoveredIndex?: number | null;
 }
 
 interface TrackPoint {
@@ -54,7 +55,7 @@ function calculateDistance(points: TrackPoint[]): number[] {
   return distances;
 }
 
-export function ElevationChart({ gpxData, trackPoints, onHoverPoint }: ElevationChartProps) {
+export function ElevationChart({ gpxData, trackPoints, onHoverPoint, hoveredIndex }: ElevationChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [width, setWidth] = useState(600);
@@ -220,6 +221,41 @@ export function ElevationChart({ gpxData, trackPoints, onHoverPoint }: Elevation
     }
     setHoverInfo(null);
   };
+
+  useEffect(() => {
+    if (trackPoints && trackPoints.length > 0 && hoveredIndex !== undefined && hoveredIndex !== null) {
+      const index = hoveredIndex;
+      if (index >= 0 && index < trackPoints.length) {
+        const points = parseGPX(gpxData);
+        if (points[index]) {
+          const distances = calculateDistance(points);
+          const point = points[index];
+          const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+          const innerHeight = 150 - margin.top - margin.bottom;
+          
+          const xScale = d3.scaleLinear()
+            .domain([0, d3.max(distances) || 0])
+            .range([0, width - margin.left - margin.right]);
+          
+          const yScale = d3.scaleLinear()
+            .domain([d3.min(points.map(p => p.ele)) || 0, d3.max(points.map(p => p.ele)) || 0])
+            .range([innerHeight, 0]);
+          
+          const xPos = margin.left + xScale(distances[index]);
+          const yPos = margin.top + yScale(point.ele);
+          
+          setHoverInfo({
+            x: xPos,
+            y: yPos,
+            elevation: point.ele,
+            distance: distances[index],
+          });
+        }
+      }
+    } else if (hoveredIndex === null || hoveredIndex === undefined) {
+      setHoverInfo(null);
+    }
+  }, [hoveredIndex, trackPoints]);
 
   return (
     <div ref={containerRef} className="w-full relative" style={{ zIndex: 1000, position: 'relative' }}>
