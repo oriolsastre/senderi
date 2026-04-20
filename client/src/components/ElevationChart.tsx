@@ -111,6 +111,12 @@ export function ElevationChart({ gpxData, trackPoints, onHoverPoint }: Elevation
       .y1((d) => yScale(d))
       .curve(d3.curveMonotoneX);
 
+    const line = d3
+      .line<number>()
+      .x((_, i) => xScale(distances[i]))
+      .y((d) => yScale(d))
+      .curve(d3.curveMonotoneX);
+
     const gradient = svg
       .append("defs")
       .append("linearGradient")
@@ -128,6 +134,13 @@ export function ElevationChart({ gpxData, trackPoints, onHoverPoint }: Elevation
       .attr("fill", "url(#ele-gradient)")
       .attr("opacity", 0.7)
       .attr("d", area);
+
+    g.append("path")
+      .datum(elevations)
+      .attr("fill", "none")
+      .attr("stroke", "#654321")
+      .attr("stroke-width", 1.5)
+      .attr("d", line);
 
     g.append("g")
       .attr("transform", `translate(0,${innerHeight})`)
@@ -184,7 +197,6 @@ export function ElevationChart({ gpxData, trackPoints, onHoverPoint }: Elevation
     
     const point = points[closestIndex];
     const chartMargin = { top: 20, right: 20, bottom: 30, left: 50 };
-    const chartInnerWidth = width - chartMargin.left - chartMargin.right;
     const chartInnerHeight = 150 - chartMargin.top - chartMargin.bottom;
     
     const yScale = d3.scaleLinear()
@@ -192,7 +204,7 @@ export function ElevationChart({ gpxData, trackPoints, onHoverPoint }: Elevation
       .range([chartInnerHeight, 0]);
     
     const xPos = mouseX;
-    const yPos = yScale(point.ele);
+    const yPos = chartMargin.top + yScale(point.ele);
     
     setHoverInfo({
       x: xPos,
@@ -218,17 +230,27 @@ export function ElevationChart({ gpxData, trackPoints, onHoverPoint }: Elevation
         onMouseLeave={handleMouseLeave}
       />
       {hoverInfo && (
-        <div 
-          className="absolute bg-white border rounded px-2 py-1 text-sm shadow pointer-events-none z-50"
-          style={{ 
-            left: hoverInfo.x, 
-            top: hoverInfo.y - 10,
-            transform: 'translate(-50%, -100%)'
-          }}
-        >
-          <div className="font-medium">{Math.round(hoverInfo.elevation)}m</div>
-          <div className="text-gray-500 text-xs">{(hoverInfo.distance / 1000).toFixed(1)} km</div>
-        </div>
+        <>
+          <div 
+            className="absolute bg-white border rounded px-2 py-1 text-sm shadow pointer-events-none z-50"
+            style={{ 
+              left: hoverInfo.x, 
+              top: hoverInfo.y - 10,
+              transform: 'translate(-50%, -100%)'
+            }}
+          >
+            <div className="font-medium">{Math.round(hoverInfo.elevation)}m</div>
+            <div className="text-gray-500 text-xs">{(hoverInfo.distance / 1000).toFixed(1)} km</div>
+          </div>
+          <div 
+            className="absolute w-3 h-3 bg-black rounded-full border-2 border-white pointer-events-none z-40"
+            style={{
+              left: hoverInfo.x,
+              top: hoverInfo.y,
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        </>
       )}
     </div>
   );
