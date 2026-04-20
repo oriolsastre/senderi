@@ -4,24 +4,15 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx";
 import "proj4leaflet";
-import ReactDOMServer from "react-dom/server";
 import { MapIcon, EyeIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import { ElevationChart } from "./ElevationChart";
 import { HoverMarker } from "./HoverMarker";
+import { WaypointsLayer } from "./WaypointsLayer";
+import { AddWaypointFetcher } from "./AddWaypointFetcher";
+import { WaypointsFetcher } from "./WaypointsFetcher";
+import { WaypointsControl } from "./WaypointsControl";
 import { updateExcursio } from "../api/excursio";
-
-const createHeroIcon = (icon: typeof MapIcon, color: string) =>
-  L.divIcon({
-    className: "custom-marker",
-    html: ReactDOMServer.renderToStaticMarkup(
-      React.createElement(icon, { className: "w-6 h-6", style: { color } })
-    ),
-    iconSize: [24, 24],
-    iconAnchor: [12, 24],
-    popupAnchor: [0, -24],
-  });
-
-const waypointIcon = createHeroIcon(MapIcon, "#9333ea");
+import type { Waypoint } from "../types/waypoint";
 
 // @ts-ignore - proj4leaflet adds L.Proj.CRS
 const crsICGC = new L.Proj.CRS(
@@ -32,17 +23,6 @@ const crsICGC = new L.Proj.CRS(
     origin: [0, 0],
   }
 );
-
-interface Waypoint {
-  id: number;
-  nom: string | null;
-  lat: number;
-  lon: number;
-  tipus: string;
-  comentari?: string;
-  wikidata?: number;
-  osm_node?: number;
-}
 
 interface MapProps {
   id: number;
@@ -104,82 +84,13 @@ function StatsLoader({ osmId, onStatsLoaded }: { osmId: number; onStatsLoaded: (
   return null;
 }
 
-function WaypointsHandler({ showWaypoints, waypoints, setWaypoints }: {
-  showWaypoints: boolean;
-  waypoints: Waypoint[];
-  setWaypoints: (w: Waypoint[]) => void;
-}) {
-  const map = useMap();
-  const waypointsLayerGroup = useRef<L.LayerGroup | null>(null);
-  const fetched = useRef(false);
 
-  useEffect(() => {
-    if (!showWaypoints) return;
-
-    if (!fetched.current) {
-      fetched.current = true;
-      const bounds = map.getBounds();
-      const tolerance = 0.00001;
-      const params = new URLSearchParams();
-      params.set("min_lat", (bounds.getSouth() - tolerance).toString());
-      params.set("max_lat", (bounds.getNorth() + tolerance).toString());
-      params.set("min_lon", (bounds.getWest() - tolerance).toString());
-      params.set("max_lon", (bounds.getEast() + tolerance).toString());
-
-      fetch("/api/waypoints?" + params.toString())
-        .then(res => res.json())
-        .then(data => setWaypoints(data));
-    }
-  }, [showWaypoints]);
-
-  useEffect(() => {
-    if (waypointsLayerGroup.current) {
-      map.removeLayer(waypointsLayerGroup.current);
-      waypointsLayerGroup.current = null;
-    }
-
-    if (!showWaypoints || waypoints.length === 0) return;
-
-    waypointsLayerGroup.current = L.layerGroup();
-
-    waypoints.forEach((wp) => {
-      const marker = L.marker([wp.lat, wp.lon], { icon: waypointIcon });
-      const title = wp.nom || wp.tipus;
-      let content = wp.comentari
-        ? `<strong>${title}</strong><br/>${wp.comentari}`
-        : `<strong>${title}</strong>`;
-      
-      const links: string[] = [];
-      if (wp.wikidata) {
-        links.push(`<a href="https://www.wikidata.org/wiki/Q${wp.wikidata}" target="_blank" rel="noopener noreferrer"><img src="/assets/icons/services/wikidata-logo.svg" alt="Wikidata" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
-      }
-      if (wp.osm_node) {
-        links.push(`<a href="https://www.openstreetmap.org/node/${wp.osm_node}" target="_blank" rel="noopener noreferrer"><img src="/assets/icons/services/openstreetmap-logo.svg" alt="OSM" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
-      }
-      if (links.length > 0) {
-        content += `<div style="margin-top:4px;">${links.join("")}</div>`;
-      }
-      
-      marker.bindPopup(content);
-      waypointsLayerGroup.current!.addLayer(marker);
-    });
-
-    waypointsLayerGroup.current.addTo(map);
-
-    return () => {
-      if (waypointsLayerGroup.current) {
-        map.removeLayer(waypointsLayerGroup.current);
-      }
-    };
-  }, [showWaypoints, waypoints]);
-
-  return null;
-}
 
 export default function Map({ id, osmId, isAuthenticated }: MapProps) {
   const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
-  const [showWaypoints, setShowWaypoints] = useState(false);
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
+  const [showAddWaypoints, setShowAddWaypoints] = useState(false);
+  const [addWaypoints, setAddWaypoints] = useState<Waypoint[]>([]);
   const [gpxStats, setGpxStats] = useState<GPXStats | null>(null);
   const [gpxData, setGpxData] = useState<string | null>(null);
   const [trackPoints, setTrackPoints] = useState<{ lat: number; lon: number; ele: number }[]>([]);
@@ -190,8 +101,8 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
     setGpxStats(stats);
   };
 
-  const handleToggleWaypoints = () => {
-    setShowWaypoints(!showWaypoints);
+  const handleToggleAddWaypoints = () => {
+    setShowAddWaypoints(!showAddWaypoints);
   };
 
   const handleSaveStats = async () => {
@@ -247,12 +158,11 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
       <div className="flex items-start justify-end gap-3 mb-2">
         {isAuthenticated && (
           <button
-            onClick={handleToggleWaypoints}
-            className={`inline-flex items-center gap-1 text-sm ${showWaypoints ? "text-purple-600" : "text-black/80 hover:text-black"
-              }`}
+            onClick={handleToggleAddWaypoints}
+            className={`inline-flex items-center gap-1 text-sm ${showAddWaypoints ? "text-purple-600" : "text-black/80 hover:text-black"}`}
           >
             <EyeIcon className="w-4 h-4" />
-            {showWaypoints ? "Amaga punts" : "Mostra punts"}
+            {showAddWaypoints ? "Amaga punts (afegir)" : "Mostra punts (afegir)"}
           </button>
         )}
         <a
@@ -307,7 +217,11 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
           )}
           <GPXLoader osmId={osmId} />
           <StatsLoader osmId={osmId} onStatsLoaded={handleStatsLoaded} />
-          <WaypointsHandler showWaypoints={showWaypoints} waypoints={waypoints} setWaypoints={setWaypoints} />
+          <WaypointsFetcher waypoints={waypoints} setWaypoints={setWaypoints} excursioId={id} />
+          {!isAuthenticated && <WaypointsLayer showWaypoints={true} waypoints={waypoints} isHikingMap={true} belongsToHike={true} />}
+          {isAuthenticated && <WaypointsControl waypoints={waypoints} isAuthenticated={isAuthenticated} excursioId={id} />}
+          <AddWaypointFetcher showAddWaypoints={showAddWaypoints} setWaypoints={setAddWaypoints} excursioId={id} />
+          <WaypointsLayer showWaypoints={showAddWaypoints} waypoints={addWaypoints} isHikingMap={true} belongsToHike={false} excursioId={id} isAuthenticated={isAuthenticated} />
           <HoverMarker position={hoveredPosition} />
         </MapContainer>
         {gpxStats && (

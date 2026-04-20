@@ -33,3 +33,19 @@ export async function getWaypoints(filters?: WaypointFilters): Promise<Waypoint[
   if (!response.ok) throw new Error("Failed to fetch waypoints");
   return response.json();
 }
+
+export async function addWaypointToExcursio(excursioId: number, waypointId: number, privat: boolean = false): Promise<void> {
+  const response = await fetch(`/api/excursions/${excursioId}/waypoints`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ waypoint_id: waypointId, privat: privat ? 1 : 0 }),
+  });
+  if (!response.ok) throw new Error("Failed to add waypoint to excursion");
+}
+
+export async function removeWaypointFromExcursio(excursioId: number, waypointId: number): Promise<void> {
+  const response = await fetch(`/api/excursions/${excursioId}/waypoints/${waypointId}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) throw new Error("Failed to remove waypoint from excursion");
+}
