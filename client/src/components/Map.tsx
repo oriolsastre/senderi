@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, WMSTileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
-import ReactDOMServer from "react-dom/server";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx";
 import "proj4leaflet";
-import { MapPinIcon, FlagIcon, MapIcon, EyeIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
+import ReactDOMServer from "react-dom/server";
+import { MapIcon, EyeIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
 import { ElevationChart } from "./ElevationChart";
 import { HoverMarker } from "./HoverMarker";
 import { updateExcursio } from "../api/excursio";
 
-const createIcon = (icon: typeof MapPinIcon, color: string) =>
+const createHeroIcon = (icon: typeof MapIcon, color: string) =>
   L.divIcon({
     className: "custom-marker",
     html: ReactDOMServer.renderToStaticMarkup(
@@ -20,9 +20,7 @@ const createIcon = (icon: typeof MapPinIcon, color: string) =>
     iconAnchor: [12, 24],
   });
 
-const startIcon = createIcon(MapPinIcon, "#22c55e");
-const endIcon = createIcon(FlagIcon, "#ef4444");
-const waypointIcon = createIcon(MapIcon, "#9333ea");
+const waypointIcon = createHeroIcon(MapIcon, "#9333ea");
 
 // @ts-ignore - proj4leaflet adds L.Proj.CRS
 const crsICGC = new L.Proj.CRS(
@@ -252,8 +250,8 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
           <button
             onClick={() => setMapProvider("osm")}
             className={`px-2 py-1 text-xs rounded ${mapProvider === "osm"
-                ? "bg-green-600 text-white"
-                : "bg-white text-black hover:bg-gray-100"
+              ? "bg-green-600 text-white"
+              : "bg-white text-black hover:bg-gray-100"
               }`}
           >
             OSM
@@ -261,8 +259,8 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
           <button
             onClick={() => setMapProvider("icgc")}
             className={`px-2 py-1 text-xs rounded ${mapProvider === "icgc"
-                ? "bg-green-600 text-white"
-                : "bg-white text-black hover:bg-gray-100"
+              ? "bg-green-600 text-white"
+              : "bg-white text-black hover:bg-gray-100"
               }`}
           >
             ICGC
