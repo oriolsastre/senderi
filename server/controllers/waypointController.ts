@@ -21,6 +21,7 @@ export function findAll(req: AuthenticatedRequest, res: Response) {
   if (req.query.min_lat) filters.min_lat = parseFloat(req.query.min_lat as string);
   if (req.query.max_lon) filters.max_lon = parseFloat(req.query.max_lon as string);
   if (req.query.min_lon) filters.min_lon = parseFloat(req.query.min_lon as string);
+  if (req.query.no_excursio && req.isAuthenticated) filters.no_excursio = parseInt(req.query.no_excursio as string, 10);
 
   const waypoints = waypointModel.findAll(!!req.isAuthenticated, filters);
   const response = waypoints.map(formatWaypoint);

@@ -7,6 +7,7 @@ export interface WaypointFilters {
   min_lat?: number;
   max_lon?: number;
   min_lon?: number;
+  no_excursio?: number;
 }
 
 export function findAll(isAuthenticated: boolean, filters?: WaypointFilters): Waypoint[] {
@@ -33,6 +34,10 @@ export function findAll(isAuthenticated: boolean, filters?: WaypointFilters): Wa
   if (filters?.min_lon !== undefined) {
     conditions.push("lon >= @min_lon");
     params.min_lon = filters.min_lon;
+  }
+  if (filters?.no_excursio !== undefined) {
+    conditions.push("id NOT IN (SELECT waypoint_id FROM excursions_waypoints WHERE excursio_id = @no_excursio)");
+    params.no_excursio = filters.no_excursio;
   }
 
   if (conditions.length > 0) {

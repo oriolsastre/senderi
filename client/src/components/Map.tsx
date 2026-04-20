@@ -18,6 +18,7 @@ const createHeroIcon = (icon: typeof MapIcon, color: string) =>
     ),
     iconSize: [24, 24],
     iconAnchor: [12, 24],
+    popupAnchor: [0, -24],
   });
 
 const waypointIcon = createHeroIcon(MapIcon, "#9333ea");
@@ -38,6 +39,9 @@ interface Waypoint {
   lat: number;
   lon: number;
   tipus: string;
+  comentari?: string;
+  wikidata?: number;
+  osm_node?: number;
 }
 
 interface MapProps {
@@ -140,7 +144,23 @@ function WaypointsHandler({ showWaypoints, waypoints, setWaypoints }: {
 
     waypoints.forEach((wp) => {
       const marker = L.marker([wp.lat, wp.lon], { icon: waypointIcon });
-      marker.bindPopup(wp.nom || wp.tipus);
+      const title = wp.nom || wp.tipus;
+      let content = wp.comentari
+        ? `<strong>${title}</strong><br/>${wp.comentari}`
+        : `<strong>${title}</strong>`;
+      
+      const links: string[] = [];
+      if (wp.wikidata) {
+        links.push(`<a href="https://www.wikidata.org/wiki/Q${wp.wikidata}" target="_blank" rel="noopener noreferrer"><img src="/assets/icons/services/wikidata-logo.svg" alt="Wikidata" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
+      }
+      if (wp.osm_node) {
+        links.push(`<a href="https://www.openstreetmap.org/node/${wp.osm_node}" target="_blank" rel="noopener noreferrer"><img src="/assets/icons/services/openstreetmap-logo.svg" alt="OSM" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
+      }
+      if (links.length > 0) {
+        content += `<div style="margin-top:4px;">${links.join("")}</div>`;
+      }
+      
+      marker.bindPopup(content);
       waypointsLayerGroup.current!.addLayer(marker);
     });
 
