@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS waypoints (
   elevacio INTEGER,
   lat REAL NOT NULL,
   lon REAL NOT NULL,
-  tipus TEXT CHECK(tipus IN ('Cim', 'Ermita', 'Coll', 'Altres')) DEFAULT 'Altres',
+  tipus TEXT DEFAULT 'cim',
   comentari TEXT,
   osm_node INTEGER,
   wikidata INTEGER,

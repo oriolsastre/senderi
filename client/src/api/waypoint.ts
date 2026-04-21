@@ -49,3 +49,23 @@ export async function removeWaypointFromExcursio(excursioId: number, waypointId:
   });
   if (!response.ok) throw new Error("Failed to remove waypoint from excursion");
 }
+
+export async function createWaypoint(data: {
+  nom: string;
+  tipus: string;
+  lat: number;
+  lon: number;
+  elevacio?: number;
+  comentari?: string;
+  privat?: number;
+  osm_node?: number;
+  wikidata?: number;
+}): Promise<Waypoint> {
+  const response = await fetch("/api/waypoints", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to create waypoint");
+  return response.json();
+}

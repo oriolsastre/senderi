@@ -4,10 +4,12 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx";
 import "proj4leaflet";
-import { MapIcon, EyeIcon, CloudArrowUpIcon } from "@heroicons/react/24/solid";
+import { MapIcon, EyeIcon, CloudArrowUpIcon, PlusIcon } from "@heroicons/react/24/solid";
 import { ElevationChart } from "./ElevationChart";
 import { HoverMarker } from "./HoverMarker";
 import { GPXLoader } from "./GPXLoader";
+import { WaypointMarker } from "./WaypointMarker";
+import { AddWaypointForm } from "./AddWaypointForm";
 import { StatsLoader, type GPXStats } from "./StatsLoader";
 import { WaypointsLayer } from "./WaypointsLayer";
 import { AddWaypointFetcher } from "./AddWaypointFetcher";
@@ -42,6 +44,8 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
   const [trackPoints, setTrackPoints] = useState<{ lat: number; lon: number; ele: number }[]>([]);
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showAddPuntForm, setShowAddPuntForm] = useState(false);
+  const [waypointPos, setWaypointPos] = useState<{ lat: number; lon: number; elevacio: number }>({ lat: 0, lon: 0, elevacio: 0 });
 
   const handleStatsLoaded = (stats: GPXStats) => {
     setGpxStats(stats);
@@ -49,6 +53,14 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
 
   const handleToggleAddWaypoints = () => {
     setShowAddWaypoints(!showAddWaypoints);
+  };
+
+  const handleToggleAddPuntForm = () => {
+    setShowAddPuntForm(!showAddPuntForm);
+    if (!showAddPuntForm && trackPoints.length > 0) {
+      const midPoint = trackPoints[Math.floor(trackPoints.length / 2)];
+      setWaypointPos({ lat: midPoint.lat, lon: midPoint.lon, elevacio: midPoint.ele });
+    }
   };
 
   const handleTrackPointClick = (index: number | null) => {
@@ -107,13 +119,22 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
     <div className="space-y-2">
       <div className="flex items-start justify-end gap-3 mb-2">
         {isAuthenticated && (
-          <button
-            onClick={handleToggleAddWaypoints}
-            className={`inline-flex items-center gap-1 text-sm ${showAddWaypoints ? "text-purple-600" : "text-black/80 hover:text-black"}`}
-          >
-            <EyeIcon className="w-4 h-4" />
-            {showAddWaypoints ? "Amaga punts (afegir)" : "Mostra punts (afegir)"}
-          </button>
+          <>
+            <button
+              onClick={handleToggleAddPuntForm}
+              className={`inline-flex items-center gap-1 text-sm ${showAddPuntForm ? "text-green-600" : "text-black/80 hover:text-black"}`}
+            >
+              <PlusIcon className="w-4 h-4" />
+              Afegir punt de ruta
+            </button>
+            <button
+              onClick={handleToggleAddWaypoints}
+              className={`inline-flex items-center gap-1 text-sm ${showAddWaypoints ? "text-purple-600" : "text-black/80 hover:text-black"}`}
+            >
+              <EyeIcon className="w-4 h-4" />
+              {showAddWaypoints ? "Amaga punts (afegir)" : "Mostra punts (afegir)"}
+            </button>
+          </>
         )}
         <a
           href={`https://www.openstreetmap.org/user/SastReO/traces/${osmId}`}
@@ -166,6 +187,13 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
             />
           )}
           <GPXLoader osmId={osmId} trackPoints={trackPoints} onTrackPointClick={handleTrackPointClick} />
+          {showAddPuntForm && (
+            <WaypointMarker
+              lat={waypointPos.lat}
+              lon={waypointPos.lon}
+              onMove={(lat, lon) => setWaypointPos(prev => ({ ...prev, lat, lon }))}
+            />
+          )}
           <StatsLoader osmId={osmId} onStatsLoaded={handleStatsLoaded} />
           <WaypointsFetcher waypoints={waypoints} setWaypoints={setWaypoints} excursioId={id} />
           {!isAuthenticated && <WaypointsLayer showWaypoints={true} waypoints={waypoints} isHikingMap={true} belongsToHike={true} />}
@@ -192,6 +220,15 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
           </div>
         )}
       </div>
+      {showAddPuntForm && isAuthenticated && (
+        <AddWaypointForm
+          trackPoints={trackPoints}
+          onClose={() => setShowAddPuntForm(false)}
+          excursionId={id}
+          waypointPos={waypointPos}
+          onPosChange={setWaypointPos}
+        />
+      )}
       {gpxData && (
         <div className="relative z-[1001]">
           <ElevationChart
