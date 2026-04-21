@@ -20,7 +20,7 @@ export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
   return L.divIcon({
     className: "custom-marker",
     html: ReactDOMServer.renderToStaticMarkup(
-      React.createElement(MapIcon, { className: "w-8 h-8", style: { color: "#9333ea" } })
+      React.createElement(MapIcon, { className: "w-8 h-8", style: { color: "#000000" } })
     ),
     iconSize: [32, 32],
     iconAnchor: [16, 32],
@@ -61,7 +61,7 @@ export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, be
     links.push(`<a href="https://www.openstreetmap.org/node/${wp.osm_node}" target="_blank" rel="noopener noreferrer"><img src="/assets/icons/services/openstreetmap-logo.svg" alt="OSM" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
   }
   if (links.length > 0) {
-    content += `<div style="margin-top:4px;">${links.join("")}</div>`;
+    content += `<div style="margin-top:4px;display:flex;justify-content:flex-end;gap:4px;">${links.join("")}</div>`;
   }
 
   return content;

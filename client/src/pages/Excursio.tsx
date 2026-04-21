@@ -5,6 +5,7 @@ import { getExcursio, updateExcursio } from "../api/excursio";
 import type { Excursio } from "../types/excursio";
 
 const Map = lazy(() => import("../components/Map"));
+const Waypoints = lazy(() => import("../components/Waypoints"));
 const INaturalist = lazy(() => import("../components/INaturalist"));
 
 interface ExcursioProps {
@@ -291,6 +292,10 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
           <p className="text-black/90 whitespace-pre-wrap">{excursio.descripcio || "Sense descripció"}</p>
         )}
       </div>
+
+      <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant punts...</div>}>
+        <Waypoints excursion={excursio} isAuthenticated={isAuthenticated} />
+      </Suspense>
 
       <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant observacions...</div>}>
         <INaturalist dateInici={excursio.data_inici} dateFinal={excursio.data_final} />

@@ -69,3 +69,23 @@ export async function createWaypoint(data: {
   if (!response.ok) throw new Error("Failed to create waypoint");
   return response.json();
 }
+
+export async function updateWaypoint(id: number, data: {
+  nom?: string;
+  tipus?: string;
+  lat?: number;
+  lon?: number;
+  elevacio?: number;
+  comentari?: string;
+  privat?: number;
+  osm_node?: number;
+  wikidata?: number;
+}): Promise<Waypoint> {
+  const response = await fetch(`/api/waypoints/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to update waypoint");
+  return response.json();
+}
