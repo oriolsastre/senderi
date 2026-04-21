@@ -2,6 +2,13 @@ import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 
+const markerIcon = L.icon({
+  iconUrl: "/assets/icons/marker.svg",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [0, -35],
+});
+
 interface WaypointMarkerProps {
   lat: number;
   lon: number;
@@ -16,7 +23,7 @@ export function WaypointMarker({ lat, lon, onMove }: WaypointMarkerProps) {
     if (!lat || !lon) return;
 
     if (!markerRef.current) {
-      const marker = L.marker([lat, lon], { draggable: true });
+      const marker = L.marker([lat, lon], { draggable: true, icon: markerIcon });
       marker.on("dragend", () => {
         const pos = marker.getLatLng();
         onMove(Math.round(pos.lat * 1e6) / 1e6, Math.round(pos.lng * 1e6) / 1e6);
