@@ -16,5 +16,5 @@ npm run build
 echo "Removing vite from node_modules..."
 rm -rf node_modules/vite
 
-echo "Starting application..."
-npm start
+# echo "Starting application..."
+# npm start
