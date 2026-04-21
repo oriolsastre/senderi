@@ -6,26 +6,43 @@ import type { Waypoint } from "../types/waypoint";
 
 const mountainPath = "M7.5,2C7.2,2,7.1,2.2,6.9,2.4l-5.8,9.5C1,12,1,12.2,1,12.3C1,12.8,1.4,13,1.7,13h11.6c0.4,0,0.7-0.2,0.7-0.7c0-0.2,0-0.2-0.1-0.4L8.2,2.4C8,2.2,7.8,2,7.5,2z M7.5,3.5L10.8,9H10L8.5,7.5L7.5,9l-1-1.5L5,9H4.1L7.5,3.5z";
 
+const collPath = "M1.5,12 L1.5,8 C1.5,5 3.5,2 5,5 C6,7 7.5,10 7.5,10 C7.5,10 9,7 10,5 C11.5,2 13.5,5 13.5,8 L13.5,12 L7.5,12 L1.5,12z";
+
 export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
-  if (wp.tipus?.toLowerCase() === "cim") {
-    const color = getElevationColor(wp.elevacio);
-    return L.divIcon({
-      className: "custom-marker",
-      html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><path d="${mountainPath}" fill="${color}" stroke="#000000" stroke-width="0.5"/></svg>`,
-      iconSize: [32, 32],
-      iconAnchor: [16, 16],
-      popupAnchor: [0, -16],
-    });
+  const tipus = wp.tipus?.toLowerCase();
+  
+  switch (tipus) {
+    case "cim": {
+      const color = getElevationColor(wp.elevacio);
+      return L.divIcon({
+        className: "custom-marker",
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><path d="${mountainPath}" fill="${color}" stroke="#000000" stroke-width="0.5"/></svg>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16],
+      });
+    }
+    case "coll": {
+      const color = getElevationColor(wp.elevacio);
+      return L.divIcon({
+        className: "custom-marker",
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><path d="${collPath}" fill="${color}" stroke="#000000" stroke-width="0.5"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
+      });
+    }
+    default:
+      return L.divIcon({
+        className: "custom-marker",
+        html: ReactDOMServer.renderToStaticMarkup(
+          React.createElement(MapIcon, { className: "w-8 h-8", style: { color: "#000000" } })
+        ),
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+      });
   }
-  return L.divIcon({
-    className: "custom-marker",
-    html: ReactDOMServer.renderToStaticMarkup(
-      React.createElement(MapIcon, { className: "w-8 h-8", style: { color: "#000000" } })
-    ),
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
 };
 
 export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, belongsToHike?: boolean): string => {

@@ -46,6 +46,8 @@ export function WaypointsControl({ waypoints, isAuthenticated, excursioId }: Way
       layerGroupRef.current!.addLayer(marker);
     });
 
+    layerGroupRef.current.addTo(map);
+
     const overlay: { [key: string]: L.Layer } = {
       "Punts": layerGroupRef.current,
     };
