@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import type { Waypoint } from "../types/waypoint";
-import { createWaypointIcon, createWaypointPopupContent } from "../utils/waypointIcons";
+import { createWaypointIcon, createWaypointPopupContent } from "../utils/waypointMarkers";
 import { removeWaypointFromExcursio } from "../api/waypoint";
 
 interface WaypointsControlProps {
@@ -17,7 +17,6 @@ export function WaypointsControl({ waypoints, isAuthenticated, excursioId }: Way
   const map = useMap();
   const controlRef = useRef<L.Control.Layers | null>(null);
   const layerGroupRef = useRef<L.LayerGroup | null>(null);
-  const waypointIcon = createWaypointIcon();
 
   useEffect(() => {
     const handleRemoveWaypoint = async (excursioId: number, waypointId: number) => {
@@ -41,7 +40,7 @@ export function WaypointsControl({ waypoints, isAuthenticated, excursioId }: Way
     const showAddButton = isAuthenticated && excursioId;
 
     waypoints.forEach((wp) => {
-      const marker = L.marker([wp.lat, wp.lon], { icon: waypointIcon });
+      const marker = L.marker([wp.lat, wp.lon], { icon: createWaypointIcon(wp) });
       const content = createWaypointPopupContent(wp, showAddButton ? excursioId : undefined, true);
       marker.bindPopup(content);
       layerGroupRef.current!.addLayer(marker);
@@ -81,7 +80,7 @@ export function WaypointsControl({ waypoints, isAuthenticated, excursioId }: Way
     const showAddButton = isAuthenticated && excursioId;
 
     waypoints.forEach((wp) => {
-      const marker = L.marker([wp.lat, wp.lon], { icon: waypointIcon });
+      const marker = L.marker([wp.lat, wp.lon], { icon: createWaypointIcon(wp) });
       const content = createWaypointPopupContent(wp, showAddButton ? excursioId : undefined, true);
       marker.bindPopup(content);
       layerGroupRef.current!.addLayer(marker);

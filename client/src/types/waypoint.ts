@@ -4,6 +4,7 @@ export interface Waypoint {
   lat: number;
   lon: number;
   tipus: string;
+  elevacio?: number | null;
   comentari?: string;
   wikidata?: number;
   osm_node?: number;

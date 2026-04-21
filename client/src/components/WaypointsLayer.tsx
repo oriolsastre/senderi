@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import type { Waypoint } from "../types/waypoint";
-import { createWaypointIcon, createWaypointPopupContent } from "../utils/waypointIcons";
+import { createWaypointIcon, createWaypointPopupContent } from "../utils/waypointMarkers";
 import { addWaypointToExcursio } from "../api/waypoint";
 
 interface WaypointsLayerProps {
@@ -17,7 +17,6 @@ interface WaypointsLayerProps {
 export function WaypointsLayer({ showWaypoints, waypoints, isHikingMap = true, belongsToHike = false, excursioId, isAuthenticated }: WaypointsLayerProps) {
   const map = useMap();
   const waypointsLayerGroup = useRef<L.LayerGroup | null>(null);
-  const waypointIcon = createWaypointIcon();
 
   useEffect(() => {
     const handleAddWaypoint = async (excursioId: number, waypointId: number) => {
@@ -45,7 +44,7 @@ export function WaypointsLayer({ showWaypoints, waypoints, isHikingMap = true, b
     const showAddButton = isHikingMap && isAuthenticated && excursioId;
 
     waypoints.forEach((wp) => {
-      const marker = L.marker([wp.lat, wp.lon], { icon: waypointIcon });
+      const marker = L.marker([wp.lat, wp.lon], { icon: createWaypointIcon(wp) });
       const content = createWaypointPopupContent(wp, showAddButton ? excursioId : undefined, belongsToHike);
       marker.bindPopup(content);
       waypointsLayerGroup.current!.addLayer(marker);
