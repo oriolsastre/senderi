@@ -7,7 +7,7 @@ export interface Waypoint {
   tipus: string;
   comentari: string | null;
   osm_node: number | null;
-  wikidata: number | null;
+  wikidata: string | null;
   privat: number;
 }
 
@@ -59,7 +59,7 @@ export async function createWaypoint(data: {
   comentari?: string;
   privat?: number;
   osm_node?: number;
-  wikidata?: number;
+  wikidata?: string;
 }): Promise<Waypoint> {
   const response = await fetch("/api/waypoints", {
     method: "POST",
@@ -79,7 +79,7 @@ export async function updateWaypoint(id: number, data: {
   comentari?: string;
   privat?: number;
   osm_node?: number;
-  wikidata?: number;
+  wikidata?: string;
 }): Promise<Waypoint> {
   const response = await fetch(`/api/waypoints/${id}`, {
     method: "PATCH",

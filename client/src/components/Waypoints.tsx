@@ -24,7 +24,7 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
     comentari?: string;
     privat?: number;
     osm_node?: number;
-    wikidata?: number;
+    wikidata?: string;
   }>({});
   const [saving, setSaving] = useState(false);
 
@@ -137,9 +137,9 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                     disabled={saving}
                   />
                   <input
-                    type="number"
+                    type="text"
                     value={editForm.wikidata ?? ""}
-                    onChange={(e) => setEditForm({ ...editForm, wikidata: e.target.value ? parseInt(e.target.value) : undefined })}
+                    onChange={(e) => setEditForm({ ...editForm, wikidata: e.target.value || undefined })}
                     placeholder="Wikidata"
                     className="w-24 px-2 py-1 border rounded"
                     disabled={saving}

@@ -9,7 +9,7 @@ export interface Waypoint {
   tipus: WaypointTipus;
   comentari: string | null;
   osm_node: number | null;
-  wikidata: number | null;
+  wikidata: string | null;
   privat: number;
 }
 
@@ -21,7 +21,7 @@ export interface CreateWaypoint {
   tipus?: WaypointTipus;
   comentari?: string;
   osm_node?: number;
-  wikidata?: number;
+  wikidata?: string;
   privat?: number;
 }
 
@@ -33,7 +33,7 @@ export interface UpdateWaypoint {
   tipus?: WaypointTipus;
   comentari?: string;
   osm_node?: number;
-  wikidata?: number;
+  wikidata?: string;
   privat?: number;
 }
 

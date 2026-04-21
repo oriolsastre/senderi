@@ -20,7 +20,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
     comentari: string;
     privat: number;
     osm_node?: number;
-    wikidata?: number;
+    wikidata?: string;
   }>({
     nom: "",
     tipus: WaypointTypes.CIM,
@@ -142,9 +142,9 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
           <div>
             <label className="block text-sm font-bold">Wikidata</label>
             <input
-              type="number"
+              type="text"
               value={newWaypoint.wikidata || ""}
-              onChange={(e) => setNewWaypoint({ ...newWaypoint, wikidata: e.target.value ? parseInt(e.target.value) : undefined })}
+              onChange={(e) => setNewWaypoint({ ...newWaypoint, wikidata: e.target.value || undefined })}
               className="w-full border rounded px-2 py-1"
             />
           </div>

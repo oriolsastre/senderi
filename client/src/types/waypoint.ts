@@ -6,7 +6,7 @@ export interface Waypoint {
   tipus: string;
   elevacio?: number | null;
   comentari?: string;
-  wikidata?: number;
+  wikidata?: string;
   osm_node?: number;
 }
 

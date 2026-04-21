@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS waypoints (
   tipus TEXT DEFAULT 'cim',
   comentari TEXT,
   osm_node INTEGER,
-  wikidata INTEGER,
+  wikidata TEXT,
   privat INTEGER NOT NULL DEFAULT 0
 );
 

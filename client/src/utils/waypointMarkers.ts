@@ -55,10 +55,10 @@ export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, be
 
   const links: string[] = [];
   if (wp.wikidata) {
-    links.push(`<a href="https://www.wikidata.org/wiki/Q${wp.wikidata}" target="_blank" rel="noopener noreferrer"><img src="/assets/icons/services/wikidata-logo.svg" alt="Wikidata" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
+    links.push(`<a href="https://www.wikidata.org/wiki/${wp.wikidata}" target="_blank" rel="noopener noreferrer" title="Veure a Wikidata"><img src="/assets/icons/services/wikidata-logo.svg" alt="Wikidata" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
   }
   if (wp.osm_node) {
-    links.push(`<a href="https://www.openstreetmap.org/node/${wp.osm_node}" target="_blank" rel="noopener noreferrer"><img src="/assets/icons/services/openstreetmap-logo.svg" alt="OSM" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
+    links.push(`<a href="https://www.openstreetmap.org/node/${wp.osm_node}" target="_blank" rel="noopener noreferrer" title="Veure a OSM"><img src="/assets/icons/services/openstreetmap-logo.svg" alt="OSM" style="width:16px;height:16px;vertical-align:middle;margin-left:4px;"></a>`);
   }
   if (links.length > 0) {
     content += `<div style="margin-top:4px;display:flex;justify-content:flex-end;gap:4px;">${links.join("")}</div>`;
