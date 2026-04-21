@@ -73,7 +73,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
   if (observations.length === 0) {
     return (
       <div className="py-4">
-        <h2 className="text-lg font-semibold text-black mb-2">
+        <h2 className="text-lg font-serif font-semibold text-black mb-2">
           Observacions iNaturalist
         </h2>
         <p className="text-black/60">Cap observació per a aquesta data</p>
@@ -83,7 +83,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
 
   return (
     <div className="py-4">
-      <h2 className="text-lg font-semibold text-black mb-3">
+      <h2 className="text-lg font-serif font-semibold text-black mb-3">
         Observacions iNaturalist ({observations.length})
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">

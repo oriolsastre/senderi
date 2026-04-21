@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: Merriweather, Georgia, serif;
+}
+
 .gpx {
   stroke: #9333ea !important;
   stroke-width: 3 !important;

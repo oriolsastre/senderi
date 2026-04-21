@@ -13,7 +13,7 @@ export default function Header({ isAuthenticated, onLoginClick, onLogoutClick }:
       <div className="w-10"></div>
       <Link
         to="/"
-        className="text-2xl font-bold text-black/80 hover:text-black transition-colors"
+        className="text-3xl font-serif font-bold text-black/80 hover:text-black transition-colors"
       >
         Senderi
       </Link>

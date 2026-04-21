@@ -45,18 +45,33 @@ export default function List({ isAuthenticated }: ListProps) {
       {excursions.length === 0 ? (
         <p className="text-black/80">No excursions yet</p>
       ) : (
-        <ul className="space-y-2">
-          {excursions.map((excursion) => (
-            <li key={excursion.id}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {excursions.map((excursion) => {
+            const distanceKm = excursion.distancia ? (excursion.distancia / 1000).toFixed(1) : null;
+            const startDate = excursion.data_inici;
+            const endDate = excursion.data_final;
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const daysDiff = startDate === endDate ? null : Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+            const daysText = daysDiff ? `(${daysDiff} dies)` : null;
+            
+            return (
               <Link
+                key={excursion.id}
                 to={`/excursions/${excursion.slug}`}
-                className="text-black/90 hover:text-black hover:underline"
+                className="block p-4 rounded-lg border border-purple-500 hover:shadow-[0_0_8px_rgba(147,51,234,0.5)]"
               >
-                {excursion.titol}
+                <h3 className="text-lg font-serif font-bold text-black mb-1">{excursion.titol}</h3>
+                <p className="text-sm text-black/70 font-bold mb-1">{startDate} {daysText}</p>
+                <p className="text-sm text-black/70">
+                  {distanceKm && `${distanceKm} km`}
+                  {distanceKm && excursion.desnivell_pos > 0 && " · "}
+                  {excursion.desnivell_pos > 0 && `+${Math.round(excursion.desnivell_pos)}m/-${Math.round(excursion.desnivell_neg)}m`}
+                </p>
               </Link>
-            </li>
-          ))}
-        </ul>
+            );
+          })}
+        </div>
       )}
     </div>
   );

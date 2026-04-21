@@ -75,7 +75,7 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-black mb-3">Punts d'interès</h2>
+      <h2 className="text-lg font-serif font-semibold text-black mb-3">Punts d'interès</h2>
       <div className="space-y-1">
         {waypoints.map((wp) => (
           <div key={wp.id} className="py-1 rounded-lg">

@@ -201,7 +201,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
           </div>
         ) : (
           <>
-            <h1 className="text-3xl font-bold text-black flex-1">{excursio.titol} ({excursio.data_inici}{excursio.data_final !== excursio.data_inici && ` - ${excursio.data_final}`})</h1>
+            <h1 className="text-3xl font-serif font-bold text-black flex-1">{excursio.titol} ({excursio.data_inici}{excursio.data_final !== excursio.data_inici && ` - ${excursio.data_final}`})</h1>
             {isAuthenticated && (
               <button
                 onClick={handleEditClick}
@@ -248,7 +248,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
 
       <div>
         <div className="flex items-center gap-4 mb-2">
-          <h2 className="text-lg font-semibold text-black">Descripció</h2>
+          <h2 className="text-lg font-serif font-semibold text-black">Descripció</h2>
           {isAuthenticated && (
             <button
               onClick={handleEditDescriptionClick}
