@@ -13,6 +13,7 @@ router.get("/:slug", checkAuth, findBySlug);
 router.post("/", requireAuth, create);
 router.get("/:osmId/gpx", async (req: Request, res: Response) => {
   const { osmId } = req.params;
+  const filename = req.query.filename as string | undefined;
   const gpxUrl = `https://www.openstreetmap.org/trace/${osmId}/data`;
 
   try {
@@ -28,6 +29,9 @@ router.get("/:osmId/gpx", async (req: Request, res: Response) => {
     }
     const gpxData = await response.text();
     res.setHeader("Content-Type", "application/gpx+xml");
+    if (filename) {
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}.gpx"`);
+    }
     res.send(gpxData);
   } catch (err) {
     logger.error("Failed to fetch GPX:", err);

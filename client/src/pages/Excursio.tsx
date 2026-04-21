@@ -243,7 +243,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
       </p>
 
       <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-lg">Carregant mapa...</div>}>
-        <Map id={excursio.id!} osmId={excursio.osm ?? null} isAuthenticated={isAuthenticated} />
+        <Map id={excursio.id!} osmId={excursio.osm ?? null} slug={excursio.slug} isAuthenticated={isAuthenticated} />
       </Suspense>
 
       <div>

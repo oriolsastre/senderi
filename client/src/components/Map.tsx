@@ -4,7 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx";
 import "proj4leaflet";
-import { MapIcon, EyeIcon, CloudArrowUpIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, CloudArrowUpIcon, PlusIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { ElevationChart } from "./ElevationChart";
 import { HoverMarker } from "./HoverMarker";
 import { GPXLoader } from "./GPXLoader";
@@ -31,10 +31,11 @@ const crsICGC = new L.Proj.CRS(
 interface MapProps {
   id: number;
   osmId: number | null;
+  slug: string;
   isAuthenticated: boolean;
 }
 
-export default function Map({ id, osmId, isAuthenticated }: MapProps) {
+export default function Map({ id, osmId, slug, isAuthenticated }: MapProps) {
   const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
   const [showAddWaypoints, setShowAddWaypoints] = useState(false);
@@ -137,16 +138,16 @@ export default function Map({ id, osmId, isAuthenticated }: MapProps) {
           </>
         )}
         <a
-          href={`https://www.openstreetmap.org/user/SastReO/traces/${osmId}`}
+          href={`/api/excursions/${osmId}/gpx?filename=${slug}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-sm text-black/80 hover:text-black"
         >
-          <MapIcon className="w-4 h-4" />
-          Veure a OSM
+          <ArrowDownTrayIcon className="w-4 h-4" />
+          Descarrega (.gpx)
         </a>
       </div>
-      <div className="h-96 w-full rounded-lg overflow-hidden relative">
+      <div className="h-[450px] w-full rounded-lg overflow-hidden relative">
         <div className="absolute top-2 right-2 z-[1000] flex gap-1">
           <button
             onClick={() => setMapProvider("osm")}
