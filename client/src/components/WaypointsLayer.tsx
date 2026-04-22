@@ -23,6 +23,7 @@ export function WaypointsLayer({ showWaypoints, waypoints, isHikingMap = true, b
       try {
         await addWaypointToExcursio(excursioId, waypointId, false);
         alert("Waypoint afegit a l'excursió!");
+        window.location.reload();
       } catch (err) {
         console.error("Failed to add waypoint:", err);
         alert("Error en afegir el waypoint");
