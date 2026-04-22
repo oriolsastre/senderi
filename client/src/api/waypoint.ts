@@ -55,16 +55,20 @@ export async function createWaypoint(data: {
   tipus: string;
   lat: number;
   lon: number;
-  elevacio?: number;
+  elevacio?: number | null;
   comentari?: string;
   privat?: number;
   osm_node?: number;
   wikidata?: string;
 }): Promise<Waypoint> {
+  const body = { ...data };
+  if (body.elevacio === undefined) {
+    body.elevacio = null;
+  }
   const response = await fetch("/api/waypoints", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: JSON.stringify(body),
   });
   if (!response.ok) throw new Error("Failed to create waypoint");
   return response.json();
@@ -75,16 +79,20 @@ export async function updateWaypoint(id: number, data: {
   tipus?: string;
   lat?: number;
   lon?: number;
-  elevacio?: number;
+  elevacio?: number | null;
   comentari?: string;
   privat?: number;
   osm_node?: number;
   wikidata?: string;
 }): Promise<Waypoint> {
+  const body = { ...data };
+  if (body.elevacio === undefined) {
+    body.elevacio = null;
+  }
   const response = await fetch(`/api/waypoints/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: JSON.stringify(body),
   });
   if (!response.ok) throw new Error("Failed to update waypoint");
   return response.json();

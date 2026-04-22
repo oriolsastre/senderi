@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, WMSTileLayer } from "react-leaflet";
+import { MapContainer, TileLayer, WMSTileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gpx";
@@ -17,6 +17,19 @@ import { WaypointsFetcher } from "./WaypointsFetcher";
 
 import { updateExcursio } from "../api/excursio";
 import type { Waypoint } from "../types/waypoint";
+
+function MapCenterGetter({ onCenter, enabled }: { onCenter: (center: { lat: number; lon: number }) => void; enabled: boolean }) {
+  const map = useMap();
+  const called = React.useRef(false);
+  useEffect(() => {
+    if (enabled && !called.current) {
+      called.current = true;
+      const center = map.getCenter();
+      onCenter({ lat: center.lat, lon: center.lng });
+    }
+  }, [enabled, map, onCenter]);
+  return null;
+}
 
 // @ts-ignore - proj4leaflet adds L.Proj.CRS
 const crsICGC = new L.Proj.CRS(
@@ -47,7 +60,7 @@ export default function Map({ id, osmId, slug, isAuthenticated }: MapProps) {
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showAddPuntForm, setShowAddPuntForm] = useState(false);
-  const [waypointPos, setWaypointPos] = useState<{ lat: number; lon: number; elevacio: number }>({ lat: 0, lon: 0, elevacio: 0 });
+  const [waypointPos, setWaypointPos] = useState<{ lat: number; lon: number; elevacio: number | null }>({ lat: 0, lon: 0, elevacio: null });
 
   const handleStatsLoaded = (stats: GPXStats) => {
     setGpxStats(stats);
@@ -59,10 +72,10 @@ export default function Map({ id, osmId, slug, isAuthenticated }: MapProps) {
 
   const handleToggleAddPuntForm = () => {
     setShowAddPuntForm(!showAddPuntForm);
-    if (!showAddPuntForm && trackPoints.length > 0) {
-      const midPoint = trackPoints[Math.floor(trackPoints.length / 2)];
-      setWaypointPos({ lat: midPoint.lat, lon: midPoint.lon, elevacio: midPoint.ele });
-    }
+  };
+
+  const handleMapCenter = (center: { lat: number; lon: number }) => {
+    setWaypointPos({ lat: center.lat, lon: center.lon, elevacio: waypointPos.elevacio });
   };
 
   const handleTrackPointClick = (index: number | null) => {
@@ -189,6 +202,7 @@ className="inline-flex items-center gap-1 text-sm text-black/80 hover:text-black
             />
           )}
           <GPXLoader osmId={osmId} trackPoints={trackPoints} onTrackPointClick={handleTrackPointClick} />
+          <MapCenterGetter onCenter={handleMapCenter} enabled={showAddPuntForm} />
           {showAddPuntForm && (
             <WaypointMarker
               lat={waypointPos.lat}

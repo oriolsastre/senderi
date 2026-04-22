@@ -103,7 +103,7 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                   <input
                     type="number"
                     value={editForm.elevacio ?? ""}
-                    onChange={(e) => setEditForm({ ...editForm, elevacio: e.target.value ? parseInt(e.target.value) : undefined })}
+                    onChange={(e) => setEditForm({ ...editForm, elevacio: e.target.value === "" ? undefined : parseInt(e.target.value) })}
                     placeholder="Elevació"
                     className="w-24 px-2 py-1 border rounded"
                     disabled={saving}
@@ -177,7 +177,7 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                   dangerouslySetInnerHTML={{ __html: createWaypointIcon({ ...wp, tipus: wp.tipus || "altres" } as any).options.html || "" }}
                 />
                 <span className="text-black">{wp.nom || wp.tipus}</span>
-                {wp.elevacio && <span className="text-black/60 text-sm">({wp.elevacio}m)</span>}
+                {wp.elevacio !== undefined && wp.elevacio !== null && <span className="text-black/60 text-sm">({wp.elevacio}m)</span>}
                 {isAuthenticated && (
                   <button onClick={() => handleEditClick(wp)} className="ml-auto p-1 text-black/60 hover:text-black cursor-pointer">
                     <PencilIcon className="w-4 h-4" />

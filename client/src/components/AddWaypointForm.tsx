@@ -6,8 +6,8 @@ interface AddWaypointFormProps {
   trackPoints: { lat: number; lon: number; ele: number }[];
   onClose: () => void;
   excursionId: number;
-  waypointPos: { lat: number; lon: number; elevacio: number };
-  onPosChange: (pos: { lat: number; lon: number; elevacio: number }) => void;
+  waypointPos: { lat: number; lon: number; elevacio: number | null };
+  onPosChange: (pos: { lat: number; lon: number; elevacio: number | null }) => void;
 }
 
 export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos, onPosChange }: AddWaypointFormProps) {
@@ -16,7 +16,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
     tipus: string;
     lat: number;
     lon: number;
-    elevacio: number;
+    elevacio: number | null;
     comentari: string;
     privat: number;
     osm_node?: number;
@@ -26,7 +26,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
     tipus: WaypointTypes.CIM,
     lat: waypointPos.lat,
     lon: waypointPos.lon,
-    elevacio: waypointPos.elevacio,
+    elevacio: null,
     comentari: "",
     privat: 0,
     osm_node: undefined,
@@ -39,13 +39,16 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
       ...prev,
       lat: waypointPos.lat,
       lon: waypointPos.lon,
-      elevacio: waypointPos.elevacio,
     }));
   }, [waypointPos]);
 
-  const updatePos = (lat: number, lon: number, elevacio: number) => {
+  const updatePos = (lat: number, lon: number, elevacio: number | null) => {
     setNewWaypoint(prev => ({ ...prev, lat, lon, elevacio }));
-    onPosChange({ lat, lon, elevacio });
+    onPosChange({ lat, lon, elevacio: elevacio ?? 0 });
+  };
+
+  const handleElevacioChange = (value: number | null) => {
+    setNewWaypoint(prev => ({ ...prev, elevacio: value }));
   };
 
   const handleCreate = async () => {
@@ -57,7 +60,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
         tipus: newWaypoint.tipus,
         lat: newWaypoint.lat,
         lon: newWaypoint.lon,
-        elevacio: newWaypoint.elevacio || undefined,
+        elevacio: newWaypoint.elevacio ?? undefined,
         comentari: newWaypoint.comentari || undefined,
         privat: newWaypoint.privat,
         osm_node: newWaypoint.osm_node,
@@ -65,7 +68,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
       });
       alert("Punt de ruta creat!");
       onClose();
-      setNewWaypoint({ nom: "", tipus: WaypointTypes.CIM, lat: 0, lon: 0, elevacio: 0, comentari: "", privat: 0, osm_node: undefined, wikidata: undefined });
+      setNewWaypoint({ nom: "", tipus: WaypointTypes.CIM, lat: 0, lon: 0, elevacio: null, comentari: "", privat: 0, osm_node: undefined, wikidata: undefined });
     } catch (err) {
       console.error("Failed to create waypoint:", err);
       alert("Error en crear el punt de ruta");
@@ -124,8 +127,8 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
           <label className="block text-sm font-bold">Elevació (m)</label>
           <input
             type="number"
-            value={newWaypoint.elevacio}
-            onChange={(e) => updatePos(newWaypoint.lat, newWaypoint.lon, parseFloat(e.target.value))}
+            value={newWaypoint.elevacio ?? ""}
+            onChange={(e) => handleElevacioChange(e.target.value === "" ? null : parseFloat(e.target.value))}
             className="w-full border rounded px-2 py-1"
           />
         </div>
