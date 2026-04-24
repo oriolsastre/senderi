@@ -192,7 +192,7 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                 </div>
               </div>
             ) : (
-              <div className={`flex items-center gap-3 px-2 py-1 rounded-lg ${wp.privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_4px,rgba(147,51,234,0.2)_4px,rgba(147,51,234,0.2)_8px)]" : ""}`}>
+              <div className={`flex items-center gap-3 px-2 py-1 rounded-lg ${wp.privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_4px,rgba(147,51,234,0.2)_4px,rgba(147,51,234,0.2)_8px)]" : wp.excursio_privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_6px,rgba(147,51,234,0.2)_6px,rgba(147,51,234,0.2)_8px)]" : ""}`}>
                 <div
                   className="w-6 h-6 flex items-center justify-center"
                   dangerouslySetInnerHTML={{ __html: createWaypointIcon({ ...wp, tipus: wp.tipus || "altres" } as any).options.html || "" }}

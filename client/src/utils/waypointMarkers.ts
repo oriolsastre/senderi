@@ -1,7 +1,7 @@
 import L from "leaflet";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
-import { CloudArrowUpIcon } from "@heroicons/react/24/solid";
+import { CloudArrowUpIcon, LockClosedIcon, LockOpenIcon } from "@heroicons/react/24/solid";
 import type { Waypoint } from "../types/waypoint";
 
 const mountainPath = "M7.5,2C7.2,2,7.1,2.2,6.9,2.4l-5.8,9.5C1,12,1,12.2,1,12.3C1,12.8,1.4,13,1.7,13h11.6c0.4,0,0.7-0.2,0.7-0.7c0-0.2,0-0.2-0.1-0.4L8.2,2.4C8,2.2,7.8,2,7.5,2z M7.5,3.5L10.8,9H10L8.5,7.5L7.5,9l-1-1.5L5,9H4.1L7.5,3.5z";
@@ -126,6 +126,13 @@ export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, be
       React.createElement(CloudArrowUpIcon, { className: "w-4 h-4", style: { color: "#22c55e", cursor: "pointer" } })
     );
     actionIconsHtml += `<span onclick="window.addWaypointToHike(${excursioId}, ${wp.id})" style="display:inline-flex;cursor:pointer;vertical-align:middle;margin-left:4px;">${addIcon}</span>`;
+  } else if (excursioId && belongsToHike && isAuthenticated) {
+    const isPrivate = (wp as any).excursio_privat === 1;
+    const LockIcon = isPrivate ? LockClosedIcon : LockOpenIcon;
+    const lockIconHtml = ReactDOMServer.renderToStaticMarkup(
+      React.createElement(LockIcon, { className: "w-4 h-4", style: { color: "#9333ea", cursor: "pointer" } })
+    );
+    actionIconsHtml += `<span onclick="window.toggleWaypointPrivat(${excursioId}, ${wp.id})" style="display:inline-flex;cursor:pointer;vertical-align:middle;margin-left:4px;">${lockIconHtml}</span>`;
   }
 
   let titleHtml = `<strong>${title}</strong>`;

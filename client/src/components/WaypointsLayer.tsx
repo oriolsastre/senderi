@@ -3,7 +3,7 @@ import { useMap } from "react-leaflet";
 import L from "leaflet";
 import type { Waypoint } from "../types/waypoint";
 import { createWaypointIcon, createWaypointPopupContent } from "../utils/waypointMarkers";
-import { addWaypointToExcursio } from "../api/waypoint";
+import { addWaypointToExcursio, toggleExcursioWaypointPrivat } from "../api/waypoint";
 
 interface WaypointsLayerProps {
   showWaypoints: boolean;
@@ -28,7 +28,18 @@ export function WaypointsLayer({ showWaypoints, waypoints, isHikingMap = true, b
         alert("Error en afegir el waypoint");
       }
     };
+
+    const handleTogglePrivat = async (excursioId: number, waypointId: number) => {
+      try {
+        await toggleExcursioWaypointPrivat(excursioId, waypointId);
+      } catch (err) {
+        console.error("Failed to toggle waypoint privat:", err);
+        alert("Error en canviar la privacitat del waypoint");
+      }
+    };
+
     (window as any).addWaypointToHike = handleAddWaypoint;
+    (window as any).toggleWaypointPrivat = handleTogglePrivat;
   }, []);
 
   useEffect(() => {

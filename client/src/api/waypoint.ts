@@ -10,6 +10,8 @@ export interface Waypoint {
   osm_node: number | null;
   wikidata: string | null;
   privat: number;
+  ordre?: number;
+  excursio_privat?: number;
 }
 
 interface WaypointFilters {
@@ -99,4 +101,11 @@ export async function updateWaypoint(id: number, data: {
   });
   if (!response.ok) throw new Error("Failed to update waypoint");
   return response.json();
+}
+
+export async function toggleExcursioWaypointPrivat(excursioId: number, waypointId: number): Promise<void> {
+  const response = await fetch(`/api/excursions/${excursioId}/waypoints/${waypointId}/privat`, {
+    method: "PATCH",
+  });
+  if (!response.ok) throw new Error("Failed to toggle waypoint privat");
 }

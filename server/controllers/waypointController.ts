@@ -131,3 +131,22 @@ export function removeFromExcursio(req: AuthenticatedRequest, res: Response) {
 
   res.status(204).send();
 }
+
+export function toggleExcursioWaypointPrivat(req: AuthenticatedRequest, res: Response) {
+  const excursioId = parseInt(req.params.id as string, 10);
+  const waypointId = parseInt(req.params.waypointId as string, 10);
+
+  if (isNaN(excursioId) || isNaN(waypointId)) {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
+
+  const waypoints = waypointModel.findByExcursio(excursioId, true);
+  const wp = waypoints.find(w => w.id === waypointId);
+  if (!wp) {
+    return res.status(404).json({ error: "Not found" });
+  }
+
+  const newPrivat = wp.excursio_privat === 1 ? 0 : 1;
+  waypointModel.updateExcursioWaypoint(excursioId, waypointId, newPrivat);
+  res.json({ privat: newPrivat });
+}
