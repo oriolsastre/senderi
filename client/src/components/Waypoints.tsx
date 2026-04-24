@@ -22,6 +22,7 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
     lon?: number;
     elevacio?: number;
     comentari?: string;
+    descripcio?: string;
     privat?: number;
     osm_node?: number;
     wikidata?: string;
@@ -45,6 +46,7 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
       lon: wp.lon,
       elevacio: wp.elevacio ?? undefined,
       comentari: wp.comentari ?? undefined,
+      descripcio: (wp as any).descripcio ?? undefined,
       privat: wp.privat,
       osm_node: wp.osm_node ?? undefined,
       wikidata: wp.wikidata ?? undefined,
@@ -154,6 +156,13 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                     <span className="text-sm">Privat</span>
                   </label>
                 </div>
+                <textarea
+                  value={editForm.descripcio || ""}
+                  onChange={(e) => setEditForm({ ...editForm, descripcio: e.target.value || undefined })}
+                  placeholder="Descripció"
+                  className="w-full px-2 py-1 border rounded"
+                  disabled={saving}
+                />
                 <textarea
                   value={editForm.comentari || ""}
                   onChange={(e) => setEditForm({ ...editForm, comentari: e.target.value || undefined })}

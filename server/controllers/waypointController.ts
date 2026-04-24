@@ -34,7 +34,7 @@ export function findById(req: AuthenticatedRequest, res: Response) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const waypoint = waypointModel.findById(id);
+  const waypoint = waypointModel.findById(id, req.isAuthenticated);
   if (!waypoint) {
     return res.status(404).json({ error: "Not found" });
   }

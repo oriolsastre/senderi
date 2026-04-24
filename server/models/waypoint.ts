@@ -11,7 +11,8 @@ export interface WaypointFilters {
 }
 
 export function findAll(isAuthenticated: boolean, filters?: WaypointFilters): Waypoint[] {
-  let query = isAuthenticated ? "SELECT * FROM waypoints" : "SELECT * FROM waypoints WHERE privat = 0";
+  const fields = isAuthenticated ? "*" : "id, nom, elevacio, lat, lon, tipus, descripcio, osm_node, wikidata";
+  let query = isAuthenticated ? `SELECT ${fields} FROM waypoints` : `SELECT ${fields} FROM waypoints WHERE privat = 0`;
   const conditions: string[] = [];
   const params: Record<string, unknown> = {};
 
@@ -51,14 +52,15 @@ export function findAll(isAuthenticated: boolean, filters?: WaypointFilters): Wa
   return db.prepare(query).all() as Waypoint[];
 }
 
-export function findById(id: number): Waypoint | undefined {
-  return db.prepare("SELECT * FROM waypoints WHERE id = ?").get(id) as Waypoint | undefined;
+export function findById(id: number, isAuthenticated: boolean = false): Waypoint | undefined {
+  const fields = isAuthenticated ? "*" : "id, nom, elevacio, lat, lon, tipus, descripcio, osm_node, wikidata";
+  return db.prepare(`SELECT ${fields} FROM waypoints WHERE id = ?`).get(id) as Waypoint | undefined;
 }
 
 export function create(data: CreateWaypoint): Waypoint {
   const stmt = db.prepare(`
-    INSERT INTO waypoints (nom, elevacio, lat, lon, tipus, comentari, osm_node, wikidata, privat)
-    VALUES (@nom, @elevacio, @lat, @lon, @tipus, @comentari, @osm_node, @wikidata, @privat)
+    INSERT INTO waypoints (nom, elevacio, lat, lon, tipus, comentari, descripcio, osm_node, wikidata, privat)
+    VALUES (@nom, @elevacio, @lat, @lon, @tipus, @comentari, @descripcio, @osm_node, @wikidata, @privat)
   `);
   const result = stmt.run({
     nom: data.nom,
@@ -67,15 +69,16 @@ export function create(data: CreateWaypoint): Waypoint {
     lon: data.lon,
     tipus: data.tipus ?? "Altres",
     comentari: data.comentari ?? null,
+    descripcio: data.descripcio ?? null,
     osm_node: data.osm_node ?? null,
     wikidata: data.wikidata ?? null,
     privat: data.privat ?? 0,
   });
-  return findById(result.lastInsertRowid as number)!;
+  return findById(result.lastInsertRowid as number, true)!;
 }
 
 export function update(id: number, data: UpdateWaypoint): Waypoint | undefined {
-  const current = findById(id);
+  const current = findById(id, true);
   if (!current) return undefined;
 
   const fields: string[] = [];
@@ -87,6 +90,7 @@ export function update(id: number, data: UpdateWaypoint): Waypoint | undefined {
   if (data.lon !== undefined) { fields.push("lon = @lon"); values.lon = data.lon; }
   if (data.tipus !== undefined) { fields.push("tipus = @tipus"); values.tipus = data.tipus; }
   if (data.comentari !== undefined) { fields.push("comentari = @comentari"); values.comentari = data.comentari; }
+  if (data.descripcio !== undefined) { fields.push("descripcio = @descripcio"); values.descripcio = data.descripcio; }
   if (data.osm_node !== undefined) { fields.push("osm_node = @osm_node"); values.osm_node = data.osm_node; }
   if (data.wikidata !== undefined) { fields.push("wikidata = @wikidata"); values.wikidata = data.wikidata; }
   if (data.privat !== undefined) { fields.push("privat = @privat"); values.privat = data.privat; }
@@ -95,7 +99,7 @@ export function update(id: number, data: UpdateWaypoint): Waypoint | undefined {
 
   const stmt = db.prepare(`UPDATE waypoints SET ${fields.join(", ")} WHERE id = @id`);
   stmt.run(values);
-  return findById(id);
+  return findById(id, true);
 }
 
 export function remove(id: number): boolean {

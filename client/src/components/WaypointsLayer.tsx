@@ -56,7 +56,7 @@ export function WaypointsLayer({ showWaypoints, waypoints, isHikingMap = true, b
 
     waypoints.forEach((wp) => {
       const marker = L.marker([wp.lat, wp.lon], { icon: createWaypointIcon(wp) });
-      const content = createWaypointPopupContent(wp, showAddButton ? excursioId : undefined, belongsToHike);
+      const content = createWaypointPopupContent(wp, showAddButton ? excursioId : undefined, belongsToHike, isAuthenticated);
       marker.bindPopup(content);
       waypointsLayerGroup.current!.addLayer(marker);
     });

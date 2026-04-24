@@ -6,6 +6,7 @@ export interface Waypoint {
   lon: number;
   tipus: string;
   comentari: string | null;
+  descripcio: string | null;
   osm_node: number | null;
   wikidata: string | null;
   privat: number;
@@ -57,6 +58,7 @@ export async function createWaypoint(data: {
   lon: number;
   elevacio?: number | null;
   comentari?: string;
+  descripcio?: string;
   privat?: number;
   osm_node?: number;
   wikidata?: string;
@@ -81,6 +83,7 @@ export async function updateWaypoint(id: number, data: {
   lon?: number;
   elevacio?: number | null;
   comentari?: string;
+  descripcio?: string;
   privat?: number;
   osm_node?: number;
   wikidata?: string;

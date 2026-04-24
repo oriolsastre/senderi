@@ -18,6 +18,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
     lon: number;
     elevacio: number | null;
     comentari: string;
+    descripcio: string;
     privat: number;
     osm_node?: number;
     wikidata?: string;
@@ -28,6 +29,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
     lon: waypointPos.lon,
     elevacio: null,
     comentari: "",
+    descripcio: "",
     privat: 0,
     osm_node: undefined,
     wikidata: undefined,
@@ -62,13 +64,14 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
         lon: newWaypoint.lon,
         elevacio: newWaypoint.elevacio ?? undefined,
         comentari: newWaypoint.comentari || undefined,
+        descripcio: newWaypoint.descripcio || undefined,
         privat: newWaypoint.privat,
         osm_node: newWaypoint.osm_node,
         wikidata: newWaypoint.wikidata,
       });
       alert("Punt de ruta creat!");
       onClose();
-      setNewWaypoint({ nom: "", tipus: WaypointTypes.CIM, lat: 0, lon: 0, elevacio: null, comentari: "", privat: 0, osm_node: undefined, wikidata: undefined });
+      setNewWaypoint({ nom: "", tipus: WaypointTypes.CIM, lat: 0, lon: 0, elevacio: null, comentari: "", descripcio: "", privat: 0, osm_node: undefined, wikidata: undefined });
     } catch (err) {
       console.error("Failed to create waypoint:", err);
       alert("Error en crear el punt de ruta");
@@ -152,6 +155,14 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
             />
           </div>
         </div>
+      </div>
+      <div>
+        <label className="block text-sm font-bold">Descripció</label>
+        <textarea
+          value={newWaypoint.descripcio}
+          onChange={(e) => setNewWaypoint({ ...newWaypoint, descripcio: e.target.value })}
+          className="w-full border rounded px-2 py-1 h-20 resize-none"
+        />
       </div>
       <div>
         <label className="block text-sm font-bold">Comentari</label>

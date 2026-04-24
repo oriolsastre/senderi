@@ -115,7 +115,7 @@ export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
   }
 };
 
-export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, belongsToHike?: boolean): string => {
+export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, belongsToHike?: boolean, isAuthenticated?: boolean): string => {
   let title = wp.nom || wp.tipus;
   if ((wp.tipus?.toLowerCase() === "cim" || wp.tipus?.toLowerCase() === "coll") && wp.elevacio) {
     title = `${title} (${wp.elevacio}m)`;
@@ -136,8 +136,12 @@ export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, be
   let titleHtml = `<strong>${title}</strong>`;
   let content = `<div style="display:flex;align-items:center;gap:4px;">${titleHtml}${actionIconsHtml}</div>`;
 
-  if (wp.comentari) {
-    content += `<div>${wp.comentari}</div>`;
+  if (wp.descripcio) {
+    content += `<div>${wp.descripcio}</div>`;
+  }
+
+  if (isAuthenticated && wp.comentari) {
+    content += `<div style="border-left: 2px solid #9333ea; padding-left: 8px; margin-top: 4px; font-size: 0.9em; font-style: italic;">${wp.comentari}</div>`;
   }
 
   const links: string[] = [];
