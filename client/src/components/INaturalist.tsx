@@ -95,7 +95,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
             rel="noopener noreferrer"
             className="block group"
           >
-            <div className="aspect-square overflow-hidden rounded-lg bg-gray-200">
+            <div className="aspect-square overflow-hidden rounded-lg bg-gray-200 group-hover:shadow-[0_0_16px_rgba(147,51,234,0.8)] transition-shadow duration-200">
               {obs.photos?.[0]?.url && (
                 <img
                   src={obs.photos[0].url?.replace("square.", "medium.")}
@@ -104,7 +104,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
                 />
               )}
             </div>
-            <p className="mt-1 text-xs text-black/70 truncate">
+            <p className="mt-1 text-xs text-black/70 truncate italic">
               {obs.taxon?.name || obs.speciesGuess || "Sense identificacio"}
             </p>
           </a>
