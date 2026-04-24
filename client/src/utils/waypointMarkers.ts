@@ -1,7 +1,7 @@
 import L from "leaflet";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
-import { MapIcon, CloudArrowUpIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { CloudArrowUpIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import type { Waypoint } from "../types/waypoint";
 
 const mountainPath = "M7.5,2C7.2,2,7.1,2.2,6.9,2.4l-5.8,9.5C1,12,1,12.2,1,12.3C1,12.8,1.4,13,1.7,13h11.6c0.4,0,0.7-0.2,0.7-0.7c0-0.2,0-0.2-0.1-0.4L8.2,2.4C8,2.2,7.8,2,7.5,2z M7.5,3.5L10.8,9H10L8.5,7.5L7.5,9l-1-1.5L5,9H4.1L7.5,3.5z";
@@ -10,7 +10,7 @@ const collPath = "M0 10.94L0 9.72C0 7.93 0.34 6.17 1 4.51L1.81 2.46C1.93 2.18 2.
 
 export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
   const tipus = wp.tipus?.toLowerCase();
-  
+
   switch (tipus) {
     case "cim": {
       const color = getElevationColor(wp.elevacio);
@@ -86,10 +86,10 @@ export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
         popupAnchor: [0, -16],
       });
     }
-    case "altres": {
+    case "edifici": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/altres.svg" width="15" height="15"/></svg>`,
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/edifici.svg" width="15" height="15"/></svg>`,
         iconSize: [32, 32],
         iconAnchor: [16, 16],
         popupAnchor: [0, -16],
@@ -107,12 +107,10 @@ export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
     default:
       return L.divIcon({
         className: "custom-marker",
-        html: ReactDOMServer.renderToStaticMarkup(
-          React.createElement(MapIcon, { className: "w-8 h-8", style: { color: "#000000" } })
-        ),
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/altres.svg" width="15" height="15"/></svg>`,
         iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16],
       });
   }
 };
@@ -137,7 +135,7 @@ export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, be
 
   let titleHtml = `<strong>${title}</strong>`;
   let content = `<div style="display:flex;align-items:center;gap:4px;">${titleHtml}${actionIconsHtml}</div>`;
-  
+
   if (wp.comentari) {
     content += `<div>${wp.comentari}</div>`;
   }
@@ -173,7 +171,7 @@ const elevationRanges: ElevationRange[] = [
 
 const getElevationColor = (elevation: number | null | undefined): string => {
   const elev = elevation ?? 0;
-  
+
   for (const range of elevationRanges) {
     if (elev >= range.min && elev < range.max) {
       return range.color;

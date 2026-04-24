@@ -212,7 +212,7 @@ className="inline-flex items-center gap-1 text-sm text-black/80 hover:text-black
           )}
           <StatsLoader osmId={osmId} onStatsLoaded={handleStatsLoaded} />
           <WaypointsFetcher waypoints={waypoints} setWaypoints={setWaypoints} excursioId={id} />
-          <WaypointsLayer showWaypoints={showHikeWaypoints} waypoints={waypoints} isHikingMap={true} belongsToHike={true} />
+          <WaypointsLayer showWaypoints={showHikeWaypoints} waypoints={waypoints} isHikingMap={true} belongsToHike={true} excursioId={id} isAuthenticated={isAuthenticated} />
           <AddWaypointFetcher showAddWaypoints={showAddWaypoints} setWaypoints={setAddWaypoints} excursioId={id} />
           <WaypointsLayer showWaypoints={showAddWaypoints} waypoints={addWaypoints} isHikingMap={true} belongsToHike={false} excursioId={id} isAuthenticated={isAuthenticated} />
           <HoverMarker position={hoveredPosition} />
