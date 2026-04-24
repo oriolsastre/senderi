@@ -82,24 +82,24 @@ export function remove(req: AuthenticatedRequest, res: Response) {
   res.status(204).send();
 }
 
-export function findByExcursion(req: AuthenticatedRequest, res: Response) {
+export function findByExcursio(req: AuthenticatedRequest, res: Response) {
   const id = parseInt(req.params.id as string, 10);
   if (isNaN(id)) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const waypoints = waypointModel.findByExcursion(id, !!req.isAuthenticated);
+  const waypoints = waypointModel.findByExcursio(id, !!req.isAuthenticated);
   const response = waypoints.map((w) => ({
     ...formatWaypoint(w),
     ordre: w.ordre,
-    excursion_privat: w.excursion_privat,
+    excursio_privat: w.excursio_privat,
   }));
   return res.json(response);
 }
 
-export function addToExcursion(req: AuthenticatedRequest, res: Response) {
-  const excursionId = parseInt(req.params.id as string, 10);
-  if (isNaN(excursionId)) {
+export function addToExcursio(req: AuthenticatedRequest, res: Response) {
+  const excursioId = parseInt(req.params.id as string, 10);
+  if (isNaN(excursioId)) {
     return res.status(400).json({ error: "Invalid excursion ID" });
   }
 
@@ -108,7 +108,7 @@ export function addToExcursion(req: AuthenticatedRequest, res: Response) {
     return res.status(400).json({ error: "waypoint_id is required" });
   }
 
-  const added = waypointModel.addToExcursion(excursionId, waypoint_id, privat ?? 0);
+  const added = waypointModel.addToExcursio(excursioId, waypoint_id, privat ?? 0);
   if (!added) {
     return res.status(400).json({ error: "Failed to add waypoint" });
   }
@@ -116,15 +116,15 @@ export function addToExcursion(req: AuthenticatedRequest, res: Response) {
   res.status(201).json({ message: "Waypoint added to excursion" });
 }
 
-export function removeFromExcursion(req: AuthenticatedRequest, res: Response) {
-  const excursionId = parseInt(req.params.id as string, 10);
+export function removeFromExcursio(req: AuthenticatedRequest, res: Response) {
+  const excursioId = parseInt(req.params.id as string, 10);
   const waypointId = parseInt(req.params.waypointId as string, 10);
 
-  if (isNaN(excursionId) || isNaN(waypointId)) {
+  if (isNaN(excursioId) || isNaN(waypointId)) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const removed = waypointModel.removeFromExcursion(excursionId, waypointId);
+  const removed = waypointModel.removeFromExcursio(excursioId, waypointId);
   if (!removed) {
     return res.status(404).json({ error: "Not found" });
   }

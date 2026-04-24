@@ -42,5 +42,5 @@ export interface UpdateWaypoint {
 
 export interface WaypointWithPrivat extends Waypoint {
   ordre: number;
-  excursion_privat: number;
+  excursio_privat: number;
 }

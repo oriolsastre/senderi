@@ -108,45 +108,45 @@ export function remove(id: number): boolean {
   return result.changes > 0;
 }
 
-export interface ExcursionWaypoint {
-  excursion_id: number;
+export interface ExcursioWaypoint {
+  excursio_id: number;
   waypoint_id: number;
   ordre: number;
   privat: number;
 }
 
-export function findByExcursion(excursionId: number, isAuthenticated: boolean): WaypointWithPrivat[] {
+export function findByExcursio(excursioId: number, isAuthenticated: boolean): WaypointWithPrivat[] {
   const query = isAuthenticated
-    ? `SELECT w.*, ew.ordre, ew.privat as excursion_privat 
+    ? `SELECT w.*, ew.ordre, ew.privat as excursio_privat 
        FROM waypoints w 
        JOIN excursions_waypoints ew ON w.id = ew.waypoint_id 
        WHERE ew.excursio_id = ?
        ORDER BY ew.ordre`
-    : `SELECT w.*, ew.ordre, ew.privat as excursion_privat 
+    : `SELECT w.*, ew.ordre, ew.privat as excursio_privat 
        FROM waypoints w 
        JOIN excursions_waypoints ew ON w.id = ew.waypoint_id 
        WHERE ew.excursio_id = ? AND w.privat = 0 AND ew.privat = 0
        ORDER BY ew.ordre`;
-  return db.prepare(query).all(excursionId) as WaypointWithPrivat[];
+  return db.prepare(query).all(excursioId) as WaypointWithPrivat[];
 }
 
-export function addToExcursion(excursionId: number, waypointId: number, privat: number = 0): boolean {
+export function addToExcursio(excursioId: number, waypointId: number, privat: number = 0): boolean {
   const stmt = db.prepare(`
     INSERT INTO excursions_waypoints (excursio_id, waypoint_id, ordre, privat)
     VALUES (?, ?, (SELECT COALESCE(MAX(ordre), 0) + 1 FROM excursions_waypoints WHERE excursio_id = ?), ?)
   `);
-  const result = stmt.run(excursionId, waypointId, excursionId, privat);
+  const result = stmt.run(excursioId, waypointId, excursioId, privat);
   return result.changes > 0;
 }
 
-export function removeFromExcursion(excursionId: number, waypointId: number): boolean {
+export function removeFromExcursio(excursioId: number, waypointId: number): boolean {
   const stmt = db.prepare("DELETE FROM excursions_waypoints WHERE excursio_id = ? AND waypoint_id = ?");
-  const result = stmt.run(excursionId, waypointId);
+  const result = stmt.run(excursioId, waypointId);
   return result.changes > 0;
 }
 
-export function updateExcursionWaypoint(excursionId: number, waypointId: number, privat: number): boolean {
+export function updateExcursioWaypoint(excursioId: number, waypointId: number, privat: number): boolean {
   const stmt = db.prepare("UPDATE excursions_waypoints SET privat = ? WHERE excursio_id = ? AND waypoint_id = ?");
-  const result = stmt.run(privat, excursionId, waypointId);
+  const result = stmt.run(privat, excursioId, waypointId);
   return result.changes > 0;
 }

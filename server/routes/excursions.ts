@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { findAll, findBySlug, create, findById, update, remove } from "../controllers/excursioController.js";
-import { findByExcursion, addToExcursion, removeFromExcursion } from "../controllers/waypointController.js";
+import { findByExcursio, addToExcursio, removeFromExcursio } from "../controllers/waypointController.js";
 import { checkAuth, requireAuth } from "../middleware/auth.js";
 import { rateLimit } from "../utils/rateLimiter.js";
 import { logger } from "../utils/logger.js";
@@ -62,9 +62,9 @@ router.get("/:osmId/gpx/stats", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to calculate GPX stats" });
   }
 });
-router.get("/:id/waypoints", checkAuth, findByExcursion);
-router.post("/:id/waypoints", requireAuth, addToExcursion);
-router.delete("/:id/waypoints/:waypointId", requireAuth, removeFromExcursion);
+router.get("/:id/waypoints", checkAuth, findByExcursio);
+router.post("/:id/waypoints", requireAuth, addToExcursio);
+router.delete("/:id/waypoints/:waypointId", requireAuth, removeFromExcursio);
 router.get("/:id", requireAuth, findById);
 router.patch("/:id", requireAuth, update);
 router.delete("/:id", requireAuth, remove);
