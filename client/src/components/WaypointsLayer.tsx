@@ -3,7 +3,7 @@ import { useMap } from "react-leaflet";
 import L from "leaflet";
 import type { Waypoint } from "../types/waypoint";
 import { createWaypointIcon, createWaypointPopupContent } from "../utils/waypointMarkers";
-import { addWaypointToExcursio, removeWaypointFromExcursio } from "../api/waypoint";
+import { addWaypointToExcursio } from "../api/waypoint";
 
 interface WaypointsLayerProps {
   showWaypoints: boolean;
@@ -29,17 +29,6 @@ export function WaypointsLayer({ showWaypoints, waypoints, isHikingMap = true, b
       }
     };
     (window as any).addWaypointToHike = handleAddWaypoint;
-
-    const handleRemoveWaypoint = async (excursioId: number, waypointId: number) => {
-      try {
-        await removeWaypointFromExcursio(excursioId, waypointId);
-        alert("Waypoint eliminat de l'excursió!");
-      } catch (err) {
-        console.error("Failed to remove waypoint:", err);
-        alert("Error en eliminar el waypoint");
-      }
-    };
-    (window as any).removeWaypointFromHike = handleRemoveWaypoint;
   }, []);
 
   useEffect(() => {

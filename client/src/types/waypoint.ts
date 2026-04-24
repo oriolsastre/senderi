@@ -9,6 +9,7 @@ export interface Waypoint {
   descripcio?: string;
   wikidata?: string;
   osm_node?: number;
+  privat?: number;
 }
 
 export const WaypointTypes = {

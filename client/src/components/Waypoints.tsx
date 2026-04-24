@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { PencilIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, TrashIcon, CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import type { Excursio as ExcursioType } from "../types/excursio";
 import type { Waypoint } from "../api/waypoint";
-import { updateWaypoint } from "../api/waypoint";
+import { updateWaypoint, removeWaypointFromExcursio } from "../api/waypoint";
 import { createWaypointIcon } from "../utils/waypointMarkers";
 import { waypointTypeLabels } from "../types/waypoint";
 
@@ -56,6 +56,18 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
   const handleCancelEdit = () => {
     setEditingId(null);
     setEditForm({});
+  };
+
+  const handleRemoveFromHike = async (waypointId: number) => {
+    if (!excursion.id) return;
+    if (!confirm("Segur que vols eliminar aquest punt de l'excursió?")) return;
+    try {
+      await removeWaypointFromExcursio(excursion.id, waypointId);
+      setWaypoints(waypoints.filter(wp => wp.id !== waypointId));
+    } catch (err) {
+      console.error("Failed to remove waypoint:", err);
+      alert("Error en eliminar el punt de l'excursió");
+    }
   };
 
   const handleSaveEdit = async () => {
@@ -180,7 +192,7 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className={`flex items-center gap-3 px-2 py-1 rounded-lg ${wp.privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_4px,rgba(147,51,234,0.2)_4px,rgba(147,51,234,0.2)_8px)]" : ""}`}>
                 <div
                   className="w-6 h-6 flex items-center justify-center"
                   dangerouslySetInnerHTML={{ __html: createWaypointIcon({ ...wp, tipus: wp.tipus || "altres" } as any).options.html || "" }}
@@ -188,9 +200,14 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                 <span className="text-black">{wp.nom || wp.tipus}</span>
                 {wp.elevacio !== undefined && wp.elevacio !== null && <span className="text-black/60 text-sm">({wp.elevacio}m)</span>}
                 {isAuthenticated && (
-                  <button onClick={() => handleEditClick(wp)} className="ml-auto p-1 text-black/60 hover:text-black cursor-pointer">
-                    <PencilIcon className="w-4 h-4" />
-                  </button>
+                  <div className="ml-auto flex gap-1">
+                    <button onClick={() => handleEditClick(wp)} className="p-1 text-black/60 hover:text-black cursor-pointer" title="Edita">
+                      <PencilIcon className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleRemoveFromHike(wp.id)} className="p-1 text-red-600 hover:text-red-700 cursor-pointer" title="Elimina de l'excursió">
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  </div>
                 )}
               </div>
             )}
