@@ -23,6 +23,7 @@ export const WaypointTypes = {
   COVA: "cova",
   NATURA: "natura",
   EDIFICI: "edifici",
+  REFUGI: "refugi",
   ALTRES: "altres",
 } as const;
 
@@ -39,5 +40,6 @@ export const waypointTypeLabels: Record<WaypointType, string> = {
   cova: "Cova",
   natura: "Natura",
   edifici: "Edifici",
+  refugi: "Refugi",
   altres: "Altres",
 };
