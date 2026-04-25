@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { UserIcon, ArrowRightStartOnRectangleIcon, Bars3Icon, MapIcon } from "@heroicons/react/24/solid";
 
@@ -10,9 +10,24 @@ interface MenuProps {
 
 export default function Menu({ isAuthenticated, onLoginClick, onLogoutClick }: MenuProps) {
   const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    if (showMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMenu]);
 
   return (
-    <div className="relative">
+    <div ref={menuRef} className="relative">
       <button
         onClick={() => setShowMenu(!showMenu)}
         className="text-black/80 hover:text-black hover:border-purple-500 hover:shadow-[0_0_8px_rgba(168,85,247,0.5)] cursor-pointer p-2 rounded border border-transparent transition-colors"
@@ -20,7 +35,7 @@ export default function Menu({ isAuthenticated, onLoginClick, onLogoutClick }: M
         <Bars3Icon className="w-5 h-5" />
       </button>
       {showMenu && (
-        <div className="absolute right-0 top-full mt-1 bg-white border border-purple-500 rounded-lg shadow-lg min-w-40 z-50">
+        <div className="absolute right-0 top-full mt-1 bg-white border border-purple-500 rounded-lg shadow-lg min-w-40 z-[9999]">
           <div className="bg-green-900/30 rounded-t-lg rounded-b-lg">
             <Link
               to="/"

@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, WMSTileLayer, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { useEffect, useState, useRef } from "react";
+import { useMap } from "react-leaflet";
 import "leaflet-gpx";
-import "proj4leaflet";
 import { EyeIcon, EyeSlashIcon, CloudArrowUpIcon, PlusIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
+import LeafletMap from "./LeafletMap";
 import { ElevationChart } from "./ElevationChart";
 import { HoverMarker } from "./HoverMarker";
 import { GPXLoader } from "./GPXLoader";
@@ -18,9 +16,9 @@ import { WaypointsFetcher } from "./WaypointsFetcher";
 import { updateExcursio } from "../api/excursio";
 import type { Waypoint } from "../types/waypoint";
 
-function MapCenterGetter({ onCenter, enabled }: { onCenter: (center: { lat: number; lon: number }) => void; enabled: boolean }) {
+function MapCenterGetter({ onCenter, enabled }: { onCenter: (center: any) => void; enabled: boolean }) {
   const map = useMap();
-  const called = React.useRef(false);
+  const called = useRef(false);
   useEffect(() => {
     if (enabled && !called.current) {
       called.current = true;
@@ -31,16 +29,6 @@ function MapCenterGetter({ onCenter, enabled }: { onCenter: (center: { lat: numb
   return null;
 }
 
-// @ts-ignore - proj4leaflet adds L.Proj.CRS
-const crsICGC = new L.Proj.CRS(
-  "EPSG:25831",
-  "+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
-  {
-    resolutions: [1100, 550, 275, 100, 50, 25, 10, 5, 2, 1, 0.5, 0.25],
-    origin: [0, 0],
-  }
-);
-
 interface MapProps {
   id: number;
   osmId: number | null;
@@ -49,7 +37,6 @@ interface MapProps {
 }
 
 export default function Map({ id, osmId, slug, isAuthenticated }: MapProps) {
-  const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
   const [showAddWaypoints, setShowAddWaypoints] = useState(false);
   const [showHikeWaypoints, setShowHikeWaypoints] = useState(true);
@@ -103,7 +90,6 @@ export default function Map({ id, osmId, slug, isAuthenticated }: MapProps) {
       .then(res => res.text())
       .then(gpxText => {
         setGpxData(gpxText);
-        // Parse track points from GPX
         const parser = new DOMParser();
         const doc = parser.parseFromString(gpxText, "application/xml");
         const trkpts = doc.querySelectorAll("trkpt");
@@ -136,7 +122,7 @@ export default function Map({ id, osmId, slug, isAuthenticated }: MapProps) {
         {waypoints.length > 0 && (
           <button
             onClick={() => setShowHikeWaypoints(!showHikeWaypoints)}
-className="inline-flex items-center gap-1 text-sm text-black/80 hover:text-black cursor-pointer"
+            className="inline-flex items-center gap-1 text-sm text-black/80 hover:text-black cursor-pointer"
           >
             {showHikeWaypoints ? (
               <>
@@ -161,46 +147,8 @@ className="inline-flex items-center gap-1 text-sm text-black/80 hover:text-black
           Descarrega (.gpx)
         </a>
       </div>
-      <div className="h-[450px] w-full rounded-lg overflow-hidden relative">
-        <div className="absolute top-2 right-2 z-[1000] flex gap-1">
-          <button
-            onClick={() => setMapProvider("osm")}
-            className={`px-2 py-1 text-xs rounded ${mapProvider === "osm"
-              ? "bg-green-600 text-white"
-              : "bg-white text-black hover:bg-gray-100"
-              }`}
-          >
-            OSM
-          </button>
-          <button
-            onClick={() => setMapProvider("icgc")}
-            className={`px-2 py-1 text-xs rounded ${mapProvider === "icgc"
-              ? "bg-green-600 text-white"
-              : "bg-white text-black hover:bg-gray-100"
-              }`}
-          >
-            ICGC
-          </button>
-        </div>
-        <MapContainer
-          className="h-full w-full"
-          crs={mapProvider === "icgc" ? crsICGC : L.CRS.EPSG3857}
-          center={mapProvider === "icgc" ? [4182545, 465195] : [41.3874, 2.1686]}
-          zoom={mapProvider === "icgc" ? 6 : 13}
-        >
-          {mapProvider === "osm" ? (
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          ) : (
-            <WMSTileLayer
-              url="https://geoserveis.icgc.cat/icc_mapesmultibase/utm/wms/service?"
-              layers="topo"
-              format="image/jpeg"
-              attribution="Institut Cartogràfic i Geològic de Catalunya"
-            />
-          )}
+      <div className="relative h-[450px]">
+        <LeafletMap className="h-full w-full">
           <GPXLoader osmId={osmId} trackPoints={trackPoints} onTrackPointClick={handleTrackPointClick} />
           <MapCenterGetter onCenter={handleMapCenter} enabled={showAddPuntForm} />
           {showAddPuntForm && (
@@ -216,7 +164,7 @@ className="inline-flex items-center gap-1 text-sm text-black/80 hover:text-black
           <AddWaypointFetcher showAddWaypoints={showAddWaypoints} setWaypoints={setAddWaypoints} excursioId={id} />
           <WaypointsLayer showWaypoints={showAddWaypoints} waypoints={addWaypoints} isHikingMap={true} belongsToHike={false} excursioId={id} isAuthenticated={isAuthenticated} />
           <HoverMarker position={hoveredPosition} />
-        </MapContainer>
+        </LeafletMap>
         {gpxStats && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[1000] bg-white/90 px-3 py-1 rounded-md text-sm flex items-center gap-2">
             <span>{distanceKm} km</span>
