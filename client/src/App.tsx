@@ -8,6 +8,7 @@ import { getAuthStatus, logout as logoutApi } from "./api/auth";
 const List = lazy(() => import("./pages/List"));
 const New = lazy(() => import("./pages/New"));
 const Excursio = lazy(() => import("./pages/Excursio"));
+const Mapa = lazy(() => import("./pages/Mapa"));
 
 export default function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -34,6 +35,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<List isAuthenticated={isAuthenticated} />} />
             <Route path="/nou" element={<New isAuthenticated={isAuthenticated} />} />
+            <Route path="/mapa" element={<Mapa isAuthenticated={isAuthenticated} />} />
             <Route path="/excursions/:slug" element={<Excursio isAuthenticated={isAuthenticated} />} />
           </Routes>
         </Suspense>

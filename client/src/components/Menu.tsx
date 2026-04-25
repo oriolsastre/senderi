@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { UserIcon, ArrowRightStartOnRectangleIcon, Bars3Icon } from "@heroicons/react/24/solid";
+import { UserIcon, ArrowRightStartOnRectangleIcon, Bars3Icon, MapIcon } from "@heroicons/react/24/solid";
 
 interface MenuProps {
   isAuthenticated: boolean;
@@ -29,6 +29,14 @@ export default function Menu({ isAuthenticated, onLoginClick, onLogoutClick }: M
             >
               <img src="/assets/icons/hiking.svg" alt="" className="w-4 h-4" />
               Excursions
+            </Link>
+            <Link
+              to="/mapa"
+              onClick={() => setShowMenu(false)}
+              className="flex items-center gap-2 w-full text-left px-4 py-2 text-black/80 hover:bg-green-900/20 cursor-pointer"
+            >
+              <MapIcon className="w-4 h-4" />
+              Mapa
             </Link>
             <hr className="my-1 border-green-900/20" />
             {isAuthenticated ? (
