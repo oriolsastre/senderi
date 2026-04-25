@@ -41,6 +41,15 @@ export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
         popupAnchor: [0, -16],
       });
     }
+    case "aigua": {
+      return L.divIcon({
+        className: "custom-marker",
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/aigua.svg" width="15" height="15"/></svg>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16],
+      });
+    }
     case "cascada": {
       return L.divIcon({
         className: "custom-marker",
