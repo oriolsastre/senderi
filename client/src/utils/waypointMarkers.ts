@@ -194,7 +194,8 @@ const elevationRanges: ElevationRange[] = [
   { min: 500, max: 1000, color: "#22c55e" },
   { min: 1000, max: 1500, color: "#eab308" },
   { min: 1500, max: 2000, color: "#f97316" },
-  { min: 2500, max: 3000, color: "#ef4444" },
+  { min: 2000, max: 2500, color: "#ef4444" },
+  { min: 2500, max: 3000, color: "#92400e" },
   { min: 3000, max: Infinity, color: "#000000" },
 ];
 
