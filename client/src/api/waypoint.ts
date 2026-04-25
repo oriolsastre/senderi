@@ -109,3 +109,17 @@ export async function toggleExcursioWaypointPrivat(excursioId: number, waypointI
   });
   if (!response.ok) throw new Error("Failed to toggle waypoint privat");
 }
+
+export interface WaypointExcursio {
+  id: number;
+  titol: string;
+  data_inici: string;
+  slug: string;
+  privat: number;
+}
+
+export async function getExcursionsByWaypoint(waypointId: number): Promise<WaypointExcursio[]> {
+  const response = await fetch(`/api/waypoints/${waypointId}/excursions`);
+  if (!response.ok) throw new Error("Failed to fetch excursions");
+  return response.json();
+}

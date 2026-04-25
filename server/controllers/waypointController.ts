@@ -150,3 +150,14 @@ export function toggleExcursioWaypointPrivat(req: AuthenticatedRequest, res: Res
   waypointModel.updateExcursioWaypoint(excursioId, waypointId, newPrivat);
   res.json({ privat: newPrivat });
 }
+
+export function findExcursionsByWaypoint(req: AuthenticatedRequest, res: Response) {
+  const waypointId = parseInt(req.params.id as string, 10);
+  
+  if (isNaN(waypointId)) {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
+  
+  const excursions = waypointModel.findExcursionsByWaypoint(waypointId, !!req.isAuthenticated);
+  res.json(excursions);
+}

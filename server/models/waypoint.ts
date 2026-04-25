@@ -150,3 +150,28 @@ export function updateExcursioWaypoint(excursioId: number, waypointId: number, p
   const result = stmt.run(privat, excursioId, waypointId);
   return result.changes > 0;
 }
+
+export interface WaypointExcursio {
+  id: number;
+  titol: string;
+  data_inici: string;
+  slug: string;
+  privat: number;
+}
+
+export function findExcursionsByWaypoint(waypointId: number, isAuthenticated: boolean): WaypointExcursio[] {
+  let query = `
+    SELECT e.id, e.titol, e.data_inici, e.slug, ew.privat
+    FROM excursions e
+    JOIN excursions_waypoints ew ON e.id = ew.excursio_id
+    WHERE ew.waypoint_id = ?
+  `;
+  
+  if (!isAuthenticated) {
+    query += " AND e.privat = 0 AND ew.privat = 0";
+  }
+  
+  query += " ORDER BY e.data_inici DESC";
+  
+  return db.prepare(query).all(waypointId) as WaypointExcursio[];
+}

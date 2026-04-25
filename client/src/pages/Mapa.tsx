@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
-import { getWaypoints } from "../api/waypoint";
+import { getWaypoints, getExcursionsByWaypoint } from "../api/waypoint";
 import { createWaypointIcon, createWaypointPopupContent } from "../utils/waypointMarkers";
 import type { Waypoint } from "../api/waypoint";
 import LeafletMap from "../components/LeafletMap";
@@ -27,6 +27,25 @@ function WaypointsLayer({ waypoints, isAuthenticated }: { waypoints: Waypoint[];
       const marker = L.marker([wp.lat, wp.lon], { icon: createWaypointIcon(wp as any) });
       const popupContent = createWaypointPopupContent(wp as any, undefined, false, isAuthenticated);
       marker.bindPopup(popupContent);
+      
+      marker.on("popupopen", async () => {
+        try {
+          const excursions = await getExcursionsByWaypoint(wp.id);
+          if (excursions.length > 0) {
+            const excursionsHtml = excursions.map(e => 
+              `<a href="/excursions/${e.slug}" class="text-purple-600 hover:underline text-sm">${e.data_inici}</a>`
+            ).join(", ");
+            const popup = marker.getPopup();
+            if (popup) {
+              const content = createWaypointPopupContent(wp as any, undefined, false, isAuthenticated);
+              popup.setContent(`${content}<div style="margin-top:8px;padding-top:8px;border-top:1px solid #ccc;"><strong>Excursions:</strong> ${excursionsHtml}</div>`);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to load excursions:", err);
+        }
+      });
+      
       layerRef.current!.addLayer(marker);
     });
 
@@ -59,14 +78,9 @@ export default function Mapa({ isAuthenticated }: MapaProps) {
 
   return (
     <div className="py-4">
-      <LeafletMap className="h-[calc(100vh-200px)] w-full">
+      <LeafletMap className="h-[calc(100vh-120px)] w-full">
         <WaypointsLayer waypoints={waypoints} isAuthenticated={isAuthenticated} />
       </LeafletMap>
-      {waypoints.length > 0 && (
-        <p className="text-sm text-black/80 mt-2">
-          {waypoints.length} punts de ruta
-        </p>
-      )}
     </div>
   );
 }
