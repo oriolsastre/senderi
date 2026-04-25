@@ -157,6 +157,11 @@ export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, be
     content += `<div style="margin-top:4px;display:flex;justify-content:flex-end;gap:4px;">${links.join("")}</div>`;
   }
 
+  if (wp.privat === 1) {
+    const privatBg = "background: repeating-linear-gradient(-45deg, transparent, transparent 6px, rgba(147,51,234,0.3) 6px, rgba(147,51,234,0.3) 10px);";
+    return `<div style="${privatBg}padding:8px;border-radius:4px;">${content}</div>`;
+  }
+
   return content;
 };
 
