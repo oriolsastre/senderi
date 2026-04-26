@@ -14,6 +14,7 @@ export interface Excursio {
   data_final: string;
   slug: string;
   privat: number;
+  foto_password: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -29,6 +30,7 @@ export interface CreateExcursio {
   data_final?: string;
   slug?: string;
   privat?: number;
+  foto_password?: string;
 }
 
 export interface UpdateExcursio {
@@ -42,6 +44,7 @@ export interface UpdateExcursio {
   data_final?: string;
   slug?: string;
   privat?: number;
+  foto_password?: string;
 }
 
 export function slugify(date: string, title: string): string {
@@ -72,7 +75,7 @@ function generateUniqueSlug(date: string, title: string): string {
 export function findAll(): Excursio[] {
   return db
     .prepare(
-      "SELECT id, titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data_inici, data_final, slug, privat FROM excursions ORDER BY data_inici DESC"
+      "SELECT id, titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data_inici, data_final, slug, privat, foto_password FROM excursions ORDER BY data_inici DESC"
     )
     .all() as Excursio[];
 }
@@ -93,10 +96,14 @@ export function findBySlug(slug: string): Excursio | undefined {
   return db.prepare("SELECT * FROM excursions WHERE slug = ?").get(slug) as Excursio | undefined;
 }
 
+export function findByDataInici(dataInici: string): Excursio[] {
+  return db.prepare("SELECT * FROM excursions WHERE data_inici = ?").all(dataInici) as Excursio[];
+}
+
 export function create(data: CreateExcursio): Excursio {
   const stmt = db.prepare(`
-    INSERT INTO excursions (titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data_inici, data_final, slug, privat)
-    VALUES (@titol, @descripcio, @distancia, @desnivell_pos, @desnivell_neg, @osm, @data_inici, @data_final, @slug, @privat)
+    INSERT INTO excursions (titol, descripcio, distancia, desnivell_pos, desnivell_neg, osm, data_inici, data_final, slug, privat, foto_password)
+    VALUES (@titol, @descripcio, @distancia, @desnivell_pos, @desnivell_neg, @osm, @data_inici, @data_final, @slug, @privat, @foto_password)
   `);
   const finalDataInici = data.data_inici ?? new Date().toISOString().split("T")[0];
   const finalDataFinal = data.data_final ?? finalDataInici;
@@ -111,6 +118,7 @@ export function create(data: CreateExcursio): Excursio {
     data_final: finalDataFinal,
     slug: data.slug ?? generateUniqueSlug(finalDataInici, data.titol),
     privat: data.privat ?? 0,
+    foto_password: data.foto_password ?? null,
   });
   return findById(result.lastInsertRowid as number)!;
 }
@@ -131,6 +139,7 @@ export function update(id: number, data: UpdateExcursio): Excursio | undefined {
   if (data.data_inici !== undefined) { fields.push("data_inici = @data_inici"); values.data_inici = data.data_inici; }
   if (data.data_final !== undefined) { fields.push("data_final = @data_final"); values.data_final = data.data_final; }
   if (data.privat !== undefined) { fields.push("privat = @privat"); values.privat = data.privat; }
+  if (data.foto_password !== undefined) { fields.push("foto_password = @foto_password"); values.foto_password = data.foto_password || null; }
 
   if (fields.length === 0) return current;
 

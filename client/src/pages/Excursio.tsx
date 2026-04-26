@@ -7,6 +7,7 @@ import type { Excursio } from "../types/excursio";
 const Map = lazy(() => import("../components/Map"));
 const Waypoints = lazy(() => import("../components/Waypoints"));
 const INaturalist = lazy(() => import("../components/INaturalist"));
+const PhotoGallery = lazy(() => import("../components/PhotoGallery"));
 
 interface ExcursioProps {
   isAuthenticated: boolean;
@@ -295,6 +296,20 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
 
       <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant punts...</div>}>
         <Waypoints excursion={excursio} isAuthenticated={isAuthenticated} />
+      </Suspense>
+
+      <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant fotos...</div>}>
+        <PhotoGallery 
+          dataInici={excursio.data_inici} 
+          fotoPassword={excursio.foto_password}
+          fotoPrivat={excursio.foto_privat}
+          isAuthenticated={isAuthenticated}
+          onSaveFotoPassword={async (password) => {
+            if (!excursio?.id) return;
+            await updateExcursio(excursio.id, { foto_password: password });
+            setExcursio({ ...excursio, foto_password: password });
+          }}
+        />
       </Suspense>
 
       <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant observacions...</div>}>

@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         "/api": `http://localhost:${env.PORT || 3991}`,
+        "/fotos": `http://localhost:${env.PORT || 3991}`,
       },
     },
   };

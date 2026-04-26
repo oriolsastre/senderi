@@ -12,6 +12,8 @@ app.use(cookieParser());
 
 app.use("/api", apiRouter);
 
+app.use("/fotos", express.static(path.resolve(process.cwd(), "fotos"), { index: false }));
+
 app.use(express.static(path.resolve(process.cwd(), "client/dist")));
 
 app.get("/*splat", (_req, res) => {

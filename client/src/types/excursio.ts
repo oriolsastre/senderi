@@ -10,6 +10,8 @@ export interface Excursio {
   data_final: string;
   slug: string;
   privat?: number;
+  foto_password?: string;
+  foto_privat?: boolean;
   created_at?: string;
   updated_at?: string;
 }

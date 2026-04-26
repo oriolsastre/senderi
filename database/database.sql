@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS excursions (
   data_final TEXT NOT NULL DEFAULT (date('now')),
   slug TEXT UNIQUE NOT NULL,
   privat INTEGER NOT NULL DEFAULT 0,
+  foto_password TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

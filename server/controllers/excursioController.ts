@@ -3,25 +3,25 @@ import { AuthenticatedRequest } from "../middleware/auth.js";
 import * as excursioModel from "../models/excursio.js";
 import { PublicExcursio } from "../types/excursio.js";
 
-function toPublicExcursio(excursion: excursioModel.Excursio): PublicExcursio {
-  const { privat, created_at, updated_at, ...publicExcursio } = excursion;
-  return publicExcursio;
+function toPublicExcursio(excursio: excursioModel.Excursio): PublicExcursio {
+  const { privat, foto_password, created_at, updated_at, ...publicExcursio } = excursio;
+  return { ...publicExcursio, foto_privat: !!(foto_password && foto_password.length > 0) };
 }
 
-function formatExcursion(excursion: excursioModel.Excursio) {
-  const { created_at, updated_at, ...rest } = excursion;
-  return rest;
+function formatExcursio(excursio: excursioModel.Excursio) {
+  const { created_at, updated_at, ...rest } = excursio;
+  return { ...rest, foto_privat: !!(excursio.foto_password && excursio.foto_password.length > 0) };
 }
 
-function isPrivate(excursion: excursioModel.Excursio, isAuthenticated?: boolean): boolean {
-  return excursion.privat === 1 && !isAuthenticated;
+function isPrivate(excursio: excursioModel.Excursio, isAuthenticated?: boolean): boolean {
+  return excursio.privat === 1 && !isAuthenticated;
 }
 
 export function findAll(req: AuthenticatedRequest, res: Response) {
   const excursions = excursioModel.findAll();
   
   if (req.isAuthenticated) {
-    const response = excursions.map(formatExcursion);
+    const response = excursions.map(formatExcursio);
     return res.json(response);
   } else {
     const publicExcursions = excursions
@@ -33,26 +33,22 @@ export function findAll(req: AuthenticatedRequest, res: Response) {
 
 export function findBySlug(req: AuthenticatedRequest, res: Response) {
   const slug = req.params.slug as string;
-  const excursion = excursioModel.findBySlug(slug);
+  const excursio = excursioModel.findBySlug(slug);
 
-  if (!excursion) {
-    return res.status(404).json({ error: "Not found" });
-  }
-
-  if (isPrivate(excursion, req.isAuthenticated)) {
+  if (!excursio || isPrivate(excursio, req.isAuthenticated)) {
     return res.status(404).json({ error: "Not found" });
   }
 
   if (req.isAuthenticated) {
-    return res.json(formatExcursion(excursion));
+    return res.json(formatExcursio(excursio));
   } else {
-    return res.json(toPublicExcursio(excursion));
+    return res.json(toPublicExcursio(excursio));
   }
 }
 
 export function create(req: AuthenticatedRequest, res: Response) {
-  const excursion = excursioModel.create(req.body);
-  res.status(201).json(formatExcursion(excursion));
+  const excursio = excursioModel.create(req.body);
+  res.status(201).json(formatExcursio(excursio));
 }
 
 export function findById(req: AuthenticatedRequest, res: Response) {
@@ -62,13 +58,17 @@ export function findById(req: AuthenticatedRequest, res: Response) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const excursion = excursioModel.findById(id);
+  const excursio = excursioModel.findById(id);
 
-  if (!excursion) {
+  if (!excursio || isPrivate(excursio, req.isAuthenticated)) {
     return res.status(404).json({ error: "Not found" });
   }
 
-  return res.json(formatExcursion(excursion));
+  if (req.isAuthenticated) {
+    return res.json(formatExcursio(excursio));
+  } else {
+    return res.json(toPublicExcursio(excursio));
+  }
 }
 
 export function update(req: AuthenticatedRequest, res: Response) {
@@ -78,13 +78,13 @@ export function update(req: AuthenticatedRequest, res: Response) {
     return res.status(400).json({ error: "Invalid ID" });
   }
 
-  const excursion = excursioModel.update(id, req.body);
+  const excursio = excursioModel.update(id, req.body);
 
-  if (!excursion) {
+  if (!excursio) {
     return res.status(404).json({ error: "Not found" });
   }
 
-  return res.json(formatExcursion(excursion));
+  return res.json(formatExcursio(excursio));
 }
 
 export function remove(req: AuthenticatedRequest, res: Response) {
