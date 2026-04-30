@@ -35,100 +35,100 @@ export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
     case "font": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/font.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/font.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "aigua": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/aigua.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/aigua.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "cascada": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/cascada.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/cascada.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "cova": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/cova.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/cova.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "ruina": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/ruina.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/ruina.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "ermita": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/ermita.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/ermita.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "masia": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/masia.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/masia.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "edifici": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/edifici.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/edifici.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "natura": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/natura.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/natura.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     case "refugi": {
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/cabin.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/cabin.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
     }
     default:
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="32" height="32"><image href="/assets/icons/altres.svg" width="15" height="15"/></svg>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-        popupAnchor: [0, -16],
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/altres.svg" width="15" height="15"/></svg>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
       });
   }
 };
