@@ -5,10 +5,10 @@ export interface Waypoint {
   lon: number;
   tipus: string;
   elevacio?: number | null;
-  comentari?: string;
-  descripcio?: string;
-  wikidata?: string;
-  osm_node?: number;
+  comentari?: string | null;
+  descripcio?: string | null;
+  wikidata?: string | null;
+  osm_node?: number | null;
   privat?: number;
 }
 
