@@ -9,6 +9,7 @@ const List = lazy(() => import("./pages/List"));
 const New = lazy(() => import("./pages/New"));
 const Excursio = lazy(() => import("./pages/Excursio"));
 const Mapa = lazy(() => import("./pages/Mapa"));
+const Fita = lazy(() => import("./pages/Fita"));
 
 export default function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/nou" element={<New isAuthenticated={isAuthenticated} />} />
             <Route path="/mapa" element={<Mapa isAuthenticated={isAuthenticated} />} />
             <Route path="/excursions/:slug" element={<Excursio isAuthenticated={isAuthenticated} />} />
+            <Route path="/fita/:id" element={<Fita isAuthenticated={isAuthenticated} />} />
           </Routes>
         </Suspense>
       </Layout>

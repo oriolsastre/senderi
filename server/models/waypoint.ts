@@ -54,7 +54,11 @@ export function findAll(isAuthenticated: boolean, filters?: WaypointFilters): Wa
 
 export function findById(id: number, isAuthenticated: boolean = false): Waypoint | undefined {
   const fields = isAuthenticated ? "*" : "id, nom, elevacio, lat, lon, tipus, descripcio, osm_node, wikidata";
-  return db.prepare(`SELECT ${fields} FROM waypoints WHERE id = ?`).get(id) as Waypoint | undefined;
+  let query = `SELECT ${fields} FROM waypoints WHERE id = ?`;
+  if (!isAuthenticated) {
+    query += " AND privat = 0";
+  }
+  return db.prepare(query).get(id) as Waypoint | undefined;
 }
 
 export function create(data: CreateWaypoint): Waypoint {

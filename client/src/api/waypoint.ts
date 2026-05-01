@@ -37,6 +37,12 @@ export async function getWaypoints(filters?: WaypointFilters): Promise<Waypoint[
   return response.json();
 }
 
+export async function getWaypoint(id: number): Promise<Waypoint> {
+  const response = await fetch(`/api/waypoints/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch waypoint");
+  return response.json();
+}
+
 export async function addWaypointToExcursio(excursioId: number, waypointId: number, privat: boolean = false): Promise<void> {
   const response = await fetch(`/api/excursions/${excursioId}/waypoints`, {
     method: "POST",

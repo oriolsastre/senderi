@@ -19,6 +19,7 @@ interface LeafletMapProps {
   showLayerToggle?: boolean;
   className?: string;
   zoom?: number;
+  center?: [number, number];
 }
 
 export default function LeafletMap({ 
@@ -26,6 +27,7 @@ export default function LeafletMap({
   showLayerToggle = true, 
   className = "h-[450px] w-full",
   zoom,
+  center,
 }: LeafletMapProps) {
   const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
 
@@ -59,7 +61,7 @@ export default function LeafletMap({
       <MapContainer
         className="h-full w-full"
         crs={mapProvider === "icgc" ? crsICGC : L.CRS.EPSG3857}
-        center={defaultCenter}
+        center={center || defaultCenter}
         zoom={zoom || defaultZoom}
         zoomControl={true}
       >
