@@ -153,7 +153,7 @@ export const createWaypointPopupContent = (wp: Waypoint, excursioId?: number, be
     actionIconsHtml += `<span onclick="window.toggleWaypointPrivat(${excursioId}, ${wp.id})" style="display:inline-flex;cursor:pointer;vertical-align:middle;margin-left:4px;">${lockIconHtml}</span>`;
   }
 
-  let titleHtml = `<strong>${title}</strong>`;
+  let titleHtml = `<a href="/fita/${wp.id}" style="color:#000;text-decoration:none;font-weight:bold;" onmouseover="this.style.color='#9333ea';this.style.textDecoration='underline'" onmouseout="this.style.color='#000';this.style.textDecoration='none'">${title}</a>`;
   let content = `<div style="display:flex;align-items:center;gap:4px;">${titleHtml}${actionIconsHtml}</div>`;
 
   if (wp.descripcio) {

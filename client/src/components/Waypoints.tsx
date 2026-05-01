@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import type { Excursio as ExcursioType } from "../types/excursio";
 import type { Waypoint } from "../api/waypoint";
@@ -74,13 +75,15 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                  onCancel={handleCancelEdit}
                />
             ) : (
-              <div className={`flex items-center gap-3 px-2 py-1 rounded-lg ${wp.privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_4px,rgba(147,51,234,0.2)_4px,rgba(147,51,234,0.2)_8px)]" : wp.excursio_privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_6px,rgba(147,51,234,0.2)_6px,rgba(147,51,234,0.2)_8px)]" : ""}`}>
-                <div
-                  className="w-6 h-6 flex items-center justify-center"
-                  dangerouslySetInnerHTML={{ __html: createWaypointIcon({ ...wp, tipus: wp.tipus || "altres" }).options.html || "" }}
-                />
-                <span className="text-black">{wp.nom || wp.tipus}</span>
-                {wp.elevacio !== undefined && wp.elevacio !== null && <span className="text-black/60 text-sm">({wp.elevacio}m)</span>}
+              <div className={`flex items-center gap-3 px-2 py-1 rounded-lg border border-transparent hover:border-purple-600 hover:shadow-[0_4px_12px_rgba(147,51,234,0.3)] transition-shadow ${wp.privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_4px,rgba(147,51,234,0.2)_4px,rgba(147,51,234,0.2)_8px)]" : wp.excursio_privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_6px,rgba(147,51,234,0.2)_6px,rgba(147,51,234,0.2)_8px)]" : ""}`}>
+                 <Link to={`/fita/${wp.id}`} className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 rounded px-1">
+                   <div
+                     className="w-6 h-6 flex items-center justify-center"
+                     dangerouslySetInnerHTML={{ __html: createWaypointIcon({ ...wp, tipus: wp.tipus || "altres" }).options.html || "" }}
+                   />
+                   <span className="text-black truncate">{wp.nom || wp.tipus}</span>
+                   {wp.elevacio !== undefined && wp.elevacio !== null && <span className="text-black/60 text-sm">({wp.elevacio}m)</span>}
+                 </Link>
                 {isAuthenticated && (
                   <div className="ml-auto flex gap-1">
                     <button onClick={() => handleEditClick(wp)} className="p-1 text-black/60 hover:text-black cursor-pointer" title="Edita">
