@@ -3,6 +3,7 @@ import { findAll, findBySlug, create, findById, update, remove } from "../contro
 import { findByExcursio, addToExcursio, removeFromExcursio, toggleExcursioWaypointPrivat } from "../controllers/waypointController.js";
 import { checkAuth, requireAuth } from "../middleware/auth.js";
 import { rateLimit } from "../utils/rateLimiter.js";
+import { getServiceBaseUrl, getServiceHeaders } from "../utils/externalServices.js";
 import { logger } from "../utils/logger.js";
 import { parseGPXStats } from "../utils/gpxParser.js";
 
@@ -14,15 +15,13 @@ router.post("/", requireAuth, create);
 router.get("/:osmId/gpx", async (req: Request, res: Response) => {
   const { osmId } = req.params;
   const filename = req.query.filename as string | undefined;
-  const gpxUrl = `https://www.openstreetmap.org/trace/${osmId}/data`;
+  const baseUrl = getServiceBaseUrl("osm");
+  const headers = getServiceHeaders("osm");
+  const gpxUrl = `${baseUrl}/trace/${osmId}/data`;
 
   try {
     const response = await rateLimit("osm", async () => {
-      return fetch(gpxUrl, {
-        headers: {
-          "User-Agent": "Senderi/1.0 (oriol.sastre+senderi@gmail.com)"
-        }
-      });
+      return fetch(gpxUrl, { headers });
     });
     if (!response.ok) {
       return res.status(500).send("Failed to fetch GPX");
@@ -40,15 +39,13 @@ router.get("/:osmId/gpx", async (req: Request, res: Response) => {
 });
 router.get("/:osmId/gpx/stats", async (req: Request, res: Response) => {
   const { osmId } = req.params;
-  const gpxUrl = `https://www.openstreetmap.org/trace/${osmId}/data`;
+  const baseUrl = getServiceBaseUrl("osm");
+  const headers = getServiceHeaders("osm");
+  const gpxUrl = `${baseUrl}/trace/${osmId}/data`;
 
   try {
     const response = await rateLimit("osm", async () => {
-      return fetch(gpxUrl, {
-        headers: {
-          "User-Agent": "Senderi/1.0 (oriol.sastre+senderi@gmail.com)"
-        }
-      });
+      return fetch(gpxUrl, { headers });
     });
     if (!response.ok) {
       return res.status(500).json({ error: "Failed to fetch GPX" });

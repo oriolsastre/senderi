@@ -1,20 +1,7 @@
-interface RateLimitConfig {
-  limit: number;
-  windowMs: number;
-}
-
-type RateLimitConfigMap = Record<string, RateLimitConfig>;
-
-const defaultConfig: RateLimitConfigMap = {
-  osm: { limit: 60, windowMs: 60000 },
-  inaturalist: { limit: 60, windowMs: 60000 }
-};
+import { getServiceRateLimit } from "./externalServices.js";
+import { logger } from "./logger.js";
 
 const timestamps: Map<string, number[]> = new Map();
-
-export function setRateLimitConfig(config: Partial<RateLimitConfigMap>): void {
-  Object.assign(defaultConfig, config);
-}
 
 async function waitForSlot(service: string, windowMs: number): Promise<void> {
   return new Promise((resolve) => {
@@ -22,7 +9,8 @@ async function waitForSlot(service: string, windowMs: number): Promise<void> {
       const times = timestamps.get(service) || [];
       const now = Date.now();
       const recent = times.filter((t) => now - t < windowMs);
-      if (recent.length < (defaultConfig[service]?.limit || 60)) {
+      const cfg = getServiceRateLimit(service);
+      if (recent.length < cfg.limit) {
         clearInterval(checkInterval);
         resolve();
       }
@@ -32,17 +20,16 @@ async function waitForSlot(service: string, windowMs: number): Promise<void> {
 
 export async function rateLimit<T>(
   service: string,
-  fn: () => Promise<T>,
-  config?: RateLimitConfig
+  fn: () => Promise<T>
 ): Promise<T> {
-  const cfg = config || defaultConfig[service] || { limit: 60, windowMs: 60000 };
+  const cfg = getServiceRateLimit(service);
   const now = Date.now();
 
   const times = timestamps.get(service) || [];
   const recent = times.filter((t) => now - t < cfg.windowMs);
 
   if (recent.length >= cfg.limit) {
-    console.log(`Rate limit reached for ${service}, waiting for slot...`);
+    logger.info(`Rate limit reached for ${service}, waiting for slot...`);
     await waitForSlot(service, cfg.windowMs);
   }
 
