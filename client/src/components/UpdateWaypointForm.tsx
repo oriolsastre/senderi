@@ -47,8 +47,8 @@ export function UpdateWaypointForm({
       lat: editForm.lat,
       lon: editForm.lon,
       elevacio: editForm.elevacio,
-      comentari: editForm.comentari,
-      descripcio: editForm.descripcio,
+      comentari: editForm.comentari === "" ? null : editForm.comentari,
+      descripcio: editForm.descripcio === "" ? null : editForm.descripcio,
       privat: editForm.privat,
       osm_node: editForm.osm_node,
       wikidata: editForm.wikidata,
@@ -141,7 +141,7 @@ export function UpdateWaypointForm({
           <label className="text-black/80 text-sm font-bold">Descripció</label>
           <textarea
             value={editForm.descripcio || ""}
-            onChange={(e) => setEditForm({ ...editForm, descripcio: e.target.value || undefined })}
+             onChange={(e) => setEditForm({ ...editForm, descripcio: e.target.value })}
              className="w-full px-3 py-2 bg-white/90 text-gray-900 border border-gray-300 rounded-lg min-h-[80px] focus:border-purple-600"
              disabled={saving}
            />
@@ -150,7 +150,7 @@ export function UpdateWaypointForm({
             <label className="text-black/80 text-sm font-bold">Comentari (privat)</label>
             <textarea
               value={editForm.comentari || ""}
-              onChange={(e) => setEditForm({ ...editForm, comentari: e.target.value || undefined })}
+               onChange={(e) => setEditForm({ ...editForm, comentari: e.target.value })}
               className="w-full px-3 py-2 bg-white/90 text-gray-900 border border-gray-300 rounded-lg min-h-[80px] focus:border-purple-600"
               disabled={saving}
             />
