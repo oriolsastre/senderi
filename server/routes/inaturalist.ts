@@ -8,7 +8,11 @@ router.get("/observations", async (req, res) => {
   const { d1, d2, perPage } = req.query;
 
   const params = new URLSearchParams();
-  params.set("user_login", "sastreo");
+  if (!process.env.INATURALIST_USER) {
+    logger.error("INATURALIST_USER environment variable is not set");
+    return res.status(500).json({ error: "Configuration error" });
+  }
+  params.set("user_login", process.env.INATURALIST_USER);
   params.set("photos", "true");
   params.set("order", "asc");
   params.set("oder_by", "observed_on");
