@@ -37,7 +37,7 @@
     "react-dom": "^19.2.4",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.14.0",
-    "rison-node": "^2.1.1"
+    "rison": "^0.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
@@ -50,6 +50,7 @@
     "@types/node": "^25.5.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/rison": "^0.1.0",
     "@waysidemapping/pinhead": "^15.22.0",
     "concurrently": "^9.2.1",
     "postcss": "^8.5.9",
