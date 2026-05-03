@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 
+const capitalizeFirst = (str?: string) => {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 interface INaturalistProps {
   dateInici: string;
   dateFinal: string;
@@ -7,9 +12,9 @@ interface INaturalistProps {
 
 interface INatObservation {
   id?: number;
-  speciesGuess?: string;
   taxon?: {
     name?: string;
+    preferred_common_name?: string;
   };
   photos?: Array<{
     url?: string;
@@ -97,16 +102,23 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
           >
             <div className="aspect-square overflow-hidden rounded-lg bg-gray-200 group-hover:shadow-[0_0_16px_rgba(147,51,234,0.8)] transition-shadow duration-200">
               {obs.photos?.[0]?.url && (
-                <img
-                  src={obs.photos[0].url?.replace("square.", "medium.")}
-                  alt={obs.taxon?.name || obs.speciesGuess || "Observacio"}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                />
+              <img
+                   src={obs.photos?.[0]?.url?.replace("square.", "medium.")}
+                   alt={capitalizeFirst(obs.taxon?.preferred_common_name) || obs.taxon?.name || "Observacio"}
+                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                 />
               )}
             </div>
-            <p className="mt-1 text-xs text-black/70 truncate italic">
-              {obs.taxon?.name || obs.speciesGuess || "Sense identificacio"}
-            </p>
+              {obs.taxon?.preferred_common_name ? (
+                <p className="mt-1 text-xs text-black/70 truncate">
+                  {capitalizeFirst(obs.taxon.preferred_common_name)}
+                </p>
+              ) : null}
+              {obs.taxon?.name && (
+                <p className="text-xs text-black/60 truncate italic">
+                  {obs.taxon.name}
+                </p>
+              )}
           </a>
         ))}
       </div>

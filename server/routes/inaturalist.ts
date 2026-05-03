@@ -2,6 +2,7 @@ import { Router } from "express";
 import { rateLimit } from "../utils/rateLimiter.js";
 import { getServiceBaseUrl, getServiceHeaders } from "../utils/externalServices.js";
 import { logger } from "../utils/logger.js";
+import rison from "rison-node";
 
 const router = Router();
 
@@ -18,11 +19,13 @@ router.get("/observations", async (req, res) => {
 
   const params = new URLSearchParams();
   params.set("user_login", process.env.INATURALIST_USER);
-  params.set("photos", "true");
   params.set("order", "asc");
   params.set("oder_by", "observed_on");
   params.set("geo", "true");
   params.set("geoprivacy", "open");
+  params.set("locale", "ca");
+  params.set("ttl", "3600");
+  params.set("fields", rison.encode({ id: true, taxon: { name: true, preferred_common_name: true }, photos: { url: true } }));
   if (d1) params.set("d1", d1 as string);
   if (d2) params.set("d2", d2 as string);
   if (perPage) params.set("per_page", perPage as string);

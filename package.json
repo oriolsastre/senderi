@@ -36,7 +36,8 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-leaflet": "^5.0.0",
-    "react-router-dom": "^7.14.0"
+    "react-router-dom": "^7.14.0",
+    "rison-node": "^2.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",

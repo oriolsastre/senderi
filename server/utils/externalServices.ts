@@ -21,7 +21,7 @@ const osmUserAgent = `senderi.cat (${contactEmail}) Node.js/${nodeVersion}`;
 
 const services: Record<string, ExternalServiceConfig> = {
   inaturalist: {
-    baseUrl: "https://api.inaturalist.org/v1",
+    baseUrl: "https://api.inaturalist.org/v2",
     userAgent: inatUserAgent,
     rateLimit: { limit: 60, windowMs: 60000 }
   },
