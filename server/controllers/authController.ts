@@ -12,7 +12,11 @@ export function status(req: Request, res: Response) {
       jwt.verify(token, JWT_SECRET);
       return res.json({ authenticated: true });
     } catch {
-      res.clearCookie("token");
+      res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "PROD",
+      });
     }
   }
   
@@ -31,6 +35,7 @@ export function login(req: Request, res: Response) {
   res.cookie("token", token, {
     httpOnly: true,
     sameSite: "strict",
+    secure: process.env.NODE_ENV === "PROD",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
@@ -38,6 +43,10 @@ export function login(req: Request, res: Response) {
 }
 
 export function logout(_req: Request, res: Response) {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "PROD",
+  });
   res.json({ message: "Logout successful" });
 }
