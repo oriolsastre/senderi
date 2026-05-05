@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import compression from "compression";
 import cookieParser from "cookie-parser";
 import path from "path";
 import apiRouter from "./routes/router.js";
@@ -9,6 +10,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(compression());
 
 app.use("/api", apiRouter);
 

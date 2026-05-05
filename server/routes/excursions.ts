@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import compression from "compression";
 import { findAll, findBySlug, create, findById, update, remove } from "../controllers/excursioController.js";
 import { findByExcursio, addToExcursio, removeFromExcursio, toggleExcursioWaypointPrivat } from "../controllers/waypointController.js";
 import { checkAuth, requireAuth } from "../middleware/auth.js";
@@ -12,7 +13,7 @@ const router = Router();
 router.get("/", checkAuth, findAll);
 router.get("/:slug", checkAuth, findBySlug);
 router.post("/", requireAuth, create);
-router.get("/:osmId/gpx", async (req: Request, res: Response) => {
+router.get("/:osmId/gpx", compression({ filter: () => true }), async (req: Request, res: Response) => {
   const { osmId } = req.params;
   const filename = req.query.filename as string | undefined;
   const baseUrl = getServiceBaseUrl("osm");
@@ -31,7 +32,7 @@ router.get("/:osmId/gpx", async (req: Request, res: Response) => {
     if (filename) {
       res.setHeader("Content-Disposition", `attachment; filename="${filename}.gpx"`);
     } else {
-      res.setHeader("Cache-Control", "public, max-age=31536000"); // Cache for 1 year
+      res.setHeader("Cache-Control", "public, max-age=15552000"); // Cache for 6 months
     }
     res.send(gpxData);
   } catch (err) {
@@ -55,7 +56,7 @@ router.get("/:osmId/gpx/stats", async (req: Request, res: Response) => {
     const gpxData = await response.text();
     const stats = parseGPXStats(gpxData);
 
-    res.setHeader("Cache-Control", "public, max-age=31536000"); // Cache for 1 year    
+    res.setHeader("Cache-Control", "public, max-age=15552000"); // Cache for 6 months    
     res.json(stats);
   } catch (err) {
     logger.error("Failed to calculate GPX stats:", err);
