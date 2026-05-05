@@ -30,6 +30,8 @@ router.get("/:osmId/gpx", async (req: Request, res: Response) => {
     res.setHeader("Content-Type", "application/gpx+xml");
     if (filename) {
       res.setHeader("Content-Disposition", `attachment; filename="${filename}.gpx"`);
+    } else {
+      res.setHeader("Cache-Control", "public, max-age=31536000"); // Cache for 1 year
     }
     res.send(gpxData);
   } catch (err) {
@@ -51,8 +53,9 @@ router.get("/:osmId/gpx/stats", async (req: Request, res: Response) => {
       return res.status(500).json({ error: "Failed to fetch GPX" });
     }
     const gpxData = await response.text();
-    
     const stats = parseGPXStats(gpxData);
+
+    res.setHeader("Cache-Control", "public, max-age=31536000"); // Cache for 1 year    
     res.json(stats);
   } catch (err) {
     logger.error("Failed to calculate GPX stats:", err);

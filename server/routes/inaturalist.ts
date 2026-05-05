@@ -38,6 +38,7 @@ router.get("/observations", async (req, res) => {
       return fetch(url, { headers });
     });
     const data = await response.json();
+    res.setHeader("Cache-Control", "public, max-age=172800"); // Cache for 48 hours
     res.json(data);
   } catch (err) {
     logger.error("Failed to fetch from iNaturalist:", err);
