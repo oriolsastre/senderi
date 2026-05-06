@@ -8,6 +8,7 @@ const Map = lazy(() => import("../components/Map"));
 const Waypoints = lazy(() => import("../components/Waypoints"));
 const INaturalist = lazy(() => import("../components/INaturalist"));
 const PhotoGallery = lazy(() => import("../components/PhotoGallery"));
+const CommonsPhotos = lazy(() => import("../components/CommonsPhotos"));
 
 interface ExcursioProps {
   isAuthenticated: boolean;
@@ -309,6 +310,13 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
             await updateExcursio(excursio.id, { foto_password: password });
             setExcursio({ ...excursio, foto_password: password });
           }}
+        />
+      </Suspense>
+
+      <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant fotos de Commons...</div>}>
+        <CommonsPhotos
+          dataInici={excursio.data_inici}
+          dataFinal={excursio.data_final}
         />
       </Suspense>
 
