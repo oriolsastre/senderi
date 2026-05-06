@@ -6,6 +6,7 @@ import * as excursioModel from "../models/excursio.js";
 import authRouter from "./auth.js";
 import excursionsRouter from "./excursions.js";
 import inaturalistRouter from "./inaturalist.js";
+import sparqlCommonsRouter from "./sparqlCommons.js";
 import waypointsRouter from "./waypoints.js";
 
 const apiRouter = Router();
@@ -13,6 +14,7 @@ const apiRouter = Router();
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/excursions", excursionsRouter);
 apiRouter.use("/inaturalist", inaturalistRouter);
+apiRouter.use("/commons", sparqlCommonsRouter);
 apiRouter.use("/waypoints", waypointsRouter);
 
 apiRouter.get("/fotos/:folder", checkAuth, (req: AuthenticatedRequest, res) => {
