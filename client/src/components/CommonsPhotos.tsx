@@ -143,7 +143,7 @@ export default function CommonsPhotos({ dataInici, dataFinal }: CommonsPhotosPro
           <img src="/assets/icons/services/wikidata-powered-light.svg" alt="Wikidata" className="h-4 w-auto" />
         </a>
       </h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 items-end">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 items-end">
         {photos.map((photo, index) => (
           <div
             key={photo.file || index}
