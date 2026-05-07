@@ -96,14 +96,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
   }
 
   if (!data || !data.results || data.results.length === 0) {
-    return (
-      <div className="py-4">
-        <h2 className="text-lg font-serif font-semibold text-black mb-2">
-          Observacions iNaturalist
-        </h2>
-        <p className="text-black/60">Cap observació per a aquesta data</p>
-      </div>
-    );
+    return null;
   }
 
   return (
