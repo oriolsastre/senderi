@@ -2,7 +2,7 @@
 
 Senderi és un gestor d'excursions i cims.
 
-Quan surto d'excursió guardo el track amb un rGPS, faig fotos d'animals i plantes, faig fotos dels llocs, i al final del dia... em pots passar el track? Em pots passar les fotos?
+Quan surto d'excursió gravo el recorregut amb el rGPS, faig fotos d'animals i plantes, faig algunes fotos dels llocs que més m'han agradat i, al final del dia... em pots passar el track? Em pots passar les fotos?
 
 ## Excursions
 
@@ -12,7 +12,9 @@ També hi pot haver una descripció de l'excursió.
 
 Les observacions d'iNaturalist fetes.
 
-Els geocatxes (Geocaching) trobats.
+Fotografies que hagi fet aquell dia que hagin acabat a la Wikimedia Commons.
+
+🚧 Els geocatxes (Geocaching) trobats. [No disponible encara] 🚧
 
 ![](./assets/senderi_excursio.png)
 

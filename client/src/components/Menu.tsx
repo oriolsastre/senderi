@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { UserIcon, ArrowRightStartOnRectangleIcon, Bars3Icon, MapIcon } from "@heroicons/react/24/solid";
+import { UserIcon, ArrowRightStartOnRectangleIcon, Bars3Icon, MapIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 
 interface MenuProps {
   isAuthenticated: boolean;
@@ -53,6 +53,14 @@ export default function Menu({ isAuthenticated, onLoginClick, onLogoutClick }: M
               <MapIcon className="w-4 h-4" />
               Mapa
             </Link>
+            <Link
+              to="/info"
+              onClick={() => setShowMenu(false)}
+              className="flex items-center gap-2 w-full text-left px-4 py-2 text-black/80 hover:bg-green-900/20 cursor-pointer"
+            >
+              <QuestionMarkCircleIcon className="w-4 h-4" />
+              Què és?
+            </Link>
             <hr className="my-1 border-green-900/20" />
             {isAuthenticated ? (
               <button
@@ -76,6 +84,41 @@ export default function Menu({ isAuthenticated, onLoginClick, onLogoutClick }: M
                 <UserIcon className="w-4 h-4" />
                 Entra
               </button>
+            )}
+            {isAuthenticated && (
+              <>
+                <hr className="my-1 border-green-900/20" />
+                <a
+                  href="https://www.openstreetmap.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowMenu(false)}
+                  className="flex items-center gap-2 w-full text-left px-4 py-2 text-black/80 hover:bg-green-900/20 cursor-pointer"
+                >
+                  <img src="/assets/icons/services/openstreetmap-logo.svg" alt="OSM" className="w-4 h-4" />
+                  OSM
+                </a>
+                <a
+                  href="https://www.wikidata.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowMenu(false)}
+                  className="flex items-center gap-2 w-full text-left px-4 py-2 text-black/80 hover:bg-green-900/20 cursor-pointer"
+                >
+                  <img src="/assets/icons/services/wikidata-logo.svg" alt="Wikidata" className="w-4 h-4" />
+                  Wikidata
+                </a>
+                <a
+                  href="https://visors.icgc.cat/vissir/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowMenu(false)}
+                  className="flex items-center gap-2 w-full text-left px-4 py-2 text-black/80 hover:bg-green-900/20 cursor-pointer"
+                >
+                  <img src="https://www.icgc.cat/themes/custom/icgc_web/favicon.ico" alt="Vissir" className="w-4 h-4" />
+                  Vissir
+                </a>
+              </>
             )}
           </div>
         </div>
