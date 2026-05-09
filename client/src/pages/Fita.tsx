@@ -8,6 +8,7 @@ import { createWaypointIcon } from "../utils/waypointMarkers";
 import LeafletMap from "../components/LeafletMap";
 import { Marker } from "react-leaflet";
 import { UpdateWaypointForm } from "../components/UpdateWaypointForm";
+import INaturalist from "../components/INaturalist";
 
 interface FitaProps {
   isAuthenticated: boolean;
@@ -159,6 +160,9 @@ export default function Fita({ isAuthenticated }: FitaProps) {
             ))}
           </ul>
         </div>
+      )}
+      {waypoint.lat && waypoint.lon && (
+        <INaturalist lat={waypoint.lat} lng={waypoint.lon} radi={0.1} />
       )}
     </div>
   );

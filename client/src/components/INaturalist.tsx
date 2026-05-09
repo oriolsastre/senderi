@@ -6,8 +6,11 @@ const capitalizeFirst = (str?: string) => {
 };
 
 interface INaturalistProps {
-  dateInici: string;
-  dateFinal: string;
+  dateInici?: string;
+  dateFinal?: string;
+  lat?: number;
+  lng?: number;
+  radi?: number;
 }
 
 interface INatObservation {
@@ -28,7 +31,7 @@ interface INatResponse {
   results?: INatObservation[];
 }
 
-export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) {
+export default function INaturalist({ dateInici, dateFinal, lat, lng, radi }: INaturalistProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,11 +52,18 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
       }
 
       try {
-        const params = new URLSearchParams({
-          d1: dateInici,
-          d2: dateFinal,
-          page: currentPage.toString(),
-        });
+        const params = new URLSearchParams({ page: currentPage.toString() });
+        if (dateInici && dateFinal) {
+          params.set("d1", dateInici);
+        }
+        if (dateFinal) {
+          params.set("d2", dateFinal);
+        }
+        if (lat && lng && radi !== undefined) {
+          params.set("lat", lat.toString());
+          params.set("lon", lng.toString());
+          params.set("radi", radi.toString());
+        }
 
         const response = await fetch(`/api/inaturalist/observations?${params}`);
         if (!response.ok) {
@@ -77,7 +87,7 @@ export default function INaturalist({ dateInici, dateFinal }: INaturalistProps) 
     };
 
     fetchObservations();
-  }, [dateInici, dateFinal, currentPage, fetchedPages]);
+  }, [lat, lng, radi, dateInici, dateFinal, currentPage, fetchedPages]);
 
   if (loading) {
     return (

@@ -7,7 +7,7 @@ import { encodeRison } from "../utils/rison.js";
 const router = Router();
 
 router.get("/observations", async (req, res) => {
-  const { d1, d2, perPage = "20", page = "1" } = req.query;
+  const { d1, d2, perPage = "20", page = "1", lat, lon, radi } = req.query;
 
   if (!process.env.INATURALIST_USER) {
     logger.error("INATURALIST_USER environment variable is not set");
@@ -28,6 +28,11 @@ router.get("/observations", async (req, res) => {
   params.set("fields", encodeRison({ id: true, taxon: { name: true, preferred_common_name: true }, photos: { url: true } }));
   if (d1) params.set("d1", d1 as string);
   if (d2) params.set("d2", d2 as string);
+  if (lat && lon && radi) {
+    params.set("lat", lat as string);
+    params.set("lng", lon as string);
+    params.set("radius", radi as string);
+  }
   params.set("per_page", perPage as string);
   params.set("page", page as string);
 
