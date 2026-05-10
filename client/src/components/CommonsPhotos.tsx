@@ -4,7 +4,9 @@ import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/2
 interface CommonsPhotosProps {
   dataInici?: string;
   dataFinal?: string;
-  wikidata?: string;
+  wikidata?: string | null;
+  lat?: number;
+  lon?: number;
 }
 
 interface CommonsPhoto {
@@ -17,7 +19,7 @@ interface CommonsPhoto {
   aspectRatio?: number;
 }
 
-export default function CommonsPhotos({ dataInici, dataFinal, wikidata }: CommonsPhotosProps) {
+export default function CommonsPhotos({ dataInici, dataFinal, wikidata, lat, lon }: CommonsPhotosProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<CommonsPhoto[]>([]);
@@ -31,6 +33,10 @@ export default function CommonsPhotos({ dataInici, dataFinal, wikidata }: Common
     if (dataInici) params.set("d1", dataInici);
     if (dataFinal) params.set("d2", dataFinal);
     if (wikidata) params.set("wikidata", wikidata);
+    if (lat && lon) {
+      params.set("lat", lat.toString());
+      params.set("lon", lon.toString());
+    }
 
     if (params.toString() === "") {
       setPhotos([]);
@@ -70,10 +76,10 @@ export default function CommonsPhotos({ dataInici, dataFinal, wikidata }: Common
     } finally {
       setLoading(false);
     }
-  }, [dataInici, dataFinal, wikidata]);
+  }, [dataInici, dataFinal, wikidata, lat, lon]);
 
   useEffect(() => {
-    if (dataInici || dataFinal || wikidata) {
+    if (dataInici || dataFinal || wikidata || (lat && lon)) {
       fetchPhotos();
     } else {
       setPhotos([]);

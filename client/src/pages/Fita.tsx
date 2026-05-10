@@ -76,11 +76,11 @@ export default function Fita({ isAuthenticated }: FitaProps) {
       {isEditing ? (
         <div className="w-full">
           <UpdateWaypointForm
-             waypoint={waypoint}
-             saving={saving}
-             onSave={handleSave}
-             onCancel={handleCancel}
-           />
+            waypoint={waypoint}
+            saving={saving}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          />
         </div>
       ) : (
         <>
@@ -162,8 +162,12 @@ export default function Fita({ isAuthenticated }: FitaProps) {
           </ul>
         </div>
       )}
-      {waypoint.wikidata && (
-        <CommonsPhotos wikidata={waypoint.wikidata} />
+      {((waypoint.lat && waypoint.lon) || waypoint.wikidata) && (
+        <CommonsPhotos
+          lat={waypoint.lat}
+          lon={waypoint.lon}
+          wikidata={waypoint.wikidata}
+        />
       )}
       {waypoint.lat && waypoint.lon && (
         <INaturalist lat={waypoint.lat} lng={waypoint.lon} radi={0.1} />
