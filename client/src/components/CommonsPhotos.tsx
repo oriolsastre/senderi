@@ -2,8 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 interface CommonsPhotosProps {
-  dataInici: string;
-  dataFinal: string;
+  dataInici?: string;
+  dataFinal?: string;
+  wikidata?: string;
 }
 
 interface CommonsPhoto {
@@ -16,7 +17,7 @@ interface CommonsPhoto {
   aspectRatio?: number;
 }
 
-export default function CommonsPhotos({ dataInici, dataFinal }: CommonsPhotosProps) {
+export default function CommonsPhotos({ dataInici, dataFinal, wikidata }: CommonsPhotosProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<CommonsPhoto[]>([]);
@@ -26,12 +27,18 @@ export default function CommonsPhotos({ dataInici, dataFinal }: CommonsPhotosPro
     setLoading(true);
     setError(null);
 
-    try {
-      const params = new URLSearchParams({
-        d1: dataInici,
-        d2: dataFinal,
-      });
+    const params = new URLSearchParams();
+    if (dataInici) params.set("d1", dataInici);
+    if (dataFinal) params.set("d2", dataFinal);
+    if (wikidata) params.set("wikidata", wikidata);
 
+    if (params.toString() === "") {
+      setPhotos([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
       const response = await fetch(`/api/commons/fotos?${params}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -63,10 +70,10 @@ export default function CommonsPhotos({ dataInici, dataFinal }: CommonsPhotosPro
     } finally {
       setLoading(false);
     }
-  }, [dataInici, dataFinal]);
+  }, [dataInici, dataFinal, wikidata]);
 
   useEffect(() => {
-    if (dataInici && dataFinal) {
+    if (dataInici || dataFinal || wikidata) {
       fetchPhotos();
     } else {
       setPhotos([]);

@@ -31,7 +31,12 @@ const wcqsClient = got.extend({
   },
 });
 
-function buildSparqlQuery(username: string, d1?: string, d2?: string): string {
+function buildSparqlQuery(
+  username: string, 
+  d1?: string, 
+  d2?: string, 
+  wikidataId?: string
+): string {
   const dateFilters: string[] = [];
 
   if (d1) {
@@ -47,6 +52,7 @@ function buildSparqlQuery(username: string, d1?: string, d2?: string): string {
       ?file (p:P170/pq:P4174) ?username;
             wdt:P571 ?date;
             schema:url ?url.
+      ${wikidataId ? `  ?file wdt:P180 wd:${wikidataId} .\n` : ''}
       OPTIONAL { ?file schema:contentUrl ?fullImage }
       OPTIONAL { ?file schema:caption ?label . FILTER(LANG(?label) = "ca") }
       ${dateFilters.join("\n  ")}
@@ -57,7 +63,7 @@ function buildSparqlQuery(username: string, d1?: string, d2?: string): string {
 }
 
 router.get("/fotos", async (req, res) => {
-  const { d1, d2 } = req.query;
+  const { d1, d2, wikidata } = req.query;
 
   if (!process.env.WIKIMEDIA_USER) {
     logger.error("WIKIMEDIA_USER environment variable is not set");
@@ -69,10 +75,18 @@ router.get("/fotos", async (req, res) => {
     return res.status(500).json({ error: "Error de configuració." });
   }
 
+  const isValidWikidataId = (id: string) => /^Q\d+$/.test(id);
+
+  if (wikidata && !isValidWikidataId(wikidata as string)) {
+    logger.error(`Invalid Wikidata ID format: ${wikidata}`);
+    return res.status(400).json({ error: "Format Wikidata ID invàlid" });
+  }
+
   const sparqlQuery = buildSparqlQuery(
     process.env.WIKIMEDIA_USER,
-    d1 as string,
-    d2 as string
+    d1 as string | undefined,
+    d2 as string | undefined,
+    wikidata as string | undefined
   );
 
   try {

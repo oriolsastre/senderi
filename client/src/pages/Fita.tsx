@@ -9,6 +9,7 @@ import LeafletMap from "../components/LeafletMap";
 import { Marker } from "react-leaflet";
 import { UpdateWaypointForm } from "../components/UpdateWaypointForm";
 import INaturalist from "../components/INaturalist";
+import CommonsPhotos from "../components/CommonsPhotos";
 
 interface FitaProps {
   isAuthenticated: boolean;
@@ -160,6 +161,9 @@ export default function Fita({ isAuthenticated }: FitaProps) {
             ))}
           </ul>
         </div>
+      )}
+      {waypoint.wikidata && (
+        <CommonsPhotos wikidata={waypoint.wikidata} />
       )}
       {waypoint.lat && waypoint.lon && (
         <INaturalist lat={waypoint.lat} lng={waypoint.lon} radi={0.1} />
