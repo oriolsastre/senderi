@@ -1,3 +1,5 @@
+import type { Waypoint } from "./waypoint";
+
 export interface Excursio {
   id?: number;
   titol: string;
@@ -14,4 +16,5 @@ export interface Excursio {
   foto_privat?: boolean;
   created_at?: string;
   updated_at?: string;
+  fites?: Waypoint[];
 }

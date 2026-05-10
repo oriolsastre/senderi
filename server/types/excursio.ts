@@ -1,3 +1,5 @@
+import { WaypointWithPrivat } from "./waypoint.js";
+
 export interface Excursio {
   id: number;
   titol: string;
@@ -27,4 +29,10 @@ export interface PublicExcursio {
   data_final: string;
   slug: string;
   foto_privat: boolean;
+  fites?: WaypointWithPrivat[];
+}
+
+export interface AuthExcursio extends PublicExcursio {
+  privat: number;
+  foto_password: string | null;
 }

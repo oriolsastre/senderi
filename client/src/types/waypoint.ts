@@ -1,15 +1,17 @@
 export interface Waypoint {
   id: number;
   nom: string | null;
+  elevacio: number | null;
   lat: number;
   lon: number;
   tipus: string;
-  elevacio?: number | null;
-  comentari?: string | null;
-  descripcio?: string | null;
-  wikidata?: string | null;
-  osm_node?: number | null;
-  privat?: number;
+  comentari: string | null;
+  descripcio: string | null;
+  wikidata: string | null;
+  osm_node: number | null;
+  privat: number;
+  ordre?: number;
+  excursio_privat?: number;
 }
 
 export const WaypointTypes = {

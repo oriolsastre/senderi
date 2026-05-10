@@ -6,8 +6,10 @@ export async function getExcursions(): Promise<Excursio[]> {
   return response.json();
 }
 
-export async function getExcursio(slug: string): Promise<Excursio> {
-  const response = await fetch(`/api/excursions/${slug}`);
+export async function getExcursio(slug: string, waypoints?: boolean): Promise<Excursio> {
+  let url = `/api/excursions/${slug}`;
+  if (waypoints) url += "?waypoints=1";
+  const response = await fetch(url);
   if (!response.ok) throw new Error("Failed to fetch excursion");
   return response.json();
 }

@@ -1,30 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { TrashIcon, PencilIcon } from "@heroicons/react/24/solid";
 import type { Excursio as ExcursioType } from "../types/excursio";
-import type { Waypoint } from "../api/waypoint";
+import type { Waypoint } from "../types/waypoint";
 import { updateWaypoint, removeWaypointFromExcursio } from "../api/waypoint";
 import { createWaypointIcon } from "../utils/waypointMarkers";
 import { UpdateWaypointForm } from "./UpdateWaypointForm";
 
 interface WaypointsProps {
-  excursion: ExcursioType;
+  excursio: ExcursioType;
   isAuthenticated: boolean;
+  fites?: Waypoint[];
 }
 
-export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps) {
-  const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function Waypoints({ excursio, isAuthenticated, fites }: WaypointsProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!excursion.id) return;
-    fetch(`/api/excursions/${excursion.id}/waypoints`)
-      .then(res => res.json())
-      .then(setWaypoints)
-      .finally(() => setLoading(false));
-  }, [excursion.id]);
+  const waypoints = fites || [];
 
   const handleEditClick = (wp: Waypoint) => {
     setEditingId(wp.id);
@@ -35,11 +28,11 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
   };
 
   const handleRemoveFromHike = async (waypointId: number) => {
-    if (!excursion.id) return;
+    if (!excursio.id) return;
     if (!confirm("Segur que vols eliminar aquest punt de l'excursió?")) return;
     try {
-      await removeWaypointFromExcursio(excursion.id, waypointId);
-      setWaypoints(waypoints.filter(wp => wp.id !== waypointId));
+      await removeWaypointFromExcursio(excursio.id, waypointId);
+      window.location.reload();
     } catch (err) {
       console.error("Failed to remove waypoint:", err);
       alert("Error en eliminar el punt de l'excursió");
@@ -49,16 +42,14 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
   const handleSaveEdit = async (waypointId: number, data: any) => {
     setSaving(true);
     try {
-      const updated = await updateWaypoint(waypointId, data);
-      setWaypoints(waypoints.map(wp => wp.id === waypointId ? updated : wp));
-      setEditingId(null);
+      await updateWaypoint(waypointId, data);
+      window.location.reload();
     } catch (err) {
       console.error("Failed to update waypoint:", err);
     }
     setSaving(false);
   };
 
-  if (loading) return <div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant punts...</div>;
   if (waypoints.length === 0) return null;
 
   return (
@@ -76,14 +67,19 @@ export default function Waypoints({ excursion, isAuthenticated }: WaypointsProps
                />
             ) : (
               <div className={`flex items-center gap-3 px-2 py-1 rounded-lg border border-transparent hover:border-purple-600 hover:shadow-[0_4px_12px_rgba(147,51,234,0.3)] transition-shadow ${wp.privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_4px,rgba(147,51,234,0.2)_4px,rgba(147,51,234,0.2)_8px)]" : wp.excursio_privat === 1 ? "bg-[repeating-linear-gradient(-45deg,transparent,transparent_6px,rgba(147,51,234,0.2)_6px,rgba(147,51,234,0.2)_8px)]" : ""}`}>
-                 <Link to={`/fita/${wp.id}`} className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 rounded px-1">
-                   <div
-                     className="w-6 h-6 flex items-center justify-center"
-                     dangerouslySetInnerHTML={{ __html: createWaypointIcon({ ...wp, tipus: wp.tipus || "altres" }).options.html || "" }}
-                   />
-                   <span className="text-black truncate">{wp.nom || wp.tipus}</span>
-                   {wp.elevacio !== undefined && wp.elevacio !== null && <span className="text-black/60 text-sm">({wp.elevacio}m)</span>}
-                 </Link>
+<Link to={`/fita/${wp.id}`} className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 rounded px-1">
+                    <div
+                      className="w-6 h-6 flex items-center justify-center"
+                      dangerouslySetInnerHTML={{ __html: createWaypointIcon({ ...wp, tipus: wp.tipus || "altres" }).options.html || "" }}
+                    />
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-black truncate">{wp.nom || wp.tipus}</span>
+                        {wp.elevacio !== undefined && wp.elevacio !== null && <span className="text-black/60 text-sm">({wp.elevacio}m)</span>}
+                      </div>
+                      {wp.descripcio && <span className="text-black/70 text-sm truncate">{wp.descripcio}</span>}
+                    </div>
+                  </Link>
                 {isAuthenticated && (
                   <div className="ml-auto flex gap-1">
                     <button onClick={() => handleEditClick(wp)} className="p-1 text-black/60 hover:text-black cursor-pointer" title="Edita">

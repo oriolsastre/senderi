@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { PencilIcon, CheckIcon, XMarkIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
 import { getExcursio, updateExcursio } from "../api/excursio";
 import type { Excursio } from "../types/excursio";
+import Waypoints from "../components/Waypoints";
 
 const Map = lazy(() => import("../components/Map"));
-const Waypoints = lazy(() => import("../components/Waypoints"));
 const INaturalist = lazy(() => import("../components/INaturalist"));
 const PhotoGallery = lazy(() => import("../components/PhotoGallery"));
 const CommonsPhotos = lazy(() => import("../components/CommonsPhotos"));
@@ -36,7 +36,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
 
   useEffect(() => {
     if (!slug) return;
-    getExcursio(slug)
+    getExcursio(slug, true)
       .then(setExcursio)
       .catch(() => setError("Excursio no trobada"))
       .finally(() => setLoading(false));
@@ -295,9 +295,9 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
         )}
       </div>
 
-      <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant punts...</div>}>
-        <Waypoints excursion={excursio} isAuthenticated={isAuthenticated} />
-      </Suspense>
+      {excursio.fites && excursio.fites.length > 0 && (
+        <Waypoints excursio={excursio} isAuthenticated={isAuthenticated} fites={excursio.fites} />
+      )}
 
       <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant fotos...</div>}>
         <PhotoGallery 

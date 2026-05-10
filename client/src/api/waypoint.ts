@@ -1,18 +1,4 @@
-export interface Waypoint {
-  id: number;
-  nom: string | null;
-  elevacio: number | null;
-  lat: number;
-  lon: number;
-  tipus: string;
-  comentari: string | null;
-  descripcio: string | null;
-  osm_node: number | null;
-  wikidata: string | null;
-  privat: number;
-  ordre?: number;
-  excursio_privat?: number;
-}
+import type { Waypoint } from "../types/waypoint";
 
 interface WaypointFilters {
   tipus?: string;
