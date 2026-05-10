@@ -35,7 +35,7 @@ export default function List({ isAuthenticated }: ListProps) {
         {isAuthenticated && (
           <Link
             to="/nou"
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-black rounded-lg hover:bg-green-700"
+            className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-black rounded-lg hover:bg-purple-700"
           >
             <PlusIcon className="h-5 w-5" />
             Afegeix excursió
@@ -54,7 +54,7 @@ export default function List({ isAuthenticated }: ListProps) {
             const end = new Date(endDate);
             const daysDiff = startDate === endDate ? null : Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
             const daysText = daysDiff ? `(${daysDiff} dies)` : null;
-            
+
             return (
               <Link
                 key={excursion.id}
