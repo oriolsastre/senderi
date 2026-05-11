@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon, PencilIcon, CheckIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
+import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon, PencilIcon, CheckIcon, ArrowPathIcon, ArchiveBoxArrowDownIcon } from "@heroicons/react/24/solid";
 
 interface Photo {
   filename: string;
@@ -23,6 +23,7 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
   const [savingPassword, setSavingPassword] = useState(false);
   const [codiInput, setCodiInput] = useState("");
   const [loadingCodi, setLoadingCodi] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const fetchFotos = useCallback((codi?: string) => {
     const folder = dataInici.replace(/-/g, "");
@@ -36,7 +37,7 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
         }
         const photoList = await res.json();
         setPhotos(photoList);
-        
+
         photoList.forEach((photo: Photo) => {
           const img = new Image();
           img.onload = () => {
@@ -44,10 +45,10 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
               prev === null
                 ? prev
                 : prev.map((p) =>
-                    p.filename === photo.filename
-                      ? { ...p, aspectRatio: img.naturalWidth / img.naturalHeight }
-                      : p
-                  )
+                  p.filename === photo.filename
+                    ? { ...p, aspectRatio: img.naturalWidth / img.naturalHeight }
+                    : p
+                )
             );
           };
           img.src = `/fotos/${folder}/${photo.filename}`;
@@ -171,7 +172,7 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
   }
 
   const folder = dataInici.replace(/-/g, "");
-  
+
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
   };
@@ -189,6 +190,46 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
     e.stopPropagation();
     setLightboxIndex((prev) => (prev === null || prev === photos.length - 1 ? 0 : prev + 1));
   };
+
+  const downloadZip = async () => {
+    const folder = dataInici.replace(/-/g, "");
+    const url = codiInput ? `/api/fotos/${folder}/zip?codi=${encodeURIComponent(codiInput)}` : `/api/fotos/${folder}/zip`;
+
+    setDownloading(true);
+    try {
+      const res = await fetch(url, { method: "POST" });
+      if (!res.ok) throw new Error("Download failed");
+
+      const blob = await res.blob();
+      const contentDisposition = res.headers.get("Content-Disposition");
+      const filenameMatch = contentDisposition?.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      const filename = filenameMatch ? filenameMatch[1].replace(/['"]/g, "") : `${folder}.zip`;
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch (err) {
+      console.error("Download error:", err);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const DownloadButton = ({ mlAuto = false }: { mlAuto?: boolean }) => (
+    <button
+      onClick={downloadZip}
+      disabled={downloading || loadingCodi}
+      className={`inline-flex items-center gap-1 text-sm text-black/80 hover:text-purple-600 cursor-pointer${mlAuto ? " ml-auto" : ""}`}
+    >
+      {downloading ? (
+        <ArrowPathIcon className="w-4 h-4 animate-spin" />
+      ) : (
+        <ArchiveBoxArrowDownIcon className="w-4 h-4" />
+      )}
+      <span>Descarrega les fotos (.zip)</span>
+    </button>
+  );
 
   return (
     <div className="py-4">
@@ -245,7 +286,10 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
           )}
         </div>
       ) : isAuthenticated && fotoPassword ? (
-        <p className="text-sm text-gray-500 mb-3">CODI: {fotoPassword}</p>
+        <div className="mb-3 flex items-center gap-2">
+          <span className="text-sm text-gray-500">CODI: {fotoPassword}</span>
+          <DownloadButton mlAuto />
+        </div>
       ) : !isAuthenticated && fotoPrivat ? (
         <div className="mb-3 flex items-center gap-2">
           <span className="text-sm text-gray-500">Tens un codi? Usa'l:</span>
@@ -266,14 +310,20 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
             disabled={loadingCodi || !codiInput}
             className="p-2 text-black/80 hover:text-black cursor-pointer disabled:opacity-50"
           >
-              {loadingCodi ? (
-                <ArrowPathIcon className="h-5 w-5 animate-spin" />
-              ) : (
-                <CheckIcon className="h-5 w-5" />
-              )}
-            </button>
+            {loadingCodi ? (
+              <ArrowPathIcon className="h-5 w-5 animate-spin" />
+            ) : (
+              <CheckIcon className="h-5 w-5" />
+            )}
+          </button>
+          <DownloadButton mlAuto />
         </div>
       ) : null}
+      {!isAuthenticated && !fotoPrivat && (
+        <div className="flex justify-end mb-4">
+          <DownloadButton />
+        </div>
+      )}
       <div className="flex flex-wrap gap-2">
         {photos.map((photo, index) => {
           const aspect = photo.aspectRatio || 1;
@@ -282,9 +332,8 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
             <button
               key={photo.filename}
               onClick={() => openLightbox(index)}
-              className={`relative rounded-lg overflow-hidden hover:ring-2 hover:ring-purple-500 hover:shadow-lg shadow-purple-500/50 cursor-pointer ${
-                isLandscape ? "h-32" : "w-32"
-              }`}
+              className={`relative rounded-lg overflow-hidden hover:ring-2 hover:ring-purple-500 hover:shadow-lg shadow-purple-500/50 cursor-pointer ${isLandscape ? "h-32" : "w-32"
+                }`}
               style={isLandscape ? { width: `${aspect * 8}rem` } : {}}
             >
               <img
@@ -299,7 +348,7 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
       </div>
 
       {lightboxIndex !== null && (
-        <div 
+        <div
           className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center"
           onClick={closeLightbox}
         >
@@ -309,28 +358,28 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
           >
             <XMarkIcon className="w-8 h-8" />
           </button>
-          
+
           <button
             onClick={showPrev}
             className="absolute left-4 text-white/80 hover:text-white p-2 cursor-pointer"
           >
             <ChevronLeftIcon className="w-10 h-10" />
           </button>
-          
+
           <img
             src={`/fotos/${folder}/${photos[lightboxIndex].filename}`}
             alt=""
             className="max-h-[90vh] max-w-[90vw] object-contain"
             onClick={(e) => e.stopPropagation()}
           />
-          
+
           <button
             onClick={showNext}
             className="absolute right-4 text-white/80 hover:text-white p-2 cursor-pointer"
           >
             <ChevronRightIcon className="w-10 h-10" />
           </button>
-          
+
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
             {lightboxIndex + 1} / {photos.length}
           </div>
