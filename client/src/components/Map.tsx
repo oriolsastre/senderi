@@ -11,7 +11,6 @@ import { AddWaypointForm } from "./AddWaypointForm";
 import { StatsLoader, type GPXStats } from "./StatsLoader";
 import { WaypointsLayer } from "./WaypointsLayer";
 import { AddWaypointFetcher } from "./AddWaypointFetcher";
-import { WaypointsFetcher } from "./WaypointsFetcher";
 
 import { updateExcursio } from "../api/excursio";
 import type { Waypoint } from "../types/waypoint";
@@ -34,10 +33,10 @@ interface MapProps {
   osmId: number | null;
   slug: string;
   isAuthenticated: boolean;
+  waypoints?: Waypoint[];
 }
 
-export default function Map({ id, osmId, slug, isAuthenticated }: MapProps) {
-  const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
+export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }: MapProps) {
   const [showAddWaypoints, setShowAddWaypoints] = useState(false);
   const [showHikeWaypoints, setShowHikeWaypoints] = useState(true);
   const [addWaypoints, setAddWaypoints] = useState<Waypoint[]>([]);
@@ -159,7 +158,6 @@ export default function Map({ id, osmId, slug, isAuthenticated }: MapProps) {
             />
           )}
           <StatsLoader osmId={osmId} onStatsLoaded={handleStatsLoaded} />
-          <WaypointsFetcher waypoints={waypoints} setWaypoints={setWaypoints} excursioId={id} />
           <WaypointsLayer showWaypoints={showHikeWaypoints} waypoints={waypoints} isHikingMap={true} belongsToHike={true} excursioId={id} isAuthenticated={isAuthenticated} />
           <AddWaypointFetcher showAddWaypoints={showAddWaypoints} setWaypoints={setAddWaypoints} excursioId={id} />
           <WaypointsLayer showWaypoints={showAddWaypoints} waypoints={addWaypoints} isHikingMap={true} belongsToHike={false} excursioId={id} isAuthenticated={isAuthenticated} />
