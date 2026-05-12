@@ -344,11 +344,12 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
         <CommonsPhotos
           dataInici={excursio.data_inici}
           dataFinal={excursio.data_final}
+          isAuthenticated={isAuthenticated}
         />
       </Suspense>
 
       <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant observacions...</div>}>
-        <INaturalist dateInici={excursio.data_inici} dateFinal={excursio.data_final} />
+        <INaturalist dateInici={excursio.data_inici} dateFinal={excursio.data_final} isAuthenticated={isAuthenticated} />
       </Suspense>
     </div>
   );

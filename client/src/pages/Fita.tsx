@@ -167,10 +167,11 @@ export default function Fita({ isAuthenticated }: FitaProps) {
           lat={waypoint.lat}
           lon={waypoint.lon}
           wikidata={waypoint.wikidata}
+          isAuthenticated={isAuthenticated}
         />
       )}
       {waypoint.lat && waypoint.lon && (
-        <INaturalist lat={waypoint.lat} lng={waypoint.lon} radi={0.1} />
+        <INaturalist lat={waypoint.lat} lng={waypoint.lon} radi={0.1} isAuthenticated={isAuthenticated} />
       )}
     </div>
   );

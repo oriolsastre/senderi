@@ -7,6 +7,7 @@ interface CommonsPhotosProps {
   wikidata?: string | null;
   lat?: number;
   lon?: number;
+  isAuthenticated?: boolean;
 }
 
 interface CommonsPhoto {
@@ -19,7 +20,7 @@ interface CommonsPhoto {
   aspectRatio?: number;
 }
 
-export default function CommonsPhotos({ dataInici, dataFinal, wikidata, lat, lon }: CommonsPhotosProps) {
+export default function CommonsPhotos({ dataInici, dataFinal, wikidata, lat, lon, isAuthenticated }: CommonsPhotosProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<CommonsPhoto[]>([]);
@@ -105,6 +106,7 @@ export default function CommonsPhotos({ dataInici, dataFinal, wikidata, lat, lon
   }, [lightboxIndex, photos.length]);
 
   if (loading) {
+    if (!isAuthenticated) return null;
     return (
       <div className="py-4">
         <p className="text-black/80">Carregant fotos de Commons...</p>
