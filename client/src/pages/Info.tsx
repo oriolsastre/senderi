@@ -8,7 +8,7 @@ export default function Info({ isAuthenticated }: InfoProps) {
       <section className="mb-8">
         <h1 className="text-3xl font-bold text-black mb-4 border-b border-purple-500/20 pb-2">Què és això?</h1>
         <p className="mb-4">Senderi és el meu gestor d'excursions. Aquí hi puc tenir reunides les excursions que he fet, i generar-me <i>informes</i> per a poder compartir.</p>
-        <p className="mb-4">Generalment quan surto d'excursió gravo el recorregut amb el rGPS, faig fotos d'animals i plantes, faig algunes fotos dels llocs que més m'han agradat i, al final del dia, quan em demanen: <q>Em podràs passar el track?</q>, <q>Em podràs passar les fotos?</q> Ho tinc junt al mateix lloc.</p>
+        <p className="mb-4">Generalment quan surto d'excursió gravo el recorregut amb el rGPS, faig fotos d'animals i plantes, faig algunes fotos dels llocs que més m'han agradat; Si al final del dia em demanen: <q><i>Em podràs passar el track?</i></q>, <q><i>Em podràs passar les fotos?</i></q> ho tindré junt al mateix lloc.</p>
         <p className="mb-4">Senderi és on els camins es troben. Aquí no hi tinc <i>res</i>. I és on ho tinc reunit tot.</p>
         <ul className="list-disc pl-5 mb-4">
           <li className="mb-2">El track? El tinc pujat a <b className="text-purple-600">OpenStreetMap</b>.</li>
@@ -24,7 +24,7 @@ export default function Info({ isAuthenticated }: InfoProps) {
         <p className="mb-4">Per cada excursió intento afegir una descipció i anotar els punts d'interès per on passa. D'aquesta manera, puc mirar quins punts d'interès hi ha en cada excursió, i quines excursions passen per cada punt d'interès.</p>
         <p className="mb-4">Després, la màgia. Si he fet observacions d'animals i les he pujat a l'iNat, seran mostrades i enllaçades. Si he fet alguna fotografia durant l'excursió que ha acabat a la Wikimedia Commons, tres quartes parts del mateix. 🚧 <i>Si he trobat catxés en aquella excursió, la idea serà que també hi apareguin. Però això encara no està disponible.</i> 🚧</p>
         <p className="mb-4">Similar amb les Fites. Si he fet observacions a l'iNat a prop d'un punt d'interès, també seran mostrades i enllaçades. Si alguna fotografia d'aquell punt d'interès ha acabat a la Commons, també el podria veure. I si vols saber-ne més, hi trobaràs enllaços als serveis externs pertinents.</p>
-        <p className="mb-4">Al cap i a la fi, però, les dades són tant bones com jo ho permeti. Vull dir, que falten moltes dades. Molts dels punts del mapa els he importat de quan només em guardava els cims. Molts dels punts no tenen referències als serveis externs. Potser trigo un mes en pujar les fotografies a l'iNaturalist. Ves a saber quan (i si) pujo les fotos al Commons. Què hi farem. Com a mínim hi ha això. I mica en mica anar construint. Es fa sender al caminar.</p>
+        <p className="mb-4">Al cap i a la fi, però, les dades són tant bones com jo ho permeti. Vull dir, que falten moltes dades. Molts dels punts del mapa els he importat de quan només em guardava els cims. L'excursió associada no l'he pujada o és privada. Molts dels punts no tenen referències als serveis externs. Potser trigo un mes en pujar les fotografies a l'iNaturalist. Ves a saber quan (i si) pujo les fotos al Commons. Què hi farem. Tampoc perdrem... l'oremus. Com a mínim hi ha això. I mica en mica anar construint. Es fa sender al caminar.</p>
       </section>
 
       <section className="mb-8">
