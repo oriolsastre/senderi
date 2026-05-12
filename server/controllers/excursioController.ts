@@ -89,6 +89,24 @@ export function update(req: AuthenticatedRequest, res: Response) {
   return res.json(formatExcursio(excursio));
 }
 
+export function findVeins(req: AuthenticatedRequest, res: Response) {
+  const id = parseInt(req.params.id as string, 10);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
+
+  const excursio = excursioModel.findById(id);
+
+  if (!excursio) {
+    return res.status(404).json({ error: "Not found" });
+  }
+
+  const veins = excursioModel.findAdjacent(excursio.data_inici, !!req.isAuthenticated);
+  res.header("Cache-Control", "public, max-age=172800");
+  return res.json(veins);
+}
+
 export function remove(req: AuthenticatedRequest, res: Response) {
   const id = parseInt(req.params.id as string, 10);
 

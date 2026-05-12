@@ -47,6 +47,13 @@ export interface UpdateExcursio {
   foto_password?: string;
 }
 
+export interface MinimalExcursio {
+  id: number;
+  titol: string;
+  slug: string;
+  data_inici: string;
+}
+
 export function slugify(date: string, title: string): string {
   const normalized = title
     .normalize("NFD")
@@ -98,6 +105,21 @@ export function findBySlug(slug: string): Excursio | undefined {
 
 export function findByDataInici(dataInici: string): Excursio[] {
   return db.prepare("SELECT * FROM excursions WHERE data_inici = ?").all(dataInici) as Excursio[];
+}
+
+export function findAdjacent(dataInici: string, isAuth: boolean): { anterior: MinimalExcursio | null; seguent: MinimalExcursio | null } {
+  const privatFilter = isAuth ? "" : "AND privat = 0";
+  const anterior = db.prepare(`
+    SELECT id, titol, slug, data_inici FROM excursions 
+    WHERE data_inici < ? ${privatFilter}
+    ORDER BY data_inici DESC LIMIT 1
+  `).get(dataInici) as MinimalExcursio | undefined;
+  const seguent = db.prepare(`
+    SELECT id, titol, slug, data_inici FROM excursions 
+    WHERE data_inici > ? ${privatFilter}
+    ORDER BY data_inici ASC LIMIT 1
+  `).get(dataInici) as MinimalExcursio | undefined;
+  return { anterior: anterior ?? null, seguent: seguent ?? null };
 }
 
 export function create(data: CreateExcursio): Excursio {

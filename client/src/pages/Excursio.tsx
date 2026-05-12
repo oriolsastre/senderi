@@ -1,7 +1,7 @@
 import { useEffect, useState, lazy, Suspense } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { PencilIcon, CheckIcon, XMarkIcon, ArrowPathIcon } from "@heroicons/react/24/solid";
-import { getExcursio, updateExcursio } from "../api/excursio";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { PencilIcon, CheckIcon, XMarkIcon, ArrowPathIcon, ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
+import { getExcursio, updateExcursio, getExcursioVeins, type Veins } from "../api/excursio";
 import type { Excursio } from "../types/excursio";
 import Waypoints from "../components/Waypoints";
 
@@ -20,6 +20,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
   const [excursio, setExcursio] = useState<Excursio | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [veins, setVeins] = useState<Veins | null>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
@@ -41,6 +42,13 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
       .catch(() => setError("Excursio no trobada"))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    if (!excursio?.id) return;
+    getExcursioVeins(excursio.id)
+      .then(setVeins)
+      .catch(() => setVeins(null));
+  }, [excursio?.id]);
 
   const handleEditClick = () => {
     if (!excursio) return;
@@ -132,6 +140,25 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
 
   return (
     <div className="py-4 space-y-6">
+      {veins && (veins.anterior || veins.seguent) && (
+        <div className="flex justify-between text-sm font-serif text-black/70">
+          {veins.anterior ? (
+            <Link to={`/excursions/${veins.anterior.slug}`} className="max-w-[50%] hover:text-purple-600 flex gap-1 items-center">
+              <ArrowLeftIcon className="h-4 w-4 shrink-0" />
+              <span>{veins.anterior.data_inici}</span>
+              <span className="hidden sm:block truncate">{veins.anterior.titol}</span>
+            </Link>
+          ) : <span className="max-w-[50%]" />}
+          {veins.seguent ? (
+            <Link to={`/excursions/${veins.seguent.slug}`} className="max-w-[50%] hover:text-purple-600 flex gap-1 justify-end text-right items-center">
+              <span className="hidden sm:block truncate">{veins.seguent.titol}</span>
+              <span>{veins.seguent.data_inici}</span>
+              <ArrowRightIcon className="h-4 w-4 shrink-0" />
+            </Link>
+          ) : <span className="max-w-[50%]" />}
+        </div>
+      )}
+
       <div className="flex items-center gap-4">
         {isEditing ? (
           <div className="flex-1 space-y-3">
