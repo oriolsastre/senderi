@@ -286,36 +286,38 @@ export default function PhotoGallery({ dataInici, fotoPassword, fotoPrivat, isAu
           )}
         </div>
       ) : isAuthenticated && fotoPassword ? (
-        <div className="mb-3 flex items-center gap-2">
+        <div className="mb-3 flex flex-col sm:flex-row items-start sm:items-center gap-2">
           <span className="text-sm text-gray-500">CODI: {fotoPassword}</span>
           <DownloadButton mlAuto />
         </div>
       ) : !isAuthenticated && fotoPrivat ? (
-        <div className="mb-3 flex items-center gap-2">
-          <span className="text-sm text-gray-500">Tens un codi? Usa'l:</span>
-          <input
-            type="text"
-            value={codiInput}
-            onChange={(e) => setCodiInput(e.target.value)}
-            placeholder="Codi"
-            className="px-3 py-1 bg-white/90 text-gray-900 rounded-lg"
-            disabled={loadingCodi}
-          />
-          <button
-            onClick={async () => {
-              setLoadingCodi(true);
-              await fetchFotos(codiInput);
-              setLoadingCodi(false);
-            }}
-            disabled={loadingCodi || !codiInput}
-            className="p-2 text-black/80 hover:text-black cursor-pointer disabled:opacity-50"
-          >
-            {loadingCodi ? (
-              <ArrowPathIcon className="h-5 w-5 animate-spin" />
-            ) : (
-              <CheckIcon className="h-5 w-5" />
-            )}
-          </button>
+        <div className="mb-3 flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-gray-500">Tens un codi? Usa'l:</span>
+            <input
+              type="text"
+              value={codiInput}
+              onChange={(e) => setCodiInput(e.target.value)}
+              placeholder="Codi"
+              className="px-3 py-1 bg-white/90 text-gray-900 rounded-lg flex-1 min-w-0 max-w-[25ch] sm:max-w-max"
+              disabled={loadingCodi}
+            />
+            <button
+              onClick={async () => {
+                setLoadingCodi(true);
+                await fetchFotos(codiInput);
+                setLoadingCodi(false);
+              }}
+              disabled={loadingCodi || !codiInput}
+              className="p-2 text-black/80 hover:text-black cursor-pointer disabled:opacity-50"
+            >
+              {loadingCodi ? (
+                <ArrowPathIcon className="h-5 w-5 animate-spin" />
+              ) : (
+                <CheckIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
           <DownloadButton mlAuto />
         </div>
       ) : null}
