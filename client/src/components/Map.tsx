@@ -215,6 +215,8 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
             trackPoints={trackPoints}
             onHoverPoint={setHoveredPointIndex}
             hoveredIndex={hoveredPointIndex}
+            waypoints={waypoints}
+            showWaypoints={showHikeWaypoints}
           />
         </div>
       )}

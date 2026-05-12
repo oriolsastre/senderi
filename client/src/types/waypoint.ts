@@ -47,3 +47,19 @@ export const waypointTypeLabels: Record<WaypointType, string> = {
   refugi: "Refugi",
   altres: "Altres",
 };
+
+export const waypointIconMap: Record<string, string> = {
+  cim: "mountain",
+  coll: "coll",
+  font: "font",
+  aigua: "aigua",
+  cascada: "cascada",
+  cova: "cova",
+  ruina: "ruina",
+  ermita: "ermita",
+  masia: "masia",
+  edifici: "edifici",
+  natura: "natura",
+  refugi: "cabin",
+  altres: "altres",
+};
