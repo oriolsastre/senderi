@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { PencilIcon, CheckIcon, XMarkIcon, ArrowPathIcon, ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
 import { getExcursio, updateExcursio, getExcursioVeins, type Veins } from "../api/excursio";
@@ -14,6 +14,46 @@ interface ExcursioProps {
   isAuthenticated: boolean;
 }
 
+interface EditForm {
+  titol: string;
+  dataInici: string;
+  dataFinal: string;
+  distancia: number;
+  desnivell_pos: number;
+  desnivell_neg: number;
+  osm: number | null;
+}
+
+const defaultEditForm: EditForm = {
+  titol: "",
+  dataInici: "",
+  dataFinal: "",
+  distancia: 0,
+  desnivell_pos: 0,
+  desnivell_neg: 0,
+  osm: null,
+};
+
+function SaveButtons({ saving, onConfirm, onCancel }: { saving: boolean; onConfirm: () => void; onCancel: () => void }) {
+  if (saving) {
+    return (
+      <div className="p-2">
+        <ArrowPathIcon className="h-6 w-6 text-black/80 animate-spin" />
+      </div>
+    );
+  }
+  return (
+    <>
+      <button onClick={onConfirm} className="p-2 text-black/80 hover:text-black cursor-pointer">
+        <CheckIcon className="h-6 w-6" />
+      </button>
+      <button onClick={onCancel} className="p-2 text-black/80 hover:text-black cursor-pointer">
+        <XMarkIcon className="h-6 w-6" />
+      </button>
+    </>
+  );
+}
+
 export default function Excursio({ isAuthenticated }: ExcursioProps) {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -21,15 +61,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [veins, setVeins] = useState<Veins | null>(null);
-
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState("");
-  const [editedDataInici, setEditedDataInici] = useState("");
-  const [editedDataFinal, setEditedDataFinal] = useState("");
-  const [editedDistancia, setEditedDistancia] = useState(0);
-  const [editedDesnivellPos, setEditedDesnivellPos] = useState(0);
-  const [editedDesnivellNeg, setEditedDesnivellNeg] = useState(0);
-  const [editedOsm, setEditedOsm] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<EditForm>(defaultEditForm);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
   const [saving, setSaving] = useState(false);
@@ -52,44 +85,39 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
 
   const handleEditClick = () => {
     if (!excursio) return;
-    setEditedTitle(excursio.titol);
-    setEditedDataInici(excursio.data_inici);
-    setEditedDataFinal(excursio.data_final);
-    setEditedDistancia(excursio.distancia);
-    setEditedDesnivellPos(excursio.desnivell_pos);
-    setEditedDesnivellNeg(excursio.desnivell_neg);
-    setEditedOsm(excursio.osm);
+    setEditForm({
+      titol: excursio.titol,
+      dataInici: excursio.data_inici,
+      dataFinal: excursio.data_final,
+      distancia: excursio.distancia,
+      desnivell_pos: excursio.desnivell_pos,
+      desnivell_neg: excursio.desnivell_neg,
+      osm: excursio.osm,
+    });
     setIsEditing(true);
     setSaveError(null);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setEditedTitle("");
-    setEditedDataInici("");
-    setEditedDataFinal("");
-    setEditedDistancia(0);
-    setEditedDesnivellPos(0);
-    setEditedDesnivellNeg(0);
-    setEditedOsm(null);
-    setSaveError(null);
+    setEditForm(defaultEditForm);
   };
 
   const handleConfirm = async () => {
-    if (!excursio?.id || !editedTitle.trim()) return;
+    if (!excursio?.id || !editForm.titol.trim()) return;
 
     setSaving(true);
     setSaveError(null);
 
     try {
       const updatedExcursio = await updateExcursio(excursio.id, {
-        titol: editedTitle.trim(),
-        data_inici: editedDataInici,
-        data_final: editedDataFinal,
-        distancia: editedDistancia,
-        desnivell_pos: editedDesnivellPos,
-        desnivell_neg: editedDesnivellNeg,
-        osm: editedOsm,
+        titol: editForm.titol.trim(),
+        data_inici: editForm.dataInici,
+        data_final: editForm.dataFinal,
+        distancia: editForm.distancia,
+        desnivell_pos: editForm.desnivell_pos,
+        desnivell_neg: editForm.desnivell_neg,
+        osm: editForm.osm,
       });
       setExcursio(updatedExcursio);
       setIsEditing(false);
@@ -112,7 +140,6 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
   const handleCancelDescription = () => {
     setIsEditingDescription(false);
     setEditedDescription("");
-    setSaveError(null);
   };
 
   const handleConfirmDescription = async () => {
@@ -131,6 +158,12 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
       setSaving(false);
     }
   };
+
+  const handleSaveFotoPassword = useCallback(async (password: string) => {
+    if (!excursio?.id) return;
+    await updateExcursio(excursio.id, { foto_password: password });
+    setExcursio({ ...excursio, foto_password: password });
+  }, [excursio]);
 
   if (loading) return <div className="py-4 text-black">Loading...</div>;
   if (error) return <div className="py-4 text-red-400">{error}</div>;
@@ -165,8 +198,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
             <div className="flex flex-wrap gap-2 items-center">
               <input
                 type="text"
-                value={editedTitle}
-                onChange={(e) => setEditedTitle(e.target.value)}
+                value={editForm.titol}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, titol: e.target.value }))}
                 className="flex-1 min-w-48 px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
                 autoFocus
@@ -174,10 +207,9 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
               <span className="text-black/80">{"("}</span>
               <input
                 type="date"
-                value={editedDataInici}
+                value={editForm.dataInici}
                 onChange={(e) => {
-                  setEditedDataInici(e.target.value);
-                  setEditedDataFinal(e.target.value);
+                  setEditForm((prev) => ({ ...prev, dataInici: e.target.value, dataFinal: e.target.value }));
                 }}
                 className="px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
@@ -185,8 +217,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
               <span className="text-black/80">-</span>
               <input
                 type="date"
-                value={editedDataFinal}
-                onChange={(e) => setEditedDataFinal(e.target.value)}
+                value={editForm.dataFinal}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, dataFinal: e.target.value }))}
                 className="px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
@@ -195,24 +227,24 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
             <div className="flex flex-wrap gap-2 items-center">
               <input
                 type="number"
-                value={editedDistancia}
-                onChange={(e) => setEditedDistancia(Number(e.target.value))}
+                value={editForm.distancia}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, distancia: Number(e.target.value) }))}
                 className="w-24 px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
               <span className="text-black/80">m</span>
               <input
                 type="number"
-                value={editedDesnivellPos}
-                onChange={(e) => setEditedDesnivellPos(Number(e.target.value))}
+                value={editForm.desnivell_pos}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, desnivell_pos: Number(e.target.value) }))}
                 className="w-24 px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
               <span className="text-black/80">m</span>
               <input
                 type="number"
-                value={editedDesnivellNeg}
-                onChange={(e) => setEditedDesnivellNeg(Number(e.target.value))}
+                value={editForm.desnivell_neg}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, desnivell_neg: Number(e.target.value) }))}
                 className="w-24 px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
               />
@@ -220,8 +252,8 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
               <span className="text-black/80">OSM Trace:</span>
               <input
                 type="number"
-                value={editedOsm ?? ""}
-                onChange={(e) => setEditedOsm(e.target.value ? Number(e.target.value) : null)}
+                value={editForm.osm ?? ""}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, osm: e.target.value ? Number(e.target.value) : null }))}
                 className="w-32 px-3 py-2 bg-white/90 text-gray-900 rounded-lg"
                 disabled={saving}
                 placeholder="ID"
@@ -241,28 +273,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
             )}
           </>
         )}
-        {isEditing && (
-          saving ? (
-            <div className="p-2">
-              <ArrowPathIcon className="h-6 w-6 text-black/80 animate-spin" />
-            </div>
-          ) : (
-            <>
-              <button
-                onClick={handleConfirm}
-                className="p-2 text-black/80 hover:text-black cursor-pointer"
-              >
-                <CheckIcon className="h-6 w-6" />
-              </button>
-              <button
-                onClick={handleCancel}
-                className="p-2 text-black/80 hover:text-black cursor-pointer"
-              >
-                <XMarkIcon className="h-6 w-6" />
-              </button>
-            </>
-          )
-        )}
+        {isEditing && <SaveButtons saving={saving} onConfirm={handleConfirm} onCancel={handleCancel} />}
       </div>
 
       {saveError && <p className="text-red-400">{saveError}</p>}
@@ -296,26 +307,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
               disabled={saving}
               autoFocus
             />
-            {saving ? (
-              <div className="p-2">
-                <ArrowPathIcon className="h-6 w-6 text-black/80 animate-spin" />
-              </div>
-            ) : (
-              <>
-                <button
-                  onClick={handleConfirmDescription}
-                  className="p-2 text-black/80 hover:text-black cursor-pointer"
-                >
-                  <CheckIcon className="h-6 w-6" />
-                </button>
-                <button
-                  onClick={handleCancelDescription}
-                  className="p-2 text-black/80 hover:text-black cursor-pointer"
-                >
-                  <XMarkIcon className="h-6 w-6" />
-                </button>
-              </>
-            )}
+            <SaveButtons saving={saving} onConfirm={handleConfirmDescription} onCancel={handleCancelDescription} />
           </div>
         ) : (
           <p className="text-black/90 whitespace-pre-wrap">{excursio.descripcio || "Sense descripció"}</p>
@@ -327,16 +319,12 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
       )}
 
       <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant fotos...</div>}>
-        <PhotoGallery 
-          dataInici={excursio.data_inici} 
+        <PhotoGallery
+          dataInici={excursio.data_inici}
           fotoPassword={excursio.foto_password}
           fotoPrivat={excursio.foto_privat}
           isAuthenticated={isAuthenticated}
-          onSaveFotoPassword={async (password) => {
-            if (!excursio?.id) return;
-            await updateExcursio(excursio.id, { foto_password: password });
-            setExcursio({ ...excursio, foto_password: password });
-          }}
+          onSaveFotoPassword={handleSaveFotoPassword}
         />
       </Suspense>
 
