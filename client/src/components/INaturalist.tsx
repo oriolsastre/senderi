@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const capitalizeFirst = (str?: string) => {
   if (!str) return str;
@@ -36,30 +36,35 @@ export default function INaturalist({ dateInici, dateFinal, lat, lng, radi, isAu
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [fetchedPages, setFetchedPages] = useState<Map<number, INatResponse>>(new Map());
   const [data, setData] = useState<INatResponse | null>(null);
+  const cacheRef = useRef<Map<number, INatResponse>>(new Map());
+  const prevParamsRef = useRef("");
 
   useEffect(() => {
+    const paramsKey = `${dateInici}|${dateFinal}|${lat}|${lng}|${radi}`;
+    if (paramsKey !== prevParamsRef.current) {
+      cacheRef.current = new Map();
+      prevParamsRef.current = paramsKey;
+      if (currentPage !== 1) {
+        setCurrentPage(1);
+        return;
+      }
+    }
+
     const fetchObservations = async () => {
       setLoading(true);
       setError(null);
 
-      // Check if data for the current page is already cached
-      if (fetchedPages.has(currentPage)) {
-        const cachedData = fetchedPages.get(currentPage)!;
-        setData(cachedData);
+      if (cacheRef.current.has(currentPage)) {
+        setData(cacheRef.current.get(currentPage)!);
         setLoading(false);
         return;
       }
 
       try {
         const params = new URLSearchParams({ page: currentPage.toString() });
-        if (dateInici && dateFinal) {
-          params.set("d1", dateInici);
-        }
-        if (dateFinal) {
-          params.set("d2", dateFinal);
-        }
+        if (dateInici) params.set("d1", dateInici);
+        if (dateFinal) params.set("d2", dateFinal);
         if (lat && lng && radi !== undefined) {
           params.set("lat", lat.toString());
           params.set("lon", lng.toString());
@@ -72,23 +77,18 @@ export default function INaturalist({ dateInici, dateFinal, lat, lng, radi, isAu
         }
         const data: INatResponse = await response.json();
 
-        setData(data); // Set the data state
-
-        // Cache the newly fetched data
-        const newFetchedPages = new Map(fetchedPages);
-        newFetchedPages.set(currentPage, data);
-        setFetchedPages(newFetchedPages);
-
-      } catch (e) {
+        setData(data);
+        cacheRef.current.set(currentPage, data);
+      } catch {
         setError("Error carregant observacions");
-        setData(null); // Clear data on error
+        setData(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchObservations();
-  }, [lat, lng, radi, dateInici, dateFinal, currentPage, fetchedPages]);
+  }, [lat, lng, radi, dateInici, dateFinal, currentPage]);
 
   if (loading && !isAuthenticated && currentPage === 1) {
     return null;

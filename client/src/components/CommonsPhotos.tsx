@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 interface CommonsPhotosProps {
@@ -26,67 +26,75 @@ export default function CommonsPhotos({ dataInici, dataFinal, wikidata, lat, lon
   const [photos, setPhotos] = useState<CommonsPhoto[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const fetchPhotos = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  useEffect(() => {
+    let cancelled = false;
 
-    const params = new URLSearchParams();
-    if (dataInici) params.set("d1", dataInici);
-    if (dataFinal) params.set("d2", dataFinal);
-    if (wikidata) params.set("wikidata", wikidata);
-    if (lat && lon) {
-      params.set("lat", lat.toString());
-      params.set("lon", lon.toString());
-    }
+    const fetchPhotos = async () => {
+      setLoading(true);
+      setError(null);
 
-    if (params.toString() === "") {
-      setPhotos([]);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/commons/fotos?${params}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const params = new URLSearchParams();
+      if (dataInici) params.set("d1", dataInici);
+      if (dataFinal) params.set("d2", dataFinal);
+      if (wikidata) params.set("wikidata", wikidata);
+      if (lat && lon) {
+        params.set("lat", lat.toString());
+        params.set("lon", lon.toString());
       }
 
-      const data = await response.json();
-      const photosWithRatio = data.map((photo: any) => ({ ...photo, aspectRatio: undefined }));
-      setPhotos(photosWithRatio);
+      if (params.toString() === "") {
+        setPhotos([]);
+        setLoading(false);
+        return;
+      }
 
-      // Preload images to calculate aspect ratios
-      photosWithRatio.forEach((photo: CommonsPhoto) => {
-        if (!photo.thumb) return;
-        const img = new Image();
-        img.onload = () => {
-          setPhotos((prev) =>
-            prev.map((p) =>
-              p.file === photo.file
-                ? { ...p, aspectRatio: img.naturalWidth / img.naturalHeight }
-                : p
-            )
-          );
-        };
-        img.src = photo.thumb;
-      });
-    } catch (e) {
-      console.log(e);
-      setError("Error carregant fotos de Commons");
-      setPhotos([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [dataInici, dataFinal, wikidata, lat, lon]);
+      try {
+        const response = await fetch(`/api/commons/fotos?${params}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-  useEffect(() => {
+        const data = await response.json();
+        if (cancelled) return;
+
+        const photosWithRatio = data.map((photo: any) => ({ ...photo, aspectRatio: undefined }));
+        setPhotos(photosWithRatio);
+
+        photosWithRatio.forEach((photo: CommonsPhoto) => {
+          if (!photo.thumb) return;
+          const img = new Image();
+          img.onload = () => {
+            setPhotos((prev) =>
+              prev.map((p) =>
+                p.file === photo.file
+                  ? { ...p, aspectRatio: img.naturalWidth / img.naturalHeight }
+                  : p
+              )
+            );
+          };
+          img.src = photo.thumb;
+        });
+      } catch (e) {
+        if (cancelled) return;
+        console.log(e);
+        setError("Error carregant fotos de Commons");
+        setPhotos([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
     if (dataInici || dataFinal || wikidata || (lat && lon)) {
       fetchPhotos();
     } else {
       setPhotos([]);
       setLoading(false);
     }
-  }, [fetchPhotos]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dataInici, dataFinal, wikidata, lat, lon]);
 
   useEffect(() => {
     if (lightboxIndex === null) return;
