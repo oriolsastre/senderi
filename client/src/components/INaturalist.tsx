@@ -11,6 +11,7 @@ interface INaturalistProps {
   lat?: number;
   lng?: number;
   radi?: number;
+  userId?: string;
   isAuthenticated?: boolean;
 }
 
@@ -32,7 +33,7 @@ interface INatResponse {
   results?: INatObservation[];
 }
 
-export default function INaturalist({ dateInici, dateFinal, lat, lng, radi, isAuthenticated }: INaturalistProps) {
+export default function INaturalist({ dateInici, dateFinal, lat, lng, radi, userId, isAuthenticated }: INaturalistProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,6 +66,7 @@ export default function INaturalist({ dateInici, dateFinal, lat, lng, radi, isAu
         const params = new URLSearchParams({ page: currentPage.toString() });
         if (dateInici) params.set("d1", dateInici);
         if (dateFinal) params.set("d2", dateFinal);
+        if (userId) params.set("user_id", userId);
         if (lat && lng && radi !== undefined) {
           params.set("lat", lat.toString());
           params.set("lon", lng.toString());
@@ -88,7 +90,7 @@ export default function INaturalist({ dateInici, dateFinal, lat, lng, radi, isAu
     };
 
     fetchObservations();
-  }, [lat, lng, radi, dateInici, dateFinal, currentPage]);
+  }, [lat, lng, radi, dateInici, dateFinal, userId, currentPage]);
 
   if (loading && !isAuthenticated && currentPage === 1) {
     return null;

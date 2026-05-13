@@ -1,18 +1,30 @@
 import React, { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
+import "leaflet-gpx";
 
 interface GPXLoaderProps {
-  osmId: number;
+  osmId?: number;
+  gpxData?: string;
   trackPoints?: { lat: number; lon: number }[];
   onTrackPointClick?: (index: number | null) => void;
 }
 
-export function GPXLoader({ osmId, trackPoints, onTrackPointClick }: GPXLoaderProps) {
+export function GPXLoader({ osmId, gpxData, trackPoints, onTrackPointClick }: GPXLoaderProps) {
   const map = useMap();
 
   useEffect(() => {
-    const gpxUrl = `/api/excursions/${osmId}/gpx`;
+    let gpxUrl: string;
+    let blob: Blob | null = null;
+
+    if (gpxData) {
+      blob = new Blob([gpxData], { type: "application/gpx+xml" });
+      gpxUrl = URL.createObjectURL(blob);
+    } else if (osmId) {
+      gpxUrl = `/api/excursions/${osmId}/gpx`;
+    } else {
+      return;
+    }
 
     // @ts-ignore - leaflet-gpx adds GPX to L
     const gpx = new L.GPX(gpxUrl, {
@@ -37,8 +49,9 @@ export function GPXLoader({ osmId, trackPoints, onTrackPointClick }: GPXLoaderPr
 
     return () => {
       map.removeLayer(gpx);
+      if (blob) URL.revokeObjectURL(gpxUrl);
     };
-  }, [osmId, map]);
+  }, [osmId, gpxData, map]);
 
   useEffect(() => {
     if (!map || !trackPoints || trackPoints.length === 0 || !onTrackPointClick) {

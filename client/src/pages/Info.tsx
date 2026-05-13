@@ -28,6 +28,20 @@ export default function Info({ isAuthenticated }: InfoProps) {
       </section>
 
       <section className="mb-8">
+        <h1 className="text-3xl font-bold text-black mb-4 border-b border-purple-500/20 pb-2">Informes</h1>
+        <p className="mb-4">Si ho vols, pots crear i imprimir el teu propi informe d'una excursió amb la mateixa estructura de les excursions que hi tinc. Al menú superior tena l'opció de crear un informe. És molt fàcil:</p>
+        <ol className="list-decimal pl-5 mb-4">
+          <li className="mb-2">Posa-li el títol que vulguis.</li>
+          <li className="mb-2">Puja un fitxer .gpx o indica la id del traçat a OpenStreetMap. Això ja et crearà un mapa i perfil d'elevació.</li>
+          <li className="mb-2">Afegeix la descripció de l'excursió.</li>
+          <li className="mb-2">Afegeix punts de ruta. Posiciona'ls sobre el mapa i tria l'icona que prefereixis. Anomena'ls i posa'ls una descripció si ho vols.</li>
+          <li className="mb-2">Si ets usuari d'iNaturalist indica el teu nom d'usuari i la data per mostrar les observacions d'aquell dia (si separes per coma, sense espais, pots afegir més d'un usuari d'iNaturalist).</li>
+          <li className="mb-2">I imprimeix!</li>
+        </ol>
+        <p className="mb-4">Els informes són <b className="text-purple-600">temporals</b>. Res no queda guardat. Si tanques la pestanya o navegues a una altra pàgina es perdrà la informació de l'informe.</p>
+      </section>
+
+      <section className="mb-8">
         <h1 className="text-3xl font-bold text-black mb-4 border-b border-purple-500/20 pb-2">Serveis externs</h1>
         <p className="mb-4">Els serveis externs que faig servir són generalment col·laboratius. Plataformes on compartir informació de forma lliure i que la pugui fer servir qui la necessiti. No tots, però.</p>
         <div className="mb-6 ml-4">

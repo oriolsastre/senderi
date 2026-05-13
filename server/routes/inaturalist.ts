@@ -7,9 +7,9 @@ import { encodeRison } from "../utils/rison.js";
 const router = Router();
 
 router.get("/observations", async (req, res) => {
-  const { d1, d2, perPage = "20", page = "1", lat, lon, radi } = req.query;
+  const { d1, d2, perPage = "20", page = "1", lat, lon, radi, user_id } = req.query;
 
-  if (!process.env.INATURALIST_USER) {
+  if (!process.env.INATURALIST_USER && !user_id) {
     logger.error("INATURALIST_USER environment variable is not set");
     return res.status(500).json({ error: "Configuration error" });
   }
@@ -18,7 +18,11 @@ router.get("/observations", async (req, res) => {
   const headers = getServiceHeaders("inaturalist");
 
   const params = new URLSearchParams();
-  params.set("user_login", process.env.INATURALIST_USER);
+  if (user_id) {
+    params.set("user_login", user_id as string);
+  } else {
+    params.set("user_login", process.env.INATURALIST_USER!);
+  }
   params.set("order", "asc");
   params.set("oder_by", "observed_on");
   params.set("geo", "true");
