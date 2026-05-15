@@ -1,18 +1,18 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, lazy, Suspense } from "react";
 import { useMap } from "react-leaflet";
 import { DocumentTextIcon, CheckIcon, TrashIcon, PlusIcon, ViewfinderCircleIcon } from "@heroicons/react/24/solid";
 import L from "leaflet";
 import LeafletMap from "../components/LeafletMap";
 import { GPXLoader } from "../components/GPXLoader";
 import { HoverMarker } from "../components/HoverMarker";
-import { ElevationChart } from "../components/ElevationChart";
 import INaturalist from "../components/INaturalist";
 import { parseGPX, computeGPXStats, extractTimeInfo } from "../utils/gpxClientParser";
 import type { GPXStats } from "../utils/gpxClientParser";
 import { createWaypointIcon, getIconUrl } from "../utils/waypointMarkers";
 import { waypointIconMap } from "../types/waypoint";
-import { generateInformePDF } from "../utils/generatePDF";
 import { svgHtmlToPng, imgFileToPng, type LocalWaypoint } from "../utils/printUtils";
+
+const ElevationChart = lazy(() => import("../components/ElevationChart").then(m => ({ default: m.ElevationChart })));
 
 function InformeWaypointsMarkers({ waypoints, onDragEnd }: { waypoints: LocalWaypoint[]; onDragEnd: (id: string, lat: number, lon: number) => void }) {
   const map = useMap();
@@ -226,6 +226,7 @@ export default function Informe() {
         return { id: wp.id, nom: wp.nom, descripcio: wp.descripcio, iconPngDataUrl };
       }));
 
+      const { generateInformePDF } = await import("../utils/generatePDF");
       const blob = await generateInformePDF({
         title,
         statsText: statsParts.join(" · "),
@@ -417,7 +418,9 @@ export default function Informe() {
               </button>
             </div>
             <div ref={chartRef} className="mt-2">
-              <ElevationChart gpxData={gpxData} trackPoints={trackPoints} onHoverPoint={setHoveredPointIndex} hoveredIndex={hoveredPointIndex} />
+              <Suspense fallback={<p className="text-black/60 text-sm py-8 text-center">Carregant gràfic d'elevació...</p>}>
+                <ElevationChart gpxData={gpxData} trackPoints={trackPoints} onHoverPoint={setHoveredPointIndex} hoveredIndex={hoveredPointIndex} />
+              </Suspense>
             </div>
           </div>
         </>

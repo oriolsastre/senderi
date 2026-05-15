@@ -2,26 +2,35 @@ import { PDFDocument, StandardFonts, rgb, PageSizes } from "pdf-lib";
 import type { PDFFont } from "pdf-lib";
 
 const BG_COLOR = rgb(185 / 255, 203 / 255, 192 / 255);
-import html2canvas from "html2canvas";
 
 function parseTranslate3d(style: string): { x: number; y: number } | null {
   const m = style.match(/translate3d\(([-\d.]+)px,\s*([-\d.]+)px/);
   return m ? { x: parseFloat(m[1]), y: parseFloat(m[2]) } : null;
 }
 
-async function captureElement(el: HTMLElement, options?: { foreignObject?: boolean; bgColor?: string | null }): Promise<string | null> {
-  try {
-    const canvas = await html2canvas(el, {
-      useCORS: true,
-      scale: 2,
-      logging: false,
-      foreignObjectRendering: options?.foreignObject ?? false,
-      backgroundColor: options?.bgColor !== undefined ? options.bgColor : "#ffffff",
-    });
-    return canvas.toDataURL("image/png");
-  } catch {
-    return null;
-  }
+function svgToPng(svgEl: SVGSVGElement): Promise<string | null> {
+  return new Promise((resolve) => {
+    try {
+      const clone = svgEl.cloneNode(true) as SVGSVGElement;
+      const str = new XMLSerializer().serializeToString(clone);
+      const blob = new Blob([str], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        const w = svgEl.clientWidth || parseInt(svgEl.getAttribute("width") || "600");
+        const h = svgEl.clientHeight || parseInt(svgEl.getAttribute("height") || "150");
+        const canvas = document.createElement("canvas");
+        canvas.width = w * 2;
+        canvas.height = h * 2;
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(img, 0, 0, w * 2, h * 2);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+      img.src = url;
+    } catch { resolve(null); }
+  });
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -309,9 +318,10 @@ export interface GeneratePDFInput {
 export async function generateInformePDF(input: GeneratePDFInput): Promise<Blob> {
   await new Promise(r => setTimeout(r, 400));
 
+  const chartSvg = input.chartElement.querySelector("svg");
   const [mapImageUrl, chartImageUrl] = await Promise.all([
     captureMapDirect(input.mapElement),
-    captureElement(input.chartElement, { bgColor: null }),
+    chartSvg ? svgToPng(chartSvg as SVGSVGElement) : Promise.resolve(null),
   ]);
 
   const waypointPngs = input.waypoints.map((wp) => wp.iconPngDataUrl);
