@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useMap } from "react-leaflet";
-import { DocumentTextIcon, CheckIcon, TrashIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { DocumentTextIcon, CheckIcon, TrashIcon, PlusIcon, ViewfinderCircleIcon } from "@heroicons/react/24/solid";
 import L from "leaflet";
 import LeafletMap from "../components/LeafletMap";
 import { GPXLoader } from "../components/GPXLoader";
@@ -9,17 +9,10 @@ import { ElevationChart } from "../components/ElevationChart";
 import INaturalist from "../components/INaturalist";
 import { parseGPX, computeGPXStats, extractTimeInfo } from "../utils/gpxClientParser";
 import type { GPXStats } from "../utils/gpxClientParser";
-import { createWaypointIcon } from "../utils/waypointMarkers";
+import { createWaypointIcon, getIconUrl } from "../utils/waypointMarkers";
 import { waypointIconMap } from "../types/waypoint";
-
-interface LocalWaypoint {
-  id: string;
-  lat: number;
-  lon: number;
-  nom: string;
-  descripcio: string;
-  tipus: string;
-}
+import { generateInformePDF } from "../utils/generatePDF";
+import { svgHtmlToPng, imgFileToPng, type LocalWaypoint } from "../utils/printUtils";
 
 function InformeWaypointsMarkers({ waypoints, onDragEnd }: { waypoints: LocalWaypoint[]; onDragEnd: (id: string, lat: number, lon: number) => void }) {
   const map = useMap();
@@ -39,7 +32,7 @@ function InformeWaypointsMarkers({ waypoints, onDragEnd }: { waypoints: LocalWay
 
     waypoints.forEach(wp => {
       const icon = createWaypointIcon({
-        id: 0, nom: null, elevacio: null,
+        id: 0, nom: null, elevacio: 5000,
         lat: wp.lat, lon: wp.lon, tipus: wp.tipus,
         comentari: null, descripcio: null,
         wikidata: null, osm_node: null, privat: 0,
@@ -69,6 +62,12 @@ function InformeWaypointsMarkers({ waypoints, onDragEnd }: { waypoints: LocalWay
   return null;
 }
 
+function MapCapture({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
+  const map = useMap();
+  useEffect(() => { mapRef.current = map; return () => { mapRef.current = null; }; }, [map]);
+  return null;
+}
+
 export default function Informe() {
   const [title, setTitle] = useState("Nou informe");
   const [gpxSource, setGpxSource] = useState<"file" | "osm">("file");
@@ -89,6 +88,10 @@ export default function Informe() {
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
   const [localWaypoints, setLocalWaypoints] = useState<LocalWaypoint[]>([]);
   const [editingIconId, setEditingIconId] = useState<string | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<HTMLDivElement>(null);
+  const leafletMapRef = useRef<L.Map | null>(null);
 
   const processGpxData = useCallback((text: string) => {
     setGpxData(text);
@@ -193,9 +196,63 @@ export default function Informe() {
     setInatSubmitted(null);
   }, [inatSubmitted]);
 
-  const handlePrint = useCallback(() => {
-    window.print();
-  }, []);
+  const distanciaKm = stats ? (stats.distance / 1000).toFixed(1) : null;
+
+  const handlePrint = useCallback(async () => {
+    if (isGeneratingPDF || !mapRef.current || !chartRef.current) return;
+    setIsGeneratingPDF(true);
+    try {
+      const statsParts: string[] = [];
+      if (startDate) {
+        statsParts.push(`${startDate}${endDate && endDate !== startDate ? ` — ${endDate}` : ""}${duration ? ` · ${duration}` : ""}`);
+      }
+      if (distanciaKm) statsParts.push(`${distanciaKm} km`);
+      if (stats) statsParts.push(`+${stats.elevation_gain}m / -${stats.elevation_loss}m`);
+
+      const waypointPdfData = await Promise.all(localWaypoints.map(async (wp) => {
+        const tipus = wp.tipus?.toLowerCase();
+        let iconPngDataUrl: string | null = null;
+        if (tipus === "cim" || tipus === "coll") {
+          const svgHtml = createWaypointIcon({
+            id: 0, nom: null, elevacio: 5000,
+            lat: wp.lat, lon: wp.lon, tipus: wp.tipus,
+            comentari: null, descripcio: null,
+            wikidata: null, osm_node: null, privat: 0,
+          }).options.html || "";
+          iconPngDataUrl = await svgHtmlToPng(svgHtml as string);
+        } else {
+          iconPngDataUrl = await imgFileToPng(getIconUrl(wp.tipus), 48);
+        }
+        return { id: wp.id, nom: wp.nom, descripcio: wp.descripcio, iconPngDataUrl };
+      }));
+
+      const blob = await generateInformePDF({
+        title,
+        statsText: statsParts.join(" · "),
+        description,
+        waypoints: waypointPdfData,
+        mapElement: mapRef.current,
+        chartElement: chartRef.current,
+        inatParams: inatSubmitted ? {
+          userId: inatSubmitted.username,
+          dateInici: inatSubmitted.sDate,
+          dateFinal: inatSubmitted.eDate,
+        } : undefined,
+      });
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      setError(err instanceof Error ? err.message : "Error generant el PDF");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  }, [title, stats, startDate, endDate, duration, distanciaKm, description, localWaypoints, inatSubmitted, isGeneratingPDF]);
 
   const handleAddWaypoint = useCallback(() => {
     const pos = trackPoints.length > 0
@@ -237,8 +294,6 @@ export default function Informe() {
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [editingIconId]);
-
-  const distanciaKm = stats ? (stats.distance / 1000).toFixed(1) : null;
 
   return (
     <div className="py-4 space-y-6">
@@ -337,14 +392,31 @@ export default function Informe() {
                 <TrashIcon className="h-5 w-5" />
               </button>
             </div>
-            <div className="h-[450px] rounded-lg overflow-hidden print-map">
+            <div ref={mapRef} className="h-[450px] rounded-lg overflow-hidden print-map">
               <LeafletMap className="h-full w-full">
                 <GPXLoader gpxData={gpxData} trackPoints={trackPoints} />
                 <HoverMarker position={hoveredPointIndex !== null ? trackPoints[hoveredPointIndex] : null} />
                 <InformeWaypointsMarkers waypoints={localWaypoints} onDragEnd={handleWaypointDrag} />
+                <MapCapture mapRef={leafletMapRef} />
               </LeafletMap>
             </div>
-            <div className="mt-2">
+            <div className="flex justify-center mt-2 no-print">
+              <button
+                onClick={() => {
+                  const map = leafletMapRef.current;
+                  if (!map || trackPoints.length === 0) return;
+                  const bounds = L.latLngBounds(trackPoints.map(p => [p.lat, p.lon]));
+                  localWaypoints.forEach(wp => bounds.extend([wp.lat, wp.lon]));
+                  map.fitBounds(bounds);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 cursor-pointer text-sm"
+                title="Centra el mapa a tot el recorregut"
+              >
+                <ViewfinderCircleIcon className="w-5 h-5" />
+                Centra
+              </button>
+            </div>
+            <div ref={chartRef} className="mt-2">
               <ElevationChart gpxData={gpxData} trackPoints={trackPoints} onHoverPoint={setHoveredPointIndex} hoveredIndex={hoveredPointIndex} />
             </div>
           </div>
@@ -372,25 +444,15 @@ export default function Informe() {
           <div className="space-y-1 mb-6">
             {localWaypoints.map(wp => (
               <div key={wp.id} className="flex items-center gap-2 px-2 py-1 rounded-lg border border-transparent hover:border-purple-600 hover:shadow-[0_4px_12px_rgba(147,51,234,0.3)] transition-shadow">
-                <div className="relative" ref={iconPickerRef}>
-                  <button onClick={() => setEditingIconId(editingIconId === wp.id ? null : wp.id)} className="w-6 h-6 flex items-center justify-center cursor-pointer">
-                    <div dangerouslySetInnerHTML={{ __html: createWaypointIcon({
-                      id: 0, nom: null, elevacio: null,
-                      lat: wp.lat, lon: wp.lon, tipus: wp.tipus,
-                      comentari: null, descripcio: null,
-                      wikidata: null, osm_node: null, privat: 0,
-                    }).options.html || "" }} />
-                  </button>
+                  <div className="relative" ref={iconPickerRef}>
+                    <button onClick={() => setEditingIconId(editingIconId === wp.id ? null : wp.id)} className="w-6 h-6 flex items-center justify-center cursor-pointer">
+                      <img src={getIconUrl(wp.tipus)} className="w-6 h-6" alt="" />
+                    </button>
                   {editingIconId === wp.id && (
                     <div className="absolute top-full left-0 z-50 bg-white border border-purple-500 rounded-lg shadow-lg p-2 grid grid-cols-4 gap-1 min-w-32">
                       {Object.keys(waypointIconMap).map(tipus => (
                         <button key={tipus} onClick={() => { handleChangeTipus(wp.id, tipus); setEditingIconId(null); }} className="p-1 hover:bg-purple-100 rounded cursor-pointer flex items-center justify-center">
-                          <div className="w-6 h-6 flex items-center justify-center" dangerouslySetInnerHTML={{ __html: createWaypointIcon({
-                            id: 0, nom: null, elevacio: null,
-                            lat: 0, lon: 0, tipus,
-                            comentari: null, descripcio: null,
-                            wikidata: null, osm_node: null, privat: 0,
-                          }).options.html || "" }} />
+                          <img src={getIconUrl(tipus)} className="w-6 h-6" alt="" />
                         </button>
                       ))}
                     </div>
@@ -479,10 +541,11 @@ export default function Informe() {
       <div className="no-print flex justify-center pt-4">
         <button
           onClick={handlePrint}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 cursor-pointer text-lg"
+          disabled={isGeneratingPDF || !gpxData}
+          className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-lg"
         >
           <DocumentTextIcon className="w-5 h-5" />
-          Imprimeix informe
+          {isGeneratingPDF ? "Generant PDF..." : "Imprimeix informe"}
         </button>
       </div>
     </div>

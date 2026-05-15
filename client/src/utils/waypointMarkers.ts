@@ -8,6 +8,26 @@ const mountainPath = "M7.5,2C7.2,2,7.1,2.2,6.9,2.4l-5.8,9.5C1,12,1,12.2,1,12.3C1
 
 const collPath = "M0 10.94L0 9.72C0 7.93 0.34 6.17 1 4.51L1.81 2.46C1.93 2.18 2.2 2 2.5 2C2.8 2 3.07 2.18 3.19 2.46C4.47 5.5 5.91 7.02 7.5 7.02C9.09 7.02 10.53 5.5 11.81 2.46C11.93 2.18 12.2 2 12.5 2C12.8 2 13.07 2.18 13.19 2.46L14 4.51C14.66 6.17 15 7.93 15 9.72L15 10.94C15 12.05 14.1 12.94 13 12.94C12.78 12.94 12.56 12.91 12.35 12.84C10.73 12.28 9.12 12 7.5 12C5.88 12 4.27 12.28 2.65 12.84L2.65 12.84C1.61 13.2 0.47 12.64 0.11 11.6C0.04 11.39 0 11.17 0 10.94ZM2.5 3.02L1 7.15L2 8.15L3 7.15L4 9.15C4.67 7.82 5 7.15 5 7.15C4.34 6.49 3.79 5.72 3.39 4.88L2.5 3.02ZM12.5 3.02L11.61 4.88C11.21 5.72 10.66 6.49 10 7.15C10 7.15 10.33 7.82 11 9.15L12 7.15L13 8.15L14 7.15L12.5 3.02Z";
 
+export const iconSvgUrls: Record<string, string> = {
+  cim: "/assets/icons/mountain.svg",
+  coll: "/assets/icons/coll.svg",
+  font: "/assets/icons/font.svg",
+  aigua: "/assets/icons/aigua.svg",
+  cascada: "/assets/icons/cascada.svg",
+  cova: "/assets/icons/cova.svg",
+  ruina: "/assets/icons/ruina.svg",
+  ermita: "/assets/icons/ermita.svg",
+  masia: "/assets/icons/masia.svg",
+  edifici: "/assets/icons/edifici.svg",
+  natura: "/assets/icons/natura.svg",
+  refugi: "/assets/icons/cabin.svg",
+  altres: "/assets/icons/altres.svg",
+};
+
+export const getIconUrl = (tipus: string): string => {
+  return iconSvgUrls[tipus?.toLowerCase()] || iconSvgUrls.altres;
+};
+
 export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
   const tipus = wp.tipus?.toLowerCase();
 
@@ -32,100 +52,21 @@ export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
         popupAnchor: [0, -12],
       });
     }
-    case "font": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/font.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "aigua": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/aigua.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "cascada": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/cascada.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "cova": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/cova.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "ruina": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/ruina.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "ermita": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/ermita.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "masia": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/masia.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "edifici": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/edifici.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "natura": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/natura.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
-    case "refugi": {
-      return L.divIcon({
-        className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/cabin.svg" width="15" height="15"/></svg>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12],
-        popupAnchor: [0, -12],
-      });
-    }
+    case "font":
+    case "aigua":
+    case "cascada":
+    case "cova":
+    case "ruina":
+    case "ermita":
+    case "masia":
+    case "edifici":
+    case "natura":
+    case "refugi":
     default:
+      const url = iconSvgUrls[tipus] || iconSvgUrls.altres;
       return L.divIcon({
         className: "custom-marker",
-        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="/assets/icons/altres.svg" width="15" height="15"/></svg>`,
+        html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" width="24" height="24"><image href="${url}" width="15" height="15"/></svg>`,
         iconSize: [24, 24],
         iconAnchor: [12, 12],
         popupAnchor: [0, -12],
