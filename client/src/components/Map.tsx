@@ -47,7 +47,10 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
   const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showAddPuntForm, setShowAddPuntForm] = useState(false);
+  const [showMarker, setShowMarker] = useState(false);
+  const [savedWaypoints, setSavedWaypoints] = useState<Waypoint[]>([]);
   const [waypointPos, setWaypointPos] = useState<{ lat: number; lon: number; elevacio: number | null }>({ lat: 0, lon: 0, elevacio: null });
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   const handleStatsLoaded = (stats: GPXStats) => {
     setGpxStats(stats);
@@ -58,7 +61,19 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
   };
 
   const handleToggleAddPuntForm = () => {
-    setShowAddPuntForm(!showAddPuntForm);
+    if (showAddPuntForm) {
+      setShowAddPuntForm(false);
+      setShowMarker(false);
+    } else {
+      setShowAddPuntForm(true);
+      setShowMarker(true);
+    }
+  };
+
+  const handleFormClose = (waypoint: Waypoint) => {
+    setShowAddPuntForm(false);
+    setShowMarker(false);
+    setSavedWaypoints(prev => [...prev, waypoint]);
   };
 
   const handleMapCenter = (center: { lat: number; lon: number }) => {
@@ -106,6 +121,12 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
       .catch(err => console.error("Failed to fetch GPX:", err));
   }, [osmId]);
 
+  useEffect(() => {
+    if (showAddPuntForm && mapContainerRef.current) {
+      mapContainerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [showAddPuntForm]);
+
   const hoveredPosition = hoveredPointIndex !== null ? trackPoints[hoveredPointIndex] : null;
 
   if (!osmId) {
@@ -143,14 +164,15 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
           Descarrega (.gpx)
         </a>
       </div>
-      <div className="relative h-[450px]">
+      <div ref={mapContainerRef} className="relative h-[450px]">
         <LeafletMap className="h-full w-full" isAuthenticated={isAuthenticated}>
           <GPXLoader osmId={osmId} trackPoints={trackPoints} onTrackPointClick={handleTrackPointClick} />
           <MapCenterGetter onCenter={handleMapCenter} enabled={showAddPuntForm} />
-          {showAddPuntForm && (
+          {showMarker && (
             <WaypointMarker
               lat={waypointPos.lat}
               lon={waypointPos.lon}
+              draggable={showAddPuntForm}
               onMove={(lat, lon) => setWaypointPos(prev => ({ ...prev, lat, lon }))}
             />
           )}
@@ -158,6 +180,7 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
           <WaypointsLayer showWaypoints={showHikeWaypoints} waypoints={waypoints} isHikingMap={true} belongsToHike={true} excursioId={id} isAuthenticated={isAuthenticated} />
           <AddWaypointFetcher showAddWaypoints={showAddWaypoints} setWaypoints={setAddWaypoints} excursioId={id} />
           <WaypointsLayer showWaypoints={showAddWaypoints} waypoints={addWaypoints} isHikingMap={true} belongsToHike={false} excursioId={id} isAuthenticated={isAuthenticated} />
+          <WaypointsLayer showWaypoints={true} waypoints={savedWaypoints} isHikingMap={true} belongsToHike={false} excursioId={id} isAuthenticated={isAuthenticated} />
           <HoverMarker position={hoveredPosition} />
         </LeafletMap>
         {isAuthenticated && <GpxStatsImport gpxStats={gpxStats} isSaving={isSaving} onSaveStats={handleSaveStats} />}
@@ -183,7 +206,7 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
       {showAddPuntForm && isAuthenticated && (
         <AddWaypointForm
           trackPoints={trackPoints}
-          onClose={() => setShowAddPuntForm(false)}
+          onClose={handleFormClose}
           excursionId={id}
           waypointPos={waypointPos}
           onPosChange={setWaypointPos}

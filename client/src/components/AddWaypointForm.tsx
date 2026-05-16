@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { WaypointTypes, waypointTypeLabels } from "../types/waypoint";
+import type { Waypoint } from "../types/waypoint";
 import { createWaypoint } from "../api/waypoint";
 
 interface AddWaypointFormProps {
   trackPoints: { lat: number; lon: number; ele: number }[];
-  onClose: () => void;
+  onClose: (waypoint: Waypoint) => void;
   excursionId: number;
   waypointPos: { lat: number; lon: number; elevacio: number | null };
   onPosChange: (pos: { lat: number; lon: number; elevacio: number | null }) => void;
@@ -53,25 +54,25 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
     setNewWaypoint(prev => ({ ...prev, elevacio: value }));
   };
 
-  const handleCreate = async () => {
-    if (!newWaypoint.nom) return;
-    setIsCreating(true);
-    try {
-      await createWaypoint({
-        nom: newWaypoint.nom,
-        tipus: newWaypoint.tipus,
-        lat: newWaypoint.lat,
-        lon: newWaypoint.lon,
-        elevacio: newWaypoint.elevacio ?? undefined,
-        comentari: newWaypoint.comentari || undefined,
-        descripcio: newWaypoint.descripcio || undefined,
-        privat: newWaypoint.privat,
-        osm_node: newWaypoint.osm_node,
-        wikidata: newWaypoint.wikidata,
-      });
-      alert("Punt de ruta creat!");
-      onClose();
-      setNewWaypoint({ nom: "", tipus: WaypointTypes.CIM, lat: 0, lon: 0, elevacio: null, comentari: "", descripcio: "", privat: 0, osm_node: undefined, wikidata: undefined });
+    const handleCreate = async () => {
+      if (!newWaypoint.nom) return;
+      setIsCreating(true);
+      try {
+        const waypoint = await createWaypoint({
+          nom: newWaypoint.nom,
+          tipus: newWaypoint.tipus,
+          lat: newWaypoint.lat,
+          lon: newWaypoint.lon,
+          elevacio: newWaypoint.elevacio ?? undefined,
+          comentari: newWaypoint.comentari || undefined,
+          descripcio: newWaypoint.descripcio || undefined,
+          privat: newWaypoint.privat,
+          osm_node: newWaypoint.osm_node,
+          wikidata: newWaypoint.wikidata,
+        });
+        alert("Punt de ruta creat!");
+        onClose(waypoint);
+        setNewWaypoint({ nom: "", tipus: WaypointTypes.CIM, lat: 0, lon: 0, elevacio: null, comentari: "", descripcio: "", privat: 0, osm_node: undefined, wikidata: undefined });
     } catch (err) {
       console.error("Failed to create waypoint:", err);
       alert("Error en crear el punt de ruta");

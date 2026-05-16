@@ -12,10 +12,11 @@ const markerIcon = L.icon({
 interface WaypointMarkerProps {
   lat: number;
   lon: number;
+  draggable?: boolean;
   onMove: (lat: number, lon: number) => void;
 }
 
-export function WaypointMarker({ lat, lon, onMove }: WaypointMarkerProps) {
+export function WaypointMarker({ lat, lon, draggable = true, onMove }: WaypointMarkerProps) {
   const map = useMap();
   const markerRef = useRef<L.Marker | null>(null);
 
@@ -23,7 +24,7 @@ export function WaypointMarker({ lat, lon, onMove }: WaypointMarkerProps) {
     if (!lat || !lon) return;
 
     if (!markerRef.current) {
-      const marker = L.marker([lat, lon], { draggable: true, icon: markerIcon });
+      const marker = L.marker([lat, lon], { draggable, icon: markerIcon });
       marker.on("dragend", () => {
         const pos = marker.getLatLng();
         onMove(Math.round(pos.lat * 1e6) / 1e6, Math.round(pos.lng * 1e6) / 1e6);
@@ -32,8 +33,20 @@ export function WaypointMarker({ lat, lon, onMove }: WaypointMarkerProps) {
       markerRef.current = marker;
     } else {
       markerRef.current.setLatLng([lat, lon]);
+      if (draggable) {
+        markerRef.current.dragging?.enable();
+      } else {
+        markerRef.current.dragging?.disable();
+      }
     }
-  }, [lat, lon]);
+
+    return () => {
+      if (markerRef.current) {
+        map.removeLayer(markerRef.current);
+        markerRef.current = null;
+      }
+    };
+  }, [lat, lon, draggable]);
 
   return null;
 }
