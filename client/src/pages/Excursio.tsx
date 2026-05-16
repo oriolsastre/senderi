@@ -315,7 +315,7 @@ export default function Excursio({ isAuthenticated }: ExcursioProps) {
       </div>
 
       {excursio.fites && excursio.fites.length > 0 && (
-        <Waypoints excursio={excursio} isAuthenticated={isAuthenticated} fites={excursio.fites} />
+        <Waypoints key={excursio.id} excursio={excursio} isAuthenticated={isAuthenticated} fites={excursio.fites} />
       )}
 
       <Suspense fallback={<div className="h-32 bg-gray-100 animate-pulse rounded-lg">Carregant fotos...</div>}>
