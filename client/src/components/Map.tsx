@@ -1,13 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { useMap } from "react-leaflet";
 import "leaflet-gpx";
-import { EyeIcon, EyeSlashIcon, CloudArrowUpIcon, PlusIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, EyeSlashIcon, PlusIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import LeafletMap from "./LeafletMap";
 import { ElevationChart } from "./ElevationChart";
 import { HoverMarker } from "./HoverMarker";
 import { GPXLoader } from "./GPXLoader";
 import { WaypointMarker } from "./WaypointMarker";
 import { AddWaypointForm } from "./AddWaypointForm";
+import GpxStatsImport from "./GPXStats";
 import { StatsLoader, type GPXStats } from "./StatsLoader";
 import { WaypointsLayer } from "./WaypointsLayer";
 import { AddWaypointFetcher } from "./AddWaypointFetcher";
@@ -111,10 +112,6 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
     return null;
   }
 
-  const distanceKm = gpxStats ? (gpxStats.distance / 1000).toFixed(1) : null;
-  const elevationGain = gpxStats ? Math.round(gpxStats.elevation_gain) : null;
-  const elevationLoss = gpxStats ? Math.round(gpxStats.elevation_loss) : null;
-
   return (
     <div className="space-y-2">
       <div className="flex items-start justify-end gap-3 mb-2">
@@ -163,23 +160,7 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
           <WaypointsLayer showWaypoints={showAddWaypoints} waypoints={addWaypoints} isHikingMap={true} belongsToHike={false} excursioId={id} isAuthenticated={isAuthenticated} />
           <HoverMarker position={hoveredPosition} />
         </LeafletMap>
-        {gpxStats && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-[1000] bg-white/90 px-3 py-1 rounded-md text-sm flex items-center gap-2">
-            <span>{distanceKm} km</span>
-            <span className="mx-2 text-black/50">|</span>
-            <span>+{elevationGain}m/-{elevationLoss}m</span>
-            {isAuthenticated && (
-              <button
-                onClick={handleSaveStats}
-                disabled={isSaving}
-                className={`p-1 rounded hover:bg-gray-200 ${isSaving ? "text-gray-400" : "text-green-600"}`}
-                title="Desa les estadístiques"
-              >
-                <CloudArrowUpIcon className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        )}
+        {isAuthenticated && <GpxStatsImport gpxStats={gpxStats} isSaving={isSaving} onSaveStats={handleSaveStats} />}
       </div>
       {isAuthenticated && (
         <div className="flex items-center gap-3">
