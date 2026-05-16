@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { MapContainer, TileLayer, WMSTileLayer } from "react-leaflet";
+import { MapContainer, TileLayer, WMSTileLayer, ScaleControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "proj4leaflet";
@@ -78,6 +78,7 @@ export default function LeafletMap({
             attribution="Institut Cartogràfic i Geològic de Catalunya"
           />
         )}
+        <ScaleControl position="bottomleft" imperial={false} />
         {children}
       </MapContainer>
     </div>
