@@ -161,3 +161,25 @@ export function findExcursionsByWaypoint(req: AuthenticatedRequest, res: Respons
   const excursions = waypointModel.findExcursionsByWaypoint(waypointId, !!req.isAuthenticated);
   res.json(excursions);
 }
+
+export function reorderWaypoints(req: AuthenticatedRequest, res: Response) {
+  const excursioId = parseInt(req.params.id as string, 10);
+  
+  if (isNaN(excursioId)) {
+    return res.status(400).json({ error: "Invalid ID" });
+  }
+
+  const items = req.body as { id: number; ordre: number }[];
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ error: "Body must be an array of { id, ordre }" });
+  }
+
+  for (const item of items) {
+    if (typeof item.id !== "number" || typeof item.ordre !== "number") {
+      return res.status(400).json({ error: "Each item must have id and ordre as numbers" });
+    }
+  }
+
+  waypointModel.reorderExcursioWaypoints(excursioId, items);
+  res.status(200).json({ message: "Order updated" });
+}

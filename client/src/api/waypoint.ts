@@ -109,6 +109,15 @@ export async function deleteWaypoint(id: number): Promise<void> {
   if (!response.ok) throw new Error("Failed to delete waypoint");
 }
 
+export async function reorderExcursioWaypoints(excursioId: number, items: { id: number; ordre: number }[]): Promise<void> {
+  const response = await fetch(`/api/excursions/${excursioId}/waypoints/ordenacio`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(items),
+  });
+  if (!response.ok) throw new Error("Failed to reorder waypoints");
+}
+
 export interface WaypointExcursio {
   id: number;
   titol: string;

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import compression from "compression";
 import { findAll, findBySlug, create, findById, update, remove, findVeins } from "../controllers/excursioController.js";
-import { findByExcursio, addToExcursio, removeFromExcursio, toggleExcursioWaypointPrivat } from "../controllers/waypointController.js";
+import { findByExcursio, addToExcursio, removeFromExcursio, toggleExcursioWaypointPrivat, reorderWaypoints } from "../controllers/waypointController.js";
 import { checkAuth, requireAuth } from "../middleware/auth.js";
 import { rateLimit } from "../utils/rateLimiter.js";
 import { getServiceBaseUrl, getServiceHeaders } from "../utils/externalServices.js";
@@ -66,6 +66,7 @@ router.get("/:osmId/gpx/stats", async (req: Request, res: Response) => {
 router.get("/:id/veins", checkAuth, findVeins);
 router.get("/:id/waypoints", checkAuth, findByExcursio);
 router.post("/:id/waypoints", requireAuth, addToExcursio);
+router.post("/:id/waypoints/ordenacio", requireAuth, reorderWaypoints);
 router.delete("/:id/waypoints/:waypointId", requireAuth, removeFromExcursio);
 router.patch("/:id/waypoints/:waypointId/privat", requireAuth, toggleExcursioWaypointPrivat);
 router.get("/:id", requireAuth, findById);

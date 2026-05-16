@@ -155,6 +155,16 @@ export function updateExcursioWaypoint(excursioId: number, waypointId: number, p
   return result.changes > 0;
 }
 
+export function reorderExcursioWaypoints(excursioId: number, items: { id: number; ordre: number }[]): void {
+  const stmt = db.prepare("UPDATE excursions_waypoints SET ordre = ? WHERE excursio_id = ? AND waypoint_id = ?");
+  const tx = db.transaction(() => {
+    for (const item of items) {
+      stmt.run(item.ordre, excursioId, item.id);
+    }
+  });
+  tx();
+}
+
 export interface WaypointExcursio {
   id: number;
   titol: string;
