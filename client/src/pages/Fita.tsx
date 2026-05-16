@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { PencilIcon } from "@heroicons/react/24/solid";
-import { getWaypoint, updateWaypoint, getExcursionsByWaypoint } from "../api/waypoint";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { getWaypoint, updateWaypoint, getExcursionsByWaypoint, deleteWaypoint } from "../api/waypoint";
 import type { WaypointExcursio } from "../api/waypoint";
 import type { Waypoint } from "../types/waypoint";
 import { createWaypointIcon } from "../utils/waypointMarkers";
@@ -17,6 +17,7 @@ interface FitaProps {
 
 export default function Fita({ isAuthenticated }: FitaProps) {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [waypoint, setWaypoint] = useState<Waypoint | null>(null);
   const [excursions, setExcursions] = useState<WaypointExcursio[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +64,20 @@ export default function Fita({ isAuthenticated }: FitaProps) {
   const handleCancel = () => {
     setIsEditing(false);
     setSaveError(null);
+  };
+
+  const handleDelete = async () => {
+    if (!waypoint) return;
+    if (!confirm("Segur que vols eliminar aquest punt d'interès?")) return;
+    if (excursions.length > 0) {
+      if (!confirm(`Aquest punt forma part de ${excursions.length} excursions. S'eliminarà de totes elles.`)) return;
+    }
+    try {
+      await deleteWaypoint(waypoint.id);
+      navigate("/mapa");
+    } catch {
+      setSaveError("Error en eliminar");
+    }
   };
 
   if (loading) return <div className="py-4 text-black">Loading...</div>;
@@ -113,12 +128,20 @@ export default function Fita({ isAuthenticated }: FitaProps) {
               </div>
             </div>
             {isAuthenticated && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="p-2 text-black/80 hover:text-black cursor-pointer"
-              >
-                <PencilIcon className="h-6 w-6" />
-              </button>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="p-2 text-black/80 hover:text-black cursor-pointer"
+                >
+                  <PencilIcon className="h-6 w-6" />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="p-2 text-red-600 hover:text-red-700 cursor-pointer"
+                >
+                  <TrashIcon className="h-6 w-6" />
+                </button>
+              </div>
             )}
           </div>
 

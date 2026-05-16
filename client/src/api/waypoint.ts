@@ -102,6 +102,13 @@ export async function toggleExcursioWaypointPrivat(excursioId: number, waypointI
   if (!response.ok) throw new Error("Failed to toggle waypoint privat");
 }
 
+export async function deleteWaypoint(id: number): Promise<void> {
+  const response = await fetch(`/api/waypoints/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) throw new Error("Failed to delete waypoint");
+}
+
 export interface WaypointExcursio {
   id: number;
   titol: string;
