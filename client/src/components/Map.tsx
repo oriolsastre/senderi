@@ -147,7 +147,7 @@ export default function Map({ id, osmId, slug, isAuthenticated, waypoints = [] }
         </a>
       </div>
       <div className="relative h-[450px]">
-        <LeafletMap className="h-full w-full">
+        <LeafletMap className="h-full w-full" isAuthenticated={isAuthenticated}>
           <GPXLoader osmId={osmId} trackPoints={trackPoints} onTrackPointClick={handleTrackPointClick} />
           <MapCenterGetter onCenter={handleMapCenter} enabled={showAddPuntForm} />
           {showAddPuntForm && (

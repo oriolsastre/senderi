@@ -78,7 +78,7 @@ export default function Mapa({ isAuthenticated }: MapaProps) {
 
   return (
     <div className="py-4">
-      <LeafletMap className="h-[calc(100vh-120px)] w-full">
+      <LeafletMap className="h-[calc(100vh-120px)] w-full" isAuthenticated={isAuthenticated}>
         <WaypointsLayer waypoints={waypoints} isAuthenticated={isAuthenticated} />
       </LeafletMap>
     </div>

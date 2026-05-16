@@ -136,7 +136,7 @@ export default function Fita({ isAuthenticated }: FitaProps) {
       )}
 
       <div className="h-[450px] rounded-lg overflow-hidden">
-        <LeafletMap zoom={13} center={[waypoint.lat, waypoint.lon]}>
+        <LeafletMap zoom={13} center={[waypoint.lat, waypoint.lon]} isAuthenticated={isAuthenticated}>
           <Marker
             position={[waypoint.lat, waypoint.lon]}
             icon={icon}

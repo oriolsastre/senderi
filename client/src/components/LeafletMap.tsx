@@ -1,5 +1,6 @@
 import { ReactNode, useState } from "react";
 import { MapContainer, TileLayer, WMSTileLayer, ScaleControl } from "react-leaflet";
+import CoordinateDisplay from "./CoordinateDisplay";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "proj4leaflet";
@@ -20,6 +21,7 @@ interface LeafletMapProps {
   className?: string;
   zoom?: number;
   center?: [number, number];
+  isAuthenticated?: boolean;
 }
 
 export default function LeafletMap({ 
@@ -28,6 +30,7 @@ export default function LeafletMap({
   className = "h-[450px] w-full",
   zoom,
   center,
+  isAuthenticated = false,
 }: LeafletMapProps) {
   const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
 
@@ -79,6 +82,7 @@ export default function LeafletMap({
           />
         )}
         <ScaleControl position="bottomleft" imperial={false} />
+        {isAuthenticated && <CoordinateDisplay />}
         {children}
       </MapContainer>
     </div>
