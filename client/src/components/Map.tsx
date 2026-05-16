@@ -18,14 +18,14 @@ import type { Waypoint } from "../types/waypoint";
 
 function MapCenterGetter({ onCenter, enabled }: { onCenter: (center: any) => void; enabled: boolean }) {
   const map = useMap();
-  const called = useRef(false);
+  const prevEnabled = useRef(false);
   useEffect(() => {
-    if (enabled && !called.current) {
-      called.current = true;
+    if (enabled && !prevEnabled.current) {
       const center = map.getCenter();
       onCenter({ lat: center.lat, lon: center.lng });
     }
-  }, [enabled, map, onCenter]);
+    prevEnabled.current = enabled;
+  });
   return null;
 }
 
