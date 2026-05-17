@@ -21,6 +21,7 @@ export const iconSvgUrls: Record<string, string> = {
   edifici: "/assets/icons/edifici.svg",
   natura: "/assets/icons/natura.svg",
   refugi: "/assets/icons/cabin.svg",
+  geodesia: "/assets/icons/geodesia.svg",
   altres: "/assets/icons/altres.svg",
 };
 
@@ -62,6 +63,7 @@ export const createWaypointIcon = (wp: Waypoint): L.DivIcon => {
     case "edifici":
     case "natura":
     case "refugi":
+    case "geodesia":
     default:
       const url = iconSvgUrls[tipus] || iconSvgUrls.altres;
       return L.divIcon({

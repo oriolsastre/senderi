@@ -27,6 +27,7 @@ export const WaypointTypes = {
   NATURA: "natura",
   EDIFICI: "edifici",
   REFUGI: "refugi",
+  GEODESIA: "geodesia",
   ALTRES: "altres",
 } as const;
 
@@ -45,6 +46,7 @@ export const waypointTypeLabels: Record<WaypointType, string> = {
   natura: "Natura",
   edifici: "Edifici",
   refugi: "Refugi",
+  geodesia: "Vèrtex geodèsic",
   altres: "Altres",
 };
 
@@ -61,5 +63,6 @@ export const waypointIconMap: Record<string, string> = {
   edifici: "edifici",
   natura: "natura",
   refugi: "cabin",
+  geodesia: "geodesia",
   altres: "altres",
 };

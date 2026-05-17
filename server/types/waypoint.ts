@@ -1,4 +1,4 @@
-export type WaypointTipus = "cim" | "coll" | "ermita" | "masia" | "ruina" | "font" | "cascada" | "cova" | "natura" | "edifici" | "altres";
+export type WaypointTipus = "cim" | "coll" | "ermita" | "masia" | "ruina" | "font" | "cascada" | "cova" | "natura" | "edifici" | "geodesia" | "altres";
 
 export interface Waypoint {
   id: number;
