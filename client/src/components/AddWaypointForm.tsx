@@ -23,6 +23,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
     privat: number;
     osm_node?: number;
     wikidata?: string;
+    icgc?: string;
   }>({
     nom: "",
     tipus: WaypointTypes.CIM,
@@ -34,6 +35,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
     privat: 0,
     osm_node: undefined,
     wikidata: undefined,
+    icgc: undefined,
   });
   const [isCreating, setIsCreating] = useState(false);
 
@@ -69,10 +71,11 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
           privat: newWaypoint.privat,
           osm_node: newWaypoint.osm_node,
           wikidata: newWaypoint.wikidata,
+          icgc: newWaypoint.icgc,
         });
         alert("Punt de ruta creat!");
         onClose(waypoint);
-        setNewWaypoint({ nom: "", tipus: WaypointTypes.CIM, lat: 0, lon: 0, elevacio: null, comentari: "", descripcio: "", privat: 0, osm_node: undefined, wikidata: undefined });
+        setNewWaypoint({ nom: "", tipus: WaypointTypes.CIM, lat: 0, lon: 0, elevacio: null, comentari: "", descripcio: "", privat: 0, osm_node: undefined, wikidata: undefined, icgc: undefined });
     } catch (err) {
       console.error("Failed to create waypoint:", err);
       alert("Error en crear el punt de ruta");
@@ -136,7 +139,7 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
             className="w-full border rounded px-2 py-1"
           />
         </div>
-        <div className="grid grid-cols-2 gap-3 col-span-3 sm:col-span-4">
+        <div className="grid grid-cols-3 gap-3 col-span-3 sm:col-span-4">
           <div>
             <label className="block text-sm font-bold">OSM Node</label>
             <input
@@ -152,6 +155,15 @@ export function AddWaypointForm({ trackPoints, onClose, excursionId, waypointPos
               type="text"
               value={newWaypoint.wikidata || ""}
               onChange={(e) => setNewWaypoint({ ...newWaypoint, wikidata: e.target.value || undefined })}
+              className="w-full border rounded px-2 py-1"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold">ICGC</label>
+            <input
+              type="text"
+              value={newWaypoint.icgc || ""}
+              onChange={(e) => setNewWaypoint({ ...newWaypoint, icgc: e.target.value || undefined })}
               className="w-full border rounded px-2 py-1"
             />
           </div>

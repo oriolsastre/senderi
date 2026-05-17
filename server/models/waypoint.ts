@@ -63,8 +63,8 @@ export function findById(id: number, isAuthenticated: boolean = false): Waypoint
 
 export function create(data: CreateWaypoint): Waypoint {
   const stmt = db.prepare(`
-    INSERT INTO waypoints (nom, elevacio, lat, lon, tipus, comentari, descripcio, osm_node, wikidata, privat)
-    VALUES (@nom, @elevacio, @lat, @lon, @tipus, @comentari, @descripcio, @osm_node, @wikidata, @privat)
+    INSERT INTO waypoints (nom, elevacio, lat, lon, tipus, comentari, descripcio, osm_node, wikidata, icgc, privat)
+    VALUES (@nom, @elevacio, @lat, @lon, @tipus, @comentari, @descripcio, @osm_node, @wikidata, @icgc, @privat)
   `);
   const result = stmt.run({
     nom: data.nom,
@@ -76,6 +76,7 @@ export function create(data: CreateWaypoint): Waypoint {
     descripcio: data.descripcio ?? null,
     osm_node: data.osm_node ?? null,
     wikidata: data.wikidata ?? null,
+    icgc: data.icgc ?? null,
     privat: data.privat ?? 0,
   });
   return findById(result.lastInsertRowid as number, true)!;
@@ -97,6 +98,7 @@ export function update(id: number, data: UpdateWaypoint): Waypoint | undefined {
   if (data.descripcio !== undefined) { fields.push("descripcio = @descripcio"); values.descripcio = data.descripcio; }
   if (data.osm_node !== undefined) { fields.push("osm_node = @osm_node"); values.osm_node = data.osm_node; }
   if (data.wikidata !== undefined) { fields.push("wikidata = @wikidata"); values.wikidata = data.wikidata; }
+  if (data.icgc !== undefined) { fields.push("icgc = @icgc"); values.icgc = data.icgc; }
   if (data.privat !== undefined) { fields.push("privat = @privat"); values.privat = data.privat; }
 
   if (fields.length === 0) return current;

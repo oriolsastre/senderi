@@ -27,6 +27,7 @@ export function UpdateWaypointForm({
     privat?: number;
     osm_node?: number;
     wikidata?: string;
+    icgc?: string;
   }>({
     nom: waypoint.nom || "",
     tipus: waypoint.tipus,
@@ -38,6 +39,7 @@ export function UpdateWaypointForm({
     privat: waypoint.privat,
     osm_node: waypoint.osm_node ?? undefined,
     wikidata: waypoint.wikidata ?? undefined,
+    icgc: waypoint.icgc ?? undefined,
   });
 
   const handleSave = () => {
@@ -52,6 +54,7 @@ export function UpdateWaypointForm({
       privat: editForm.privat,
       osm_node: editForm.osm_node,
       wikidata: editForm.wikidata,
+      icgc: editForm.icgc,
     });
   };
 
@@ -117,15 +120,23 @@ export function UpdateWaypointForm({
            className="w-48 px-2 py-1 bg-white/90 border border-gray-300 rounded-lg focus:border-purple-600"
            disabled={saving}
          />
+          <input
+            type="text"
+            value={editForm.wikidata ?? ""}
+            onChange={(e) => setEditForm({ ...editForm, wikidata: e.target.value || undefined })}
+            placeholder="Wikidata"
+            className="w-48 px-2 py-1 bg-white/90 border border-gray-300 rounded-lg focus:border-purple-600"
+           disabled={saving}
+         />
          <input
            type="text"
-           value={editForm.wikidata ?? ""}
-           onChange={(e) => setEditForm({ ...editForm, wikidata: e.target.value || undefined })}
-           placeholder="Wikidata"
+           value={editForm.icgc ?? ""}
+           onChange={(e) => setEditForm({ ...editForm, icgc: e.target.value || undefined })}
+           placeholder="ICGC"
            className="w-48 px-2 py-1 bg-white/90 border border-gray-300 rounded-lg focus:border-purple-600"
-          disabled={saving}
-        />
-        <label className="flex items-center gap-1">
+           disabled={saving}
+         />
+         <label className="flex items-center gap-1">
           <input
             type="checkbox"
             checked={editForm.privat === 1}

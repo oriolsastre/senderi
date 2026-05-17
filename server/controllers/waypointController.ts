@@ -4,12 +4,13 @@ import * as waypointModel from "../models/waypoint.js";
 import type { CreateWaypoint, UpdateWaypoint, Waypoint } from "../types/waypoint.js";
 
 function formatWaypoint(waypoint: Waypoint) {
-  const { elevacio, osm_node, wikidata, ...rest } = waypoint;
+  const { elevacio, osm_node, wikidata, icgc, ...rest } = waypoint;
   return {
     ...rest,
     elevacio: elevacio ?? undefined,
     osm_node: osm_node ?? undefined,
     wikidata: wikidata ?? undefined,
+    icgc: icgc ?? undefined,
   };
 }
 

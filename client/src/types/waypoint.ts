@@ -8,6 +8,7 @@ export interface Waypoint {
   comentari: string | null;
   descripcio: string | null;
   wikidata: string | null;
+  icgc?: string;
   osm_node: number | null;
   privat: number;
   ordre?: number;

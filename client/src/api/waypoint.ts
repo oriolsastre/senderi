@@ -56,6 +56,7 @@ export async function createWaypoint(data: {
   privat?: number;
   osm_node?: number;
   wikidata?: string;
+  icgc?: string;
 }): Promise<Waypoint> {
   const body = { ...data };
   if (body.elevacio === undefined) {
@@ -81,6 +82,7 @@ export async function updateWaypoint(id: number, data: {
   privat?: number;
   osm_node?: number;
   wikidata?: string;
+  icgc?: string;
 }): Promise<Waypoint> {
   const body = { ...data };
   if (body.elevacio === undefined) {

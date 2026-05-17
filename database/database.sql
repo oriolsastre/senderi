@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS waypoints (
   descripcio TEXT,
   osm_node INTEGER,
   wikidata TEXT,
+  icgc TEXT,
   privat INTEGER NOT NULL DEFAULT 0
 );
 

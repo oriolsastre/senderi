@@ -11,6 +11,7 @@ export interface Waypoint {
   descripcio: string | null;
   osm_node: number | null;
   wikidata: string | null;
+  icgc: string | null;
   privat: number;
 }
 
@@ -24,6 +25,7 @@ export interface CreateWaypoint {
   descripcio?: string;
   osm_node?: number;
   wikidata?: string;
+  icgc?: string;
   privat?: number;
 }
 
@@ -37,6 +39,7 @@ export interface UpdateWaypoint {
   descripcio?: string;
   osm_node?: number;
   wikidata?: string;
+  icgc?: string;
   privat?: number;
 }
 
