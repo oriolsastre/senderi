@@ -24,15 +24,15 @@ interface LeafletMapProps {
   isAuthenticated?: boolean;
 }
 
-export default function LeafletMap({ 
-  children, 
-  showLayerToggle = true, 
+export default function LeafletMap({
+  children,
+  showLayerToggle = true,
   className = "h-[450px] w-full",
   zoom,
   center,
   isAuthenticated = false,
 }: LeafletMapProps) {
-  const [mapProvider, setMapProvider] = useState<"osm" | "icgc">("osm");
+  const [mapProvider, setMapProvider] = useState<"osm" | "icgc" | "topo">("osm");
 
   const defaultCenter: [number, number] = mapProvider === "icgc" ? [4182545, 465195] : [41.469197, 2.061967];
   const defaultZoom = mapProvider === "icgc" ? 6 : 13;
@@ -46,7 +46,7 @@ export default function LeafletMap({
             className={`px-2 py-1 text-xs rounded ${mapProvider === "osm"
               ? "bg-green-600 text-white"
               : "bg-white text-black hover:bg-gray-100"
-            }`}
+              }`}
           >
             OSM
           </button>
@@ -55,9 +55,18 @@ export default function LeafletMap({
             className={`px-2 py-1 text-xs rounded ${mapProvider === "icgc"
               ? "bg-green-600 text-white"
               : "bg-white text-black hover:bg-gray-100"
-            }`}
+              }`}
           >
             ICGC
+          </button>
+          <button
+            onClick={() => setMapProvider("topo")}
+            className={`px-2 py-1 text-xs rounded ${mapProvider === "topo"
+              ? "bg-green-600 text-white"
+              : "bg-white text-black hover:bg-gray-100"
+              }`}
+          >
+            Topo
           </button>
         </div>
       )}
@@ -72,6 +81,12 @@ export default function LeafletMap({
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        ) : mapProvider === "topo" ? (
+          <TileLayer
+            attribution='Dades: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> col·laboradors, SRTM | Estil: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+            subdomains={["a", "b", "c"]}
           />
         ) : (
           <WMSTileLayer
